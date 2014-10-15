@@ -10,6 +10,6 @@ install:
   - "pip install NoseGAE"
 #  - "pip install -r requirements.txt"
 # command to run tests, e.g. python setup.py test
-script: nosetests /w ../test --with-gae --gae-lib-root=../google_appengine
+script: nosetests ../test --with-gae --gae-lib-root=../google_appengine
 notifications:
   email: false
