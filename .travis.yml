@@ -8,6 +8,7 @@ before_script:
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - "pip install NoseGAE"
+  - "pip install webtest"
 #  - "pip install -r requirements.txt"
 # command to run tests, e.g. python setup.py test
 script: nosetests ../test --with-gae --gae-lib-root=../google_appengine
