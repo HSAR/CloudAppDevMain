@@ -1,11 +1,15 @@
 language: python
 python:
   - "2.7"
+ before_script:
+  - wget https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.13.zip -nv
+  - unzip -q google_appengine_1.9.13.zip
+  - cd src
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-#install:
-#  - "pip install ."
+install:
+  - "pip install NoseGAE"
 #  - "pip install -r requirements.txt"
 # command to run tests, e.g. python setup.py test
-script: nosetests exampleTest.py
+script: nosetests /w ../test --with-gae --gae-lib-root=../google_appengine
 notifications:
   email: false
