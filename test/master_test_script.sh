@@ -10,7 +10,7 @@ echo "Setting up test run: Jasmine"
 ../google_appengine/dev_appserver.py ../src --skip_sdk_update_check &
 sleep 1
 echo "Starting test run: Jasmine"
-jasmine-node --verbose --captureExceptions ../test/templatetest-spec.js
+jasmine-node --verbose --captureExceptions ../test/
 echo "Test run complete: Jasmine"
 echo "----------------------------------------------------------------------"
 echo "All tests complete."
