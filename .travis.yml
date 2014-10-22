@@ -5,7 +5,7 @@ before_script:
   - wget https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.13.zip -nv
   - unzip -q google_appengine_1.9.13.zip
   - npm install selenium-webdriver
-  - npm install jasmine-node
+  - npm install -g jasmine-node
   - cd test
   - chmod +x ./master_test_script.sh
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
