@@ -7,6 +7,7 @@ before_script:
   - npm install selenium-webdriver
   - npm install -g jasmine-node
   - chmod +x ./test/master_test_script.sh
+  - cd test
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - "pip install NoseGAE"
