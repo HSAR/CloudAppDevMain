@@ -1,0 +1,51 @@
+div {
+	border: 1px solid black;
+}
+
+.editor {
+	height : 500px; /*This will need to be changed later as just hard coded */
+}
+
+.palette {
+	height : 100%;
+}
+
+.canvas {
+	height : 100%;
+	overflow-y : hidden;
+	overflow-x : scroll;
+	float : left;
+	white-space: nowrap;
+}
+
+.note-crotchet {
+	background-image: url('../img/quarter_note.png');
+}
+
+.note { 
+	height : 75px;
+	width : 75px;
+}
+
+.note-quaver {
+	background-image: url('../img/eighth_note.png');
+}
+
+.note-bin {
+	background-image : url('../img/bin.png');
+	height: 128px;
+	width : 128px;
+}
+
+.pitch {
+	width : 100%;
+	height : 6.2%;
+
+}
+
+.bar {
+	width : 20%;
+	height : 100%;
+	display : inline-block;
+
+}
