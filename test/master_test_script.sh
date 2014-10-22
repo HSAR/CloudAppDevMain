@@ -8,7 +8,7 @@ echo "Test run complete: Nose"
 echo "----------------------------------------------------------------------"
 echo "Setting up test run: Jasmine"
 ../google_appengine/dev_appserver.py ../src --skip_sdk_update_check &
-sleep 30
+sleep 1
 echo "Starting test run: Jasmine"
 jasmine-node --verbose --captureExceptions ../test/templatetest-spec.js
 echo "Test run complete: Jasmine"
