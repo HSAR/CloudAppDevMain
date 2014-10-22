@@ -9,6 +9,9 @@ before_script:
   - cd test
   - chmod +x ./master_test_script.sh
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 install:
   - "pip install NoseGAE"
   - "pip install webtest"
