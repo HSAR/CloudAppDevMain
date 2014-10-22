@@ -1,5 +1,6 @@
 #!/bin/sh
 # NB: We are executing this from inside /test/
+set -e
 cd ../src
 echo "Starting test run: Nose"
 nosetests ../test --with-gae --gae-lib-root=../google_appengine
