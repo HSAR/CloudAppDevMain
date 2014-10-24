@@ -40,6 +40,7 @@ div {
 .pitch {
 	width : 100%;
 	height : 6.2%;
+	position:  : relative;
 
 }
 
@@ -47,5 +48,22 @@ div {
 	width : 20%;
 	height : 100%;
 	display : inline-block;
+	position : relative;
 
+}
+
+.preview {
+	height : inherit;
+	border : 1px dotted black;
+	background-color: gray;
+}
+
+.music-note {
+	height : inherit;
+	border : 1px solid black;
+	background-color: green;
+}
+
+.no-display {
+	visibility : hidden;
 }

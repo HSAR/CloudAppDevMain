@@ -26,9 +26,9 @@ function loadPalette() {
 		drag : function(event,ui) {
 			//ok so we want to see if a preview div has been drawn, and if it has we will update it
 			if($('.preview').length) {
-				var noteValue = getNoteValue($(this));
+				var noteValue = getNoteValue($(ui.helper));
 				if(noteValue) {
-					drawPreview(ui.offset,noteValue);
+					drawPreview(event,noteValue);
 				}
 				
 			}
@@ -44,22 +44,61 @@ function loadCanvas() {
 	}
 	
 	$('.pitch').droppable({
+		tolerance : 'pointer',
 		over : function(event,ui) {
-			var note;
-			if(ui.draggable.hasClass('note-crotchet')) {
-				note = noteValues.crotchet;
-			} else if(ui.draggable.hasClass('note-quaver')) {
-				note = noteValues.quaver;
+			$(event.target).append("<div class='preview no-display'></div>");
+		},
+		out : function(event,ui) {
+			$(event.target).children('.preview').remove();
+		},
+		drop : function(event,ui) {
+			//we need to reclass the preview div here and add it to the model
+
+			//ajax some shit here
+
+			//also need to handle two notes being dropped on top of each other.
+			var conflict = false;
+			$(event.target).children('.music-note').each(function(i) {
+				var left = $(this).position().left;
+				var right = left + $(this).width();
+
+				var newLeft = $('.preview').position().left;
+				var newRight = newLeft + $('.preview').width();
+				console.log(left + " " + right + " " + newLeft + " " + newRight);
+				if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
+					conflict = true;
+				}
+			});
+			if(conflict) {
+				$('.preview').remove();
 			}
-			//rawPreview($(this),ui,note);
-			console.log($(this).offset());
-			console.log(event.pageX + "   " + event.pageY);
+			$('.preview').addClass('music-note').removeClass('preview');
+
 		}
 	});
 }
 
-function drawPreview(offset,noteLength) {
+function drawPreview(event,noteLength) {
 	//ok so we can use event.pageX - ui.offset and ignore ones where we get minus values as these are false events
+	var distanceFromLeft = event.pageX - $('.preview').parent().offset().left;
+	var width = $('.preview').parent().width();
+	if(distanceFromLeft >=0) { //if we are dragging over the correct box
+		var position = Math.floor((distanceFromLeft / width) * barLength);
+
+		if(position + noteLength > barLength) {
+			position = barLength - noteLength;//if overflows limit it to end of bar
+		}
+		var leftPos = ((position / barLength) * 100) + "%";
+		var length = ((noteLength / barLength) * 100) + "%";
+
+		$('.preview').css({
+			"position" : 'absolute',
+			'left' : leftPos,
+			'width' : length,
+			'visibility' : 'visable'
+		});
+		$('.preview').removeClass('no-display');
+	}
 }
 
 function getNoteValue($target) {
