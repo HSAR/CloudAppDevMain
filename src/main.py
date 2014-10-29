@@ -37,7 +37,13 @@ class TemplatePageHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('templates/index.html')
         self.response.write(template.render(template_values))
 
+class EditorPageHandler(webapp2.RequestHandler):
+	def get(self):
+		template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
+		self.response.write(template.render())
+
 application = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/template', TemplatePageHandler)
+    ('/template', TemplatePageHandler),
+	('/editor', EditorPageHandler)
 ], debug=True)
