@@ -1,12 +1,11 @@
 from webtest import TestApp
 from main import application
 
-import json
-
 app = TestApp(application)
 
-# This is a test of the JSON library
+# This is a test of the JSON responses from the server
 def test_index():
     response = app.get('/test/json')
-    jsonData = json.load(response)
-    assert 'success' in str(jsonData[test])
+    assert response.status == '200 OK'
+    assert response.content_type == 'application/json'
+    assert 'success' in str(response.json['test'])
