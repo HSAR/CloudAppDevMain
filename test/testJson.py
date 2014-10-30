@@ -1,6 +1,8 @@
 from webtest import TestApp
 from main import application
 
+import json
+
 app = TestApp(application)
 
 # This is a test of the JSON library
