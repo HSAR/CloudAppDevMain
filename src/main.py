@@ -19,6 +19,8 @@ import os
 import webapp2
 import jinja2
 
+import json
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -42,8 +44,17 @@ class EditorPageHandler(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
 		self.response.write(template.render())
 
+class JsonTestHandler(webapp2.RequestHandler):
+	def get(self):
+		self.response.headers['Content-Type'] = 'application/json'   
+		obj = {
+    			'test': 'success', 
+  		} 
+		self.response.out.write(json.dumps(obj))
+
 application = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/template', TemplatePageHandler),
-	('/editor', EditorPageHandler)
+	('/editor', EditorPageHandler),
+    ('/test/json', JsonTestHandler)
 ], debug=True)
