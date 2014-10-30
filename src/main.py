@@ -57,9 +57,20 @@ class JsonTestHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(obj))
 
 
+class JsonParameterTestHandler(webapp2.RequestHandler):
+    def get(self, key):
+        value = self.request.get('value')
+        self.response.headers['Content-Type'] = 'application/json'
+        obj = {
+            key: value
+        }
+        self.response.out.write(json.dumps(obj))
+
+
 application = webapp2.WSGIApplication([
                                           ('/', MainHandler),
                                           ('/template', TemplatePageHandler),
                                           ('/editor', EditorPageHandler),
-                                          ('/test/json', JsonTestHandler)
+                                          ('/test/json', JsonTestHandler),
+                                          ('/test/json/(.*)', JsonParameterTestHandler)
                                       ], debug=True)
