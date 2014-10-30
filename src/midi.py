@@ -49,13 +49,16 @@ def getVLQ(delta):
     return VLQ
 
 #function converts a json into a midi. It will probably take some other arguments later to query for the json
-def getMIDI(testJSON):
+def getMIDI(midiJSON):
+    midi = json.loads(midiJSON) #for now we pass in the JSON string to the function
+    
     #The following bytes make up the head of a MIDI file
     HEAD_CHUNK_ID   = bytearray([0x4D, 0x54, 0x68, 0x64])   #MIDI Magic Number "MThd"
     HEAD_CHUNK_SIZE = bytearray([0x00, 0x00, 0x00, 0x06])   #Head chunk is always 6 bytes in length
     MIDI_FORMAT     = bytearray([0x00, 0x00])               #We are using format 0
     MIDI_TRACKS     = bytearray([0x00, 0x01])               #Format 0 only uses 1 track
-    TIME_DIV        = bytearray([0x00, 0x60])               #Use a constant of 96 divisions per quarter note
+    #time division is stored as 2 bytes and is located under 'subDivisions' in the JSON
+    TIME_DIV        = numberToByteArray(midi['subDivisions'], 2)
 
     #Build up the complete header chunk
     HEADER_CHUNK = HEAD_CHUNK_ID
@@ -66,48 +69,52 @@ def getMIDI(testJSON):
 
     #The second chunk is the track itself
     TRACK_CHUNK_ID  = bytearray([0x4D, 0x54, 0x72, 0x6B])   #A track starts with the Magic Number "MTrk"
-    #next comes the track size which we will work out as we go along
-    trackSize = 0;
     #The first event sets the time signature (8 bytes). We use a standard 4 4
     TIME_SIG        = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08])
-    trackSize += len(TIME_SIG)
     trackEvents = TIME_SIG #build up the track events
 
-    midi = json.loads(testJSON) #for now use a hard coded example but this will be changed to get from storage
+    #convert tempo from beats per minute to microseconds per quarter note
+    tempoBPM = midi['tempo']
+    tempoMPQN = 60000000 / tempoBPM
 
-    tempo = numberToByteArray(midi['tempo'], 3)
+    tempo = numberToByteArray(tempoMPQN, 3)
     tempoEvent = bytearray([0x00, 0xFF, 0x51, 0x03])
     tempoEvent.extend(tempo)
-    trackSize += len(tempoEvent)
     trackEvents.extend(tempoEvent)
 
     #Now set the instruments
     for instrumentData in midi['instruments']:
-        currentInstrument = bytearray([0, 192+instrumentData['channel'], instrumentData['instrumentID']])
-        trackSize += len(currentInstrument)
+        currentInstrument = bytearray([0, 192+instrumentData['chan'], instrumentData['inst']])
         trackEvents.extend(currentInstrument)
         
     #Now it's time for the notes
-    for notes in midi['notes']:
-        delta = getVLQ(notes['delta'])
+    #first make sure the notes are sorted on position
+    notes = sorted(midi['notes'], key=lambda k: k['pos'])
+    currentPosition = 0
+    for noteEvent in notes:
+        position = noteEvent['pos']
+        #need to get the relative position i.e. delta. This is how much the position
+        #has changed since the lase note event
+        relativePosition = position - currentPosition
+        currentPosition = position
+        delta = getVLQ(relativePosition)
         offset = 0
-        if notes['noteDown']:
+        if noteEvent['noteOn']:
             offset = 0x90
         else:
             offset = 0x80
-        noteEvent = bytearray([offset + notes['channel'], notes['noteID'], notes['volume']])
-        delta.extend(noteEvent)
-        trackSize += len(delta)
+        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], noteEvent['vol']])
+        delta.extend(note)
         trackEvents.extend(delta)
         
     #Finally send the End event
     TRACK_END = bytearray([0x00, 0xFF, 0x2F, 0x00])
-    trackSize += len(TRACK_END)
     trackEvents.extend(TRACK_END)
 
     #now build up the complete track chunk
     trackChunk = TRACK_CHUNK_ID
-    trackChunk.extend(numberToByteArray(trackSize, 4))
+    #track chunk contains the length of the trackEvents as 4 bytes
+    trackChunk.extend(numberToByteArray(len(trackEvents), 4))
     trackChunk.extend(trackEvents)
 
     #now combine the header chunk and track chunk to make the midi file

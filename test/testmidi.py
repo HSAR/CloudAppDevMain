@@ -20,13 +20,14 @@ trackHeader = bytearray([0x4D, 0x54, 0x72, 0x6B])
 def test_one_note_midi():
     testJSON = """
     {
-        "tempo":500000,
+        "subDivisions":96,
+        "tempo":120,
         "instruments":[
-                          {"channel":0, "instrumentID":0}
+                          {"chan":0, "inst":0}
                       ],
         "notes":[
-                     {"delta":0, "channel":0, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":0, "noteID":69, "volume":127, "noteDown":false}
+                     {"id":1, "pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
+                     {"id":1, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":false}
                 ]
     }"""
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
@@ -49,58 +50,59 @@ def test_one_note_midi():
 def test_multi_channel():
     testJSON = """
     {
-        "tempo":500000,
+        "subDivisions":96,
+        "tempo":120,
         "instruments":[
-                          {"channel":0, "instrumentID":0},
-                          {"channel":1, "instrumentID":4},
-                          {"channel":2, "instrumentID":20},
-                          {"channel":3, "instrumentID":28},
-                          {"channel":4, "instrumentID":65},
-                          {"channel":5, "instrumentID":70},
-                          {"channel":6, "instrumentID":72},
-                          {"channel":7, "instrumentID":77},
-                          {"channel":8, "instrumentID":80},
-                          {"channel":9, "instrumentID":57},
-                          {"channel":10,"instrumentID":81},
-                          {"channel":11,"instrumentID":18},
-                          {"channel":12,"instrumentID":51},
-                          {"channel":13,"instrumentID":58},
-                          {"channel":14,"instrumentID":25},
-                          {"channel":15,"instrumentID":68}
+                          {"chan":0, "inst":0},
+                          {"chan":1, "inst":4},
+                          {"chan":2, "inst":20},
+                          {"chan":3, "inst":28},
+                          {"chan":4, "inst":65},
+                          {"chan":5, "inst":70},
+                          {"chan":6, "inst":72},
+                          {"chan":7, "inst":77},
+                          {"chan":8, "inst":80},
+                          {"chan":9, "inst":57},
+                          {"chan":10,"inst":81},
+                          {"chan":11,"inst":18},
+                          {"chan":12,"inst":51},
+                          {"chan":13,"inst":58},
+                          {"chan":14,"inst":25},
+                          {"chan":15,"inst":68}
                       ],
         "notes":[
-                     {"delta":0, "channel":0, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":0, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":1, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":1, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":2, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":2, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":3, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":3, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":4, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":4, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":5, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":5, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":6, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":6, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":7, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":7, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":8, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":8, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":9, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":9, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":10, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":10, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":11, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":11, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":12, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":12, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":13, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":13, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":14, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":14, "noteID":69, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":15, "noteID":69, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":15, "noteID":69, "volume":127, "noteDown":false}
+                     {"pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
+                     {"pos":96, "chan":0, "note":69, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":1, "note":69, "vol":127, "noteOn":true},
+                     {"pos":192, "chan":1, "note":69, "vol":127, "noteOn":false},
+                     {"pos":192, "chan":2, "note":69, "vol":127, "noteOn":true},
+                     {"pos":288, "chan":2, "note":69, "vol":127, "noteOn":false},
+                     {"pos":288, "chan":3, "note":69, "vol":127, "noteOn":true},
+                     {"pos":384, "chan":3, "note":69, "vol":127, "noteOn":false},
+                     {"pos":384, "chan":4, "note":69, "vol":127, "noteOn":true},
+                     {"pos":480, "chan":4, "note":69, "vol":127, "noteOn":false},
+                     {"pos":480, "chan":5, "note":69, "vol":127, "noteOn":true},
+                     {"pos":576, "chan":5, "note":69, "vol":127, "noteOn":false},
+                     {"pos":576, "chan":6, "note":69, "vol":127, "noteOn":true},
+                     {"pos":672, "chan":6, "note":69, "vol":127, "noteOn":false},
+                     {"pos":672, "chan":7, "note":69, "vol":127, "noteOn":true},
+                     {"pos":768, "chan":7, "note":69, "vol":127, "noteOn":false},
+                     {"pos":768, "chan":8, "note":69, "vol":127, "noteOn":true},
+                     {"pos":864, "chan":8, "note":69, "vol":127, "noteOn":false},
+                     {"pos":864, "chan":9, "note":69, "vol":127, "noteOn":true},
+                     {"pos":960, "chan":9, "note":69, "vol":127, "noteOn":false},
+                     {"pos":960, "chan":10, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1056, "chan":10, "note":69, "vol":127, "noteOn":false},
+                     {"pos":1056, "chan":11, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1152, "chan":11, "note":69, "vol":127, "noteOn":false},
+                     {"pos":1152, "chan":12, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1248, "chan":12, "note":69, "vol":127, "noteOn":false},
+                     {"pos":1248, "chan":13, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1344, "chan":13, "note":69, "vol":127, "noteOn":false},
+                     {"pos":1344, "chan":14, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1440, "chan":14, "note":69, "vol":127, "noteOn":false},
+                     {"pos":1440, "chan":15, "note":69, "vol":127, "noteOn":true},
+                     {"pos":1536, "chan":15, "note":69, "vol":127, "noteOn":false}
                 ]
     }"""
     
@@ -169,25 +171,26 @@ def test_multi_channel():
 def test_many_notes():
     testJSON = """
     {
-        "tempo":500000,
+        "subDivisions":96,
+        "tempo":120,
         "instruments":[
-                          {"channel":0, "instrumentID":0}
+                          {"chan":0, "inst":0}
                       ],
         "notes":[
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":59, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":60, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":62, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":64, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":65, "volume":127, "noteDown":true},
-                     {"delta":0, "channel":0, "noteID":67, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":59, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":60, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":62, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":64, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":65, "volume":127, "noteDown":false},
-                     {"delta":96, "channel":0, "noteID":67, "volume":127, "noteDown":false}
+                     {"pos":0, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":59, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":60, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":62, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":64, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":65, "vol":127, "noteOn":true},
+                     {"pos":0, "chan":0, "note":67, "vol":127, "noteOn":true},
+                     {"pos":96, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":59, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":60, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":62, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":64, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":65, "vol":127, "noteOn":false},
+                     {"pos":96, "chan":0, "note":67, "vol":127, "noteOn":false}
                 ]
     }"""
     
@@ -202,12 +205,12 @@ def test_many_notes():
                              0x00, 0x90, 0x41, 0x7F,
                              0x00, 0x90, 0x43, 0x7F,
                              0x60, 0x80, 0x39, 0x7F,
-                             0x60, 0x80, 0x3B, 0x7F,
-                             0x60, 0x80, 0x3C, 0x7F,
-                             0x60, 0x80, 0x3E, 0x7F,
-                             0x60, 0x80, 0x40, 0x7F,
-                             0x60, 0x80, 0x41, 0x7F,
-                             0x60, 0x80, 0x43, 0x7F,
+                             0x00, 0x80, 0x3B, 0x7F,
+                             0x00, 0x80, 0x3C, 0x7F,
+                             0x00, 0x80, 0x3E, 0x7F,
+                             0x00, 0x80, 0x40, 0x7F,
+                             0x00, 0x80, 0x41, 0x7F,
+                             0x00, 0x80, 0x43, 0x7F,
                              0x00, 0xFF, 0x2F, 0x00])
                              
     trackLength = bytearray([0x00, 0x00, 0x00, 0x4E])
@@ -223,27 +226,28 @@ def test_many_notes():
 def test_delta_values():
     testJSON = """
     {
-        "tempo":500000,
+        "subDivisions":96,
+        "tempo":120,
         "instruments":[
-                          {"channel":0, "instrumentID":0}
+                          {"chan":0, "inst":0}
                       ],
         "notes":[
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":1, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":48, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":96, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":127, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":128, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":137, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":1056118, "channel":0, "noteID":57, "volume":127, "noteDown":false},
-                     {"delta":0, "channel":0, "noteID":57, "volume":127, "noteDown":true},
-                     {"delta":34656598, "channel":0, "noteID":57, "volume":127, "noteDown":false}
+                     {"pos":0, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":1, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":1, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":49, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":49, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":145, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":145, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":272, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":272, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":400, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":400, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":537, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":537, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":1056655, "chan":0, "note":57, "vol":127, "noteOn":false},
+                     {"pos":1056655, "chan":0, "note":57, "vol":127, "noteOn":true},
+                     {"pos":35713253, "chan":0, "note":57, "vol":127, "noteOn":false}
                 ]
     }"""
     
@@ -277,3 +281,46 @@ def test_delta_values():
     
     midiObtained = getMIDI(testJSON)
     assert actualMIDI == midiObtained, "Different delta values"
+    
+#test when the JSON notes are out of order
+def test_out_of_order():
+    testJSON = """
+    {
+        "subDivisions":96,
+        "tempo":120,
+        "instruments":[
+                          {"chan":0, "inst":0}
+                      ],
+        "notes":[
+                     {"id":3, "pos":288, "chan":0, "note":69, "vol":127, "noteOn":false},
+                     {"id":4, "pos":288, "chan":0, "note":69, "vol":127, "noteOn":true},
+                     {"id":1, "pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
+                     {"id":4, "pos":384, "chan":0, "note":69, "vol":127, "noteOn":false},
+                     {"id":2, "pos":192, "chan":0, "note":69, "vol":127, "noteOn":false},
+                     {"id":3, "pos":192, "chan":0, "note":69, "vol":127, "noteOn":true},
+                     {"id":1, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":false},
+                     {"id":2, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":true}
+                ]
+    }"""
+    trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
+                             0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
+                             0x00, 0xC0, 0x00,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0xFF, 0x2F, 0x00])
+                             
+    trackLength = bytearray([0x00, 0x00, 0x00, 0x36])
+    
+    actualMIDI = copy(headerChunk)
+    actualMIDI.extend(trackHeader)
+    actualMIDI.extend(trackLength)
+    actualMIDI.extend(trackEvents)
+    
+    midiObtained = getMIDI(testJSON)
+    assert actualMIDI == midiObtained, "Out of order"
