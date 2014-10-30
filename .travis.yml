@@ -8,20 +8,20 @@ before_script:
   - npm install -g jasmine-node
   - cd test
   - chmod +x ./master_test_script.sh
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 install:
   - "pip install NoseGAE"
   - "pip install webtest"
-#  - "pip install -r requirements.txt"
 # command to run tests, e.g. python setup.py test
 script: ./master_test_script.sh
 addons:
   firefox: "17.0"
 notifications:
   email: false
+#    on_success: change # default: change
+#    on_failure: always # default: always
   irc:
     channels:
       - "tim32.org/#cloudappdev"
