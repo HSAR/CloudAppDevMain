@@ -15,11 +15,15 @@
 # limitations under the License.
 #
 import os
+import datetime
 
 import webapp2
 import jinja2
 
 import json
+
+from google.appengine.api import users
+from google.appengine.api import channel
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -44,8 +48,18 @@ class TemplatePageHandler(webapp2.RequestHandler):
 
 class EditorPageHandler(webapp2.RequestHandler):
     def get(self):
-        template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
-        self.response.write(template.render())
+		user = users.get_current_user()
+		if user:
+			auth_html = ('Signed in as %s. (<a href="%s">sign out</a>)' % (user.nickname(), users.create_logout_url('/')))
+		else:
+			auth_html = ('<a href="%s">Sign in or register</a>.' % users.create_login_url(self.request.uri))
+		token = channel.create_channel(datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
+		template_values = {
+			'auth_bar': auth_html,
+			'token': token,
+		}
+		template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
+		self.response.write(template.render(template_values))
 
 
 class JsonTestHandler(webapp2.RequestHandler):

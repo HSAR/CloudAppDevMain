@@ -4,12 +4,14 @@
 	<script type="text/javascript" src="/public/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/public/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+	<script src='/_ah/channel/jsapi'></script>
 	<script type="text/javascript" src="/public/js/editorHandler.js"></script>
 	<link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="/public/css/jquery-ui.min.css" />
 	<link rel="stylesheet" type="text/css" href="/public/css/edit.css" />
 </head>
 <body>
+	<div class="auth">{{auth_bar|safe}}</div>
 	<div class="container">
 		<h1>Yeah this is just me having a play around with making an editor</h1>
 		<br/>
@@ -23,5 +25,21 @@
 		</div>
 
 	</div>
+<script type="text/javascript">
 
+onOpened = function() {};
+      
+onMessage = function(msg) {};
+
+onError = function() {};
+
+onClose = function() {};
+
+/*channel = new goog.appengine.Channel('{{ token }}');
+socket = channel.open();
+socket.onopen = onOpened;
+socket.onmessage = onMessage;
+socket.onerror = onError;
+socket.onclose = onClose; */
+</script>
 </body>
