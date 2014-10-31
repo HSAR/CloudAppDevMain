@@ -1,0 +1,11 @@
+body {
+	background-color: #eee;
+}
+
+.navbar-title {
+	font-size:32px;
+}
+
+.navbar-title:hover {
+	text-decoration:none;
+}
