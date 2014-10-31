@@ -18,3 +18,20 @@ def test_json_path():
     assert response.status == '200 OK'
     assert response.content_type == 'application/json'
     assert value in str(response.json[key])
+
+# This is a test of requests with URI arguments only.
+def test_json_path_argument_only():
+    key = 'test1'
+    response = app.get('/test/json/' + key)
+    assert response.status == '200 OK'
+    assert response.content_type == 'application/json'
+    assert '' in str(response.json[key])
+
+# This is a test of requests with URI arguments only.
+def test_json_path_parameter_only():
+    value = 'test2'
+    response = app.get('/test/json/?value=' + value)
+    assert response.status == '200 OK'
+    assert response.content_type == 'application/json'
+    assert value in str(response.json[''])
+

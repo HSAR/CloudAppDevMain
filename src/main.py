@@ -82,9 +82,9 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-                                          ('/', MainHandler),
-                                          ('/template', TemplatePageHandler),
-                                          ('/editor', EditorPageHandler),
-                                          ('/test/json', JsonTestHandler),
-                                          ('/test/json/(.*)', JsonParameterTestHandler)
+                                          webapp2.Route(r'/', handler=MainHandler, name='home'),
+                                          webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
+                                          webapp2.Route(r'/editor', handler=EditorPageHandler, name='editor'),
+                                          webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
+                                          webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler, name='jsonParameterTest'),
                                       ], debug=True)
