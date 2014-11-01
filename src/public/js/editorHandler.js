@@ -10,6 +10,8 @@ String.prototype.repeat = function( num )
 
 var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(12) + '</div>';
 
+var tuneJSON;
+
 var noteValues = {
 	quaver : 1,
 	crotchet : 2
@@ -101,6 +103,10 @@ function drawPreview(event,noteLength) {
 	}
 }
 
+function drawLoadScreen() {
+
+}
+
 function getNoteValue($target) {
 	var note;
 	if($target.hasClass('note-crotchet')) {
@@ -111,8 +117,36 @@ function getNoteValue($target) {
 	return note;
 }
 
+function loadNotesFromJSON(data) {
+	tuneJSON = data;
+	
+}
+
+function getToken() {
+	$.ajax({
+		type : 'GET',
+		url : 'http://example.com',
+		dataType : 'JSON',
+		success : function(data) {
+			if(data.token) {
+				//we can now open up a socket using the token
+				initSocket(data.token);
+			} else {
+				//deal with error here
+			}
+		}
+
+	});
+}
+
+function initEditor() {
+	//first thing to do is set up loading page until we can establish a connection
+	drawLoadScreen();
+	getToken();
+}
 
 $(function() {
+	initEditor();
 	loadPalette();
 	loadCanvas();
 
