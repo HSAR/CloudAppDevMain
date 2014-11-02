@@ -46,22 +46,6 @@ class TemplatePageHandler(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class EditorPageHandler(webapp2.RequestHandler):
-    def get(self):
-		user = users.get_current_user()
-		if user:
-			auth_html = ('Signed in as %s. (<a href="%s">sign out</a>)' % (user.nickname(), users.create_logout_url('/')))
-		else:
-			auth_html = ('<a href="%s">Sign in or register</a>.' % users.create_login_url(self.request.uri))
-		token = channel.create_channel(datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
-		template_values = {
-			'auth_bar': auth_html,
-			'token': token,
-		}
-		template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
-		self.response.write(template.render(template_values))
-
-
 class JsonTestHandler(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
@@ -84,7 +68,6 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
-                                          webapp2.Route(r'/editor', handler=EditorPageHandler, name='editor'),
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
                                           webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler, name='jsonParameterTest'),
                                       ], debug=True)
