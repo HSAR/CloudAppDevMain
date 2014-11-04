@@ -16,6 +16,9 @@ handlers:
   script: editor.application
   login: required
 
+- url: /search.*
+  script: search.application
+
 - url: .*
   script: main.application
 
