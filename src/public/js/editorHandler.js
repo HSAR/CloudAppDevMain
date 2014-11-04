@@ -41,7 +41,43 @@ function loadPalette() {
 }
 
 function loadCanvas() {
-	for(var i = 1; i<9; i++) {
+	//this loads canvas from the json we got sent
+	//need to iterate through each track and add tabs (we will need at least one tab regardless)
+	//if tracks is empty add default tab otherwise add tabs as per usual
+	$('.canvas').children().remove(); //get rid of loading message
+
+	$('.canvas').append('<ul class="nav nav-tabs" role="tablist">');
+	if(tracks.length > 0) {
+		for(var i = 1; i <tuneJSON.tracks.length; i++) {
+			if(i === 1) {
+				$('.canvas').append('<li role="presentation" class="active"><a href="#track' + i + '" role="tab" data-toggle="tab">' + tuneJSON.tracks[i] + '</a></li>');
+			} else {
+				$('.canvas').append('<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab">' + tuneJSON.tracks[i] + '</a></li>');
+			}
+			
+		}
+	} else {//add default tab
+		$('.canvas').append('<li role="presentation" class="active"><a href="#default" role="tab" data-toggle="tab"></a></li>');
+	}
+	$('.canvas').append('</ul><div class="tab-content">');
+	//now add the tab panels
+	if(tracks.length > 0) {
+		for(var i = 1; i <tuneJSON.tracks.length; i++) {
+			if(i === 1) {
+				$('.canvas').append('<div role="tabpanel" class="tab-pane active" id="track' + i +'"></div>');
+			} else {
+				$('.canvas').append('<div role="tabpanel" class="tab-pane" id="track' + i +'"></div>');
+			}
+			
+		}
+	} else {
+		$('.canvas').append('<div role="tabpanel" class="tab-pane" id="default"></div>');
+	}
+	
+	//now we work out how many bars there are 
+	var numBars = tuneJSON.head.bars;
+
+	for(var i = 1; i<; i++) {
 		$('.canvas').append(barHTML);
 	}
 	
@@ -104,7 +140,7 @@ function drawPreview(event,noteLength) {
 }
 
 function drawLoadScreen() {
-
+	$('.canvas').append('<h1>Connecting to server<h1>');
 }
 
 function getNoteValue($target) {
@@ -119,7 +155,7 @@ function getNoteValue($target) {
 
 function loadNotesFromJSON(data) {
 	tuneJSON = data;
-	
+
 }
 
 function getToken() {
@@ -147,8 +183,7 @@ function initEditor() {
 
 $(function() {
 	initEditor();
-	loadPalette();
-	loadCanvas();
+
 
 
 

@@ -33,7 +33,9 @@ function onMessage(msg) {
 	//split this up based on what type of message we receive
 	if(msg.topic = 'token') {
 
-	} else if(msg.topic = '')
+	} else if(msg.topic = '') {
+		
+	}
 }
 
 function onError() {
