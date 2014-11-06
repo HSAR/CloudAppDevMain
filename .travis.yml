@@ -7,8 +7,10 @@ before_script:
   - npm config set loglevel info
 
   - npm install selenium-webdriver
-  - npm install -g grunt
+  - npm install -g grunt-cli
+  - npm install -g phantomjs
   - npm install -g jasmine-node
+  - npm install
 
 
   - cd test

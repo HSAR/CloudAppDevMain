@@ -14,5 +14,6 @@ jasmine-node --verbose --captureExceptions ../test/
 echo "Test run complete: Jasmine"
 echo "----------------------------------------------------------------------"
 cd ..
-grunt test --verbose --force
+echo "Starting test run : QUnit"
+grunt --verbose --force
 echo "All tests complete."
