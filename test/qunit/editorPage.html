@@ -18,7 +18,8 @@
       setup : function() {
         QUnit.stop();
         ansynchOp();
-        $('qunit-fixture').load('../../src/templates/editor.html',function() {
+    
+        $('#qunit-fixture').load('../../src/templates/editor.html',function() {
           QUnit.start();
         });
       }
