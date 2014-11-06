@@ -1,4 +1,4 @@
-jQuery = require('jquery').create();
+jQuery = require('jquery');
 $ = jQuery;
 window = require('jsdom').jsdom().createWindow();
 document = window.document;
