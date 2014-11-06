@@ -1,7 +1,7 @@
 jQuery = require('jquery');
 $ = jQuery;
 
-jqueryJasmine = require('jasmine-jquery');
+var jqueryJasmine = require('jasmine-jquery');
 
 require('../src/public/js/editorHandler.js');
 
