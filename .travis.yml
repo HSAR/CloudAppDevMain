@@ -8,7 +8,7 @@ before_script:
   - npm install selenium-webdriver
   - npm install jsdom
   - npm install -g jasmine-node
-  - sudo npm install jasmine-jquery
+  - npm install jasmine-jquery
 
   - cd test
   - chmod +x ./master_test_script.sh
