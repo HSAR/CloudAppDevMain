@@ -6,8 +6,8 @@ before_script:
   - unzip -q google_appengine_1.9.15.zip
   - npm install -g jquery
   - npm install selenium-webdriver
-  - npm install -g jasmine-node
-  - npm install -g jasmine-jquery
+  - npm install  jasmine-node
+  - npm install  jasmine-jquery
 
   - cd test
   - chmod +x ./master_test_script.sh
