@@ -17,8 +17,8 @@
     QUnit.module('Setting up DOM elements from tune JSON',{
       setup : function() {
         QUnit.stop();
-        ansynchOp();
-    
+        ansyncOp();
+
         $('#qunit-fixture').load('../../src/templates/editor.html',function() {
           QUnit.start();
         });
