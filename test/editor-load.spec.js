@@ -1,7 +1,9 @@
 jQuery = require('jquery');
 $ = jQuery;
-window = require('jsdom').jsdom.createWindow();
-document = window.document;
+window = require('jsdom').jsdom;
+document = jsdom('<!doctype html><html><body></body></html>');
+window = document.createWindow();
+
 
 var jqueryJasmine = require('jasmine-jquery');
 
