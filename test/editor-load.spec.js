@@ -1,7 +1,10 @@
-jQuery = require('jquery');
+jQuery = require('jquery').create();
 $ = jQuery;
+window = require('jsdom').jsdom().createWindow();
+document = window.document;
 
 var jqueryJasmine = require('jasmine-jquery');
+
 
 require('../src/public/js/editorHandler.js');
 
