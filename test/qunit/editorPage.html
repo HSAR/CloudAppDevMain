@@ -18,13 +18,16 @@
       setup : function() {
         QUnit.stop();
 
-        $('#qunit-fixture').load('../../src/templates/editor.html .editor',function() {
+        $('#qunit-fixture').load('../../src/templates/editor.html .editor',function(res,status,req) {
+          console.log(req);
+
           QUnit.start();
         });
       }
     });
     QUnit.test( "check if loaded", function( assert ) {
       var value = "hello";
+
       assert.equal(1, $('.canvas').length, "We expect value to be hello" );
     });
   </script>
