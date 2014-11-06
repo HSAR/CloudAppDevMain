@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en>
+	<head>
+		{% block head %}
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../favicon.ico">
+		<title>Jinglr</title>
+			
+		<script type="text/javascript" src="../public/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../public/js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="/public/css/jquery-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="/public/css/base.css" />
+		{% endblock %}
+	</head>
+	<body>
+		<div class="header">
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+				  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#jinglr-navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+				  <a class="navbar-title navbar-link" href="#">Jinglr</a>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="jinglr-navbar">
+					<form class="navbar-form navbar-right" role="search">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Search">
+						</div>
+						<button type="submit" class="btn btn-default">Submit</button>
+					  </form>
+					  <p class="navbar-text navbar-right">Welcome, Username</a>
+				  
+				</div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+		</div>
+		<div class="content"> {% block content %}{% endblock %}</div>
+		<div class="footer"> {% block footer %}{% endblock %}</div>
+	</body>
+<html>

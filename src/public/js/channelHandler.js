@@ -22,6 +22,7 @@ function onOpened() {
 			if(data.topic === 'tune') {
 				//we can now open up a socket using the token
 				loadNotesFromJSON(data);
+				loadPalette();
 			} else {
 				//deal with error here
 			}

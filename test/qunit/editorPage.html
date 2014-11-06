@@ -10,6 +10,7 @@
   <div id="qunit-fixture"></div>
   <script src="qunit.js"></script>
   <script src="jquery.min.js"></script>
+  <script src="jquery-ui.min.js"></script>
   <script type="text/javascript" src="../../src/public/js/channelHandler.js"></script>
   <script type="text/javascript" src="../../src/public/js/editorHandler.js"></script>
   <script>
@@ -18,17 +19,38 @@
       setup : function() {
         QUnit.stop();
 
-        $('#qunit-fixture').load('../../src/templates/editor.html .editor',function(res,status,req) {
-          console.log(req);
+        function callBack() {
+            QUnit.start();
+            var testJSON = {
+              head : {
+                title : 'bleh',
+                tempo : 9000,
+                genre : 'rock',
+                bars : 32,
+                barLength : 4,
+                subdivisions : 2
+              },
+              tracks : [{instrument : 1, notes : [{id : 1, position : 25, length : 6, pitch : 6}]}]
+             };
+            loadNotesFromJSON(testJSON);
+          }
 
-          QUnit.start();
+        $('#qunit-fixture').load('../../src/templates/editor.html .editor',function(res,status,req) {
+          if(status == "error") {//if not on server
+            $('#qunit-fixture').load('templates/editor.html .editor', callBack);//load local copy
+          } else {
+            callBack();
+          }
         });
       }
     });
-    QUnit.test( "check if loaded", function( assert ) {
-      var value = "hello";
+    QUnit.test( "Check if in correct bar", function( assert ) {
+       
+      assert.equal($('#note1').parent().parent().index(), 3, "Loaded note should be in the 4th bar" );
+    });
 
-      assert.equal(1, $('.canvas').length, "We expect value to be hello" );
+    QUnit.test("Check tab is displaying correct instrument name",function(assert) {
+      assert.equal($('ul.nav-tabs li a').eq(0).text(),'Piano',"Title of the tab should be the name of the instrument");
     });
   </script>
 </body>

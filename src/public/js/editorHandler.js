@@ -195,14 +195,14 @@
 		var pitch =  note.pitch;
 		var left = ((note.position % subdivisions) / subdivisions) * 100 + '%';//could potentially divide by 0 but js protects us
 		var length = (note.length / subdivisions) * 100 + '%';
-		$tab.children('.bar').eq(bar).children('.pitch').eq(pitch).append('<div class="newNote"></div>');
+		$tab.children('.bar').eq(bar).children('.pitch').eq(pitch).append('<div class="newNote" id="note' + note.id +'"></div>');
 
 		$('.newNote').css({
 			'position' : 'absolute',
 			'left' : left,
 			'width' : length
 		});
-
+		console.log($('.newNote').attr('id'));
 		$('.newNote').addClass('music-note').removeClass('newNote');
 	}
 
@@ -220,10 +220,10 @@
 		return note;
 	}
 
-	function loadNotesFromJSON(data) {
+	function loadNotesFromJSON(data,cb) {
 		tuneJSON = data;
 		loadCanvas();
-		loadPalette();
+		
 	}
 
 	function getToken() {
@@ -250,20 +250,11 @@
 	}
 
 	function testLoading() {
-		var testJSON = {
-			head : {
-				title : 'bleh',
-				tempo : 9000,
-				genre : 'rock',
-				bars : 32,
-				barLength : 4,
-				subdivisions : 2
-			},
-			tracks : [{instrument : 1, notes : [{id : 1, position : 25, length : 6, pitch : 6}]}]
-		};
-		loadNotesFromJSON(testJSON);
+		
 
 	}
+
+	//what do we want to test? loading notes from JSON
 
 	$(function() {
 		initEditor();
