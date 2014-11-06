@@ -1,8 +1,9 @@
 jQuery = require('jquery');
 $ = jQuery;
 var jsdom = require('jsdom').jsdom;
+var webdriver = require('selenium-webdriver');
 
-var jqueryJasmine = require('./jasmine-jquery.js');
+var jqueryJasmine = require('jasmine-jquery');
 
 jasmine.getFixtures().fixturesPath = '../src/templates';
 // document = jsdom('<!doctype html><html><head></head><body></body></html>');
