@@ -1,6 +1,6 @@
 jQuery = require('jquery');
 $ = jQuery;
-window = require('jsdom').jsdom;
+var jsdom = require('jsdom').jsdom;
 document = jsdom('<!doctype html><html><body></body></html>');
 window = document.createWindow();
 
