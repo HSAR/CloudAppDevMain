@@ -10,23 +10,22 @@
   <div id="qunit-fixture"></div>
   <script src="qunit.js"></script>
   <script src="jquery.min.js"></script>
-  <script type="text/javascript" src="../public/js/channelHandler.js"></script>
-  <script type="text/javascript" src="../public/js/editorHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/channelHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/editorHandler.js"></script>
   <script>
 
     QUnit.module('Setting up DOM elements from tune JSON',{
       setup : function() {
         QUnit.stop();
-        ansyncOp();
 
-        $('#qunit-fixture').load('../../src/templates/editor.html',function() {
+        $('#qunit-fixture').load('../../src/templates/editor.html .editor',function() {
           QUnit.start();
         });
       }
     });
-    QUnit.test( "a basic test example", function( assert ) {
+    QUnit.test( "check if loaded", function( assert ) {
       var value = "hello";
-      assert.equal( value, "hello", "We expect value to be hello" );
+      assert.equal(1, $('.canvas').length, "We expect value to be hello" );
     });
   </script>
 </body>
