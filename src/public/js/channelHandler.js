@@ -6,6 +6,13 @@ function initSocket(token) {
 	socket.onerror = onError;
 	socket.onclose = onClose;
 
+	
+}
+
+/*
+ *	Handler function called when channel initially opened
+ */
+function onOpened() {
 	//we can now make call to server to get notes json
 	$.ajax({
 		type : 'GET',
@@ -20,13 +27,6 @@ function initSocket(token) {
 			}
 		}
 	});
-}
-
-/*
- *	Handler function called when channel initially opened
- */
-function onOpened() {
-
 }
 
 function onMessage(msg) {
