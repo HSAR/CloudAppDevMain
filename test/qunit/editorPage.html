@@ -11,8 +11,10 @@
   <script src="qunit.js"></script>
   <script src="jquery.min.js"></script>
   <script src="jquery-ui.min.js"></script>
-  <script type="text/javascript" src="../../src/public/js/channelHandler.js"></script>
-  <script type="text/javascript" src="../../src/public/js/editorHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/editor/ajaxHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/editor/midiHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/editor/channelHandler.js"></script>
+  <script type="text/javascript" src="../../src/public/js/editor/editorHandler.js"></script>
   <script>
 
     QUnit.module('Setting up DOM elements from tune JSON',{
@@ -30,7 +32,7 @@
                 barLength : 4,
                 subdivisions : 2
               },
-              tracks : [{instrument : 1, notes : [{id : 1, position : 25, length : 6, pitch : 6}]}]
+              tracks : [{instrument : 1, notes : [{id : 1, position : 25, length : 6, pitch : 82}]}]
              };
             loadNotesFromJSON(testJSON);
           }
@@ -50,7 +52,7 @@
     });
 
     QUnit.test("Check tab is displaying correct instrument name",function(assert) {
-      assert.equal($('ul.nav-tabs li a').eq(0).text(),'Piano',"Title of the tab should be the name of the instrument");
+      assert.equal($('ul.nav-tabs li a').eq(0).text(),'Acoustic Grand Piano',"Title of the tab should be the name of the instrument");
     });
   </script>
 </body>
