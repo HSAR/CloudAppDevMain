@@ -19,6 +19,9 @@ handlers:
 - url: /search.*
   script: search.application
 
+- url: /auth.*
+  script: auth.application
+
 - url: .*
   script: main.application
 
