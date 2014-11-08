@@ -3,7 +3,7 @@
 set -e
 cd ../src
 echo "Starting test run: Nose"
-nosetests ../test --with-gae --gae-lib-root=../google_appengine
+nosetests ../test --verbose --with-gae --gae-lib-root=../google_appengine
 echo "Test run complete: Nose"
 echo "----------------------------------------------------------------------"
 echo "Setting up test run: Jasmine"
