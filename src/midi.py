@@ -1,8 +1,20 @@
-import json;
+import json
+import base64
+
+class MIDIError(Exception):
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return repr(self.message)
 
 #function to convert a decimal number to an array of bytes
 #takes a number to convert and the number of bytes in the returned array
+#raises MIDIError if the number is too big for the given number of bytes
 def numberToByteArray(number, bytes):
+    bits = 8 * bytes
+    if number > 2**bits - 1:
+        raise MIDIError("Not Enough Bytes")
+    
     byteArr = bytearray(bytes)
     bytes -= 1
     count = 0
@@ -48,17 +60,35 @@ def getVLQ(delta):
     VLQ[-1] -= 128 #unset the 8th bit for the last byte
     return VLQ
 
-#function converts a json into a midi. It will probably take some other arguments later to query for the json
+#function takes a jingle JSON and returns an array of bytes which make up the
+#MIDI file for that jingle.
+#raises MIDIError if there is a problem creating the MIDI file
 def getMIDI(midiJSON):
-    midi = json.loads(midiJSON) #for now we pass in the JSON string to the function
+    midi = json.loads(midiJSON) #load the JSON as a python dictionary
     
     #The following bytes make up the head of a MIDI file
     HEAD_CHUNK_ID   = bytearray([0x4D, 0x54, 0x68, 0x64])   #MIDI Magic Number "MThd"
     HEAD_CHUNK_SIZE = bytearray([0x00, 0x00, 0x00, 0x06])   #Head chunk is always 6 bytes in length
     MIDI_FORMAT     = bytearray([0x00, 0x00])               #We are using format 0
     MIDI_TRACKS     = bytearray([0x00, 0x01])               #Format 0 only uses 1 track
-    #time division is stored as 2 bytes and is located under 'subDivisions' in the JSON
-    TIME_DIV        = numberToByteArray(midi['subDivisions'], 2)
+    
+    if not 'head' in midi:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'head'")
+    
+    midiHead = midi['head']
+    
+    if not 'subDivisions' in midiHead:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'subDivisions' from head")
+    
+    if midiHead['subDivisions'] < 1:
+        raise MIDIError("subDivisions is too small. Minimum value is 1")
+    
+    TIME_DIV = None;
+    try:
+        #time division is stored as 2 bytes
+        TIME_DIV = numberToByteArray(midiHead['subDivisions'], 2)
+    except MIDIError as exep:
+        raise MIDIError("subDivisions is too large. Maximum value is 65535")
 
     #Build up the complete header chunk
     HEADER_CHUNK = HEAD_CHUNK_ID
@@ -73,8 +103,14 @@ def getMIDI(midiJSON):
     TIME_SIG        = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08])
     trackEvents = TIME_SIG #build up the track events
 
+    if not 'tempo' in midiHead:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'tempo' from head")
+    
+    if midiHead['tempo'] < 4:
+        raise MIDIError("tempo is too small. Minimum value is 4")
+    
     #convert tempo from beats per minute to microseconds per quarter note
-    tempoBPM = midi['tempo']
+    tempoBPM = midiHead['tempo']
     tempoMPQN = 60000000 / tempoBPM
 
     tempo = numberToByteArray(tempoMPQN, 3)
@@ -82,28 +118,92 @@ def getMIDI(midiJSON):
     tempoEvent.extend(tempo)
     trackEvents.extend(tempoEvent)
 
-    #Now set the instruments
-    for instrumentData in midi['instruments']:
-        currentInstrument = bytearray([0, 192+instrumentData['chan'], instrumentData['inst']])
-        trackEvents.extend(currentInstrument)
+    if not 'tracks' in midi:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'tracks'")
+    
+    midiChannels = midi['tracks']
+    #Now set the instruments and collect note events in a list
+    currentChannel = 0
+    allNoteEvents = []
+    for channel in midiChannels:
+        if currentChannel == 9:
+            #channel 10 (index 9) is for percussion only so skip it
+            currentChannel = 10
+            
+        if currentChannel > 15:
+            raise MIDIError("Too many tracks. Maximum number of tracks is 15")
+        if not 'instrument' in channel:
+            raise MIDIError("Invalid Jingle JSON format. Missing 'instrument' from track")
+        if not 'notes' in channel:
+            raise MIDIError("Invalid Jingle JSON format. Missing 'notes' from track")
         
+        instrument = channel['instrument']
+        notes = channel['notes']
+        
+        if instrument < 0 or instrument > 127:
+            raise MIDIError("Invalid instrument number. Must be in range of 0 to 127")
+        
+        #here we actually set an instrument to the current channel
+        setInstrumentEvent = bytearray([0, 192+currentChannel, instrument])
+        trackEvents.extend(setInstrumentEvent)
+        
+        for noteData in notes:
+            if not 'pos' in noteData:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'pos' from notes")
+        
+        for noteData in sorted(notes, key=lambda k: k['pos']):
+            if not 'length' in noteData:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
+            if not 'note' in noteData:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'note' from notes")
+            if noteData['note'] < 0 or noteData['note'] > 127:
+                raise MIDIError("Invalid note number. Must be in range of 0 to 127")
+            if noteData['pos'] < 0:
+                raise MIDIError("Invalid pos. Must not be negative")
+            if noteData['length'] < 0:
+                raise MIDIError("Invalid length. Must not be negative")
+                
+            noteOnEvent = {
+                "pos":    noteData['pos'],
+                "chan":   currentChannel,
+                "note":   noteData['note'],
+                "noteOn": True
+            }
+            
+            noteOffEvent = {
+                "pos":    noteData['pos'] + noteData['length'],
+                "chan":   currentChannel,
+                "note":   noteData['note'],
+                "noteOn": False
+            }
+            
+            allNoteEvents.append(noteOnEvent)
+            allNoteEvents.append(noteOffEvent)
+            
+        currentChannel += 1
+    
+    
     #Now it's time for the notes
     #first make sure the notes are sorted on position
-    notes = sorted(midi['notes'], key=lambda k: k['pos'])
+    noteEventsSorted = sorted(allNoteEvents, key=lambda k: k['pos'])
     currentPosition = 0
-    for noteEvent in notes:
+    for noteEvent in noteEventsSorted:
         position = noteEvent['pos']
         #need to get the relative position i.e. delta. This is how much the position
         #has changed since the lase note event
         relativePosition = position - currentPosition
         currentPosition = position
         delta = getVLQ(relativePosition)
+        
+        if len(delta) > 4:
+            raise MIDIError("A delta value was too big. The maximum difference in position values is 268,435,455 subDivisions")
+        
         offset = 0
         if noteEvent['noteOn']:
             offset = 0x90
         else:
             offset = 0x80
-        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], noteEvent['vol']])
+        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], 127]) #use a hard coded volume. 127 is max
         delta.extend(note)
         trackEvents.extend(delta)
         
@@ -113,8 +213,13 @@ def getMIDI(midiJSON):
 
     #now build up the complete track chunk
     trackChunk = TRACK_CHUNK_ID
-    #track chunk contains the length of the trackEvents as 4 bytes
-    trackChunk.extend(numberToByteArray(len(trackEvents), 4))
+    
+    try:
+        #track chunk contains the length of the trackEvents as 4 bytes
+        trackChunk.extend(numberToByteArray(len(trackEvents), 4))
+    except MIDIError as exep:
+        raise MIDIError("MIDI file too large. Maximum size is 4,294,967,295 bytes. (4 GB)")
+        
     trackChunk.extend(trackEvents)
 
     #now combine the header chunk and track chunk to make the midi file
@@ -122,3 +227,10 @@ def getMIDI(midiJSON):
     midiFile.extend(trackChunk)
     
     return midiFile
+    
+#function converts a jingle JSON to a midi file encoded in base64
+#raises MIDIError if there is a problem creating the MIDI file
+def getMIDIBase64(midiJSON):
+    midiFile = getMIDI(midiJSON)
+    midiEncoded = base64.b64encode(midiFile)
+    return midiEncoded

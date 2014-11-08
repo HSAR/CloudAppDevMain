@@ -1,4 +1,4 @@
-from midi import getMIDI
+from midi import getMIDI, MIDIError
 from copy import copy
 
 HEAD_CHUNK_ID   = bytearray([0x4D, 0x54, 0x68, 0x64])
@@ -20,16 +20,17 @@ trackHeader = bytearray([0x4D, 0x54, 0x72, 0x6B])
 def test_one_note_midi():
     testJSON = """
     {
-        "subDivisions":96,
-        "tempo":120,
-        "instruments":[
-                          {"chan":0, "inst":0}
-                      ],
-        "notes":[
-                     {"id":1, "pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
-                     {"id":1, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":false}
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"id":1, "pos":0, "length":96, "note":69}
                 ]
-    }"""
+            }
+        ]
+    }
+    """
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
                              0x00, 0xC0, 0x00,
@@ -50,61 +51,101 @@ def test_one_note_midi():
 def test_multi_channel():
     testJSON = """
     {
-        "subDivisions":96,
-        "tempo":120,
-        "instruments":[
-                          {"chan":0, "inst":0},
-                          {"chan":1, "inst":4},
-                          {"chan":2, "inst":20},
-                          {"chan":3, "inst":28},
-                          {"chan":4, "inst":65},
-                          {"chan":5, "inst":70},
-                          {"chan":6, "inst":72},
-                          {"chan":7, "inst":77},
-                          {"chan":8, "inst":80},
-                          {"chan":9, "inst":57},
-                          {"chan":10,"inst":81},
-                          {"chan":11,"inst":18},
-                          {"chan":12,"inst":51},
-                          {"chan":13,"inst":58},
-                          {"chan":14,"inst":25},
-                          {"chan":15,"inst":68}
-                      ],
-        "notes":[
-                     {"pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
-                     {"pos":96, "chan":0, "note":69, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":1, "note":69, "vol":127, "noteOn":true},
-                     {"pos":192, "chan":1, "note":69, "vol":127, "noteOn":false},
-                     {"pos":192, "chan":2, "note":69, "vol":127, "noteOn":true},
-                     {"pos":288, "chan":2, "note":69, "vol":127, "noteOn":false},
-                     {"pos":288, "chan":3, "note":69, "vol":127, "noteOn":true},
-                     {"pos":384, "chan":3, "note":69, "vol":127, "noteOn":false},
-                     {"pos":384, "chan":4, "note":69, "vol":127, "noteOn":true},
-                     {"pos":480, "chan":4, "note":69, "vol":127, "noteOn":false},
-                     {"pos":480, "chan":5, "note":69, "vol":127, "noteOn":true},
-                     {"pos":576, "chan":5, "note":69, "vol":127, "noteOn":false},
-                     {"pos":576, "chan":6, "note":69, "vol":127, "noteOn":true},
-                     {"pos":672, "chan":6, "note":69, "vol":127, "noteOn":false},
-                     {"pos":672, "chan":7, "note":69, "vol":127, "noteOn":true},
-                     {"pos":768, "chan":7, "note":69, "vol":127, "noteOn":false},
-                     {"pos":768, "chan":8, "note":69, "vol":127, "noteOn":true},
-                     {"pos":864, "chan":8, "note":69, "vol":127, "noteOn":false},
-                     {"pos":864, "chan":9, "note":69, "vol":127, "noteOn":true},
-                     {"pos":960, "chan":9, "note":69, "vol":127, "noteOn":false},
-                     {"pos":960, "chan":10, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1056, "chan":10, "note":69, "vol":127, "noteOn":false},
-                     {"pos":1056, "chan":11, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1152, "chan":11, "note":69, "vol":127, "noteOn":false},
-                     {"pos":1152, "chan":12, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1248, "chan":12, "note":69, "vol":127, "noteOn":false},
-                     {"pos":1248, "chan":13, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1344, "chan":13, "note":69, "vol":127, "noteOn":false},
-                     {"pos":1344, "chan":14, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1440, "chan":14, "note":69, "vol":127, "noteOn":false},
-                     {"pos":1440, "chan":15, "note":69, "vol":127, "noteOn":true},
-                     {"pos":1536, "chan":15, "note":69, "vol":127, "noteOn":false}
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"pos":0, "length":96, "note":69}
                 ]
-    }"""
+            },
+            {
+                "instrument":4,
+                "notes": [
+                    {"pos":96, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":20,
+                "notes": [
+                    {"pos":192, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":28,
+                "notes": [
+                    {"pos":288, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":65,
+                "notes": [
+                    {"pos":384, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":70,
+                "notes": [
+                    {"pos":480, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":72,
+                "notes": [
+                    {"pos":576, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":77,
+                "notes": [
+                    {"pos":672, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":80,
+                "notes": [
+                    {"pos":768, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":57,
+                "notes": [
+                    {"pos":864, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":81,
+                "notes": [
+                    {"pos":960, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":18,
+                "notes": [
+                    {"pos":1056, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":51,
+                "notes": [
+                    {"pos":1152, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":58,
+                "notes": [
+                    {"pos":1248, "length":96, "note":69}
+                ]
+            },
+            {
+                "instrument":25,
+                "notes": [
+                    {"pos":1344, "length":96, "note":69}
+                ]
+            }
+        ]
+    }
+    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -117,13 +158,12 @@ def test_multi_channel():
                              0x00, 0xC6, 0x48,
                              0x00, 0xC7, 0x4D,
                              0x00, 0xC8, 0x50,
-                             0x00, 0xC9, 0x39,
-                             0x00, 0xCA, 0x51,
-                             0x00, 0xCB, 0x12,
-                             0x00, 0xCC, 0x33,
-                             0x00, 0xCD, 0x3A,
-                             0x00, 0xCE, 0x19,
-                             0x00, 0xCF, 0x44,
+                             0x00, 0xCA, 0x39,
+                             0x00, 0xCB, 0x51,
+                             0x00, 0xCC, 0x12,
+                             0x00, 0xCD, 0x33,
+                             0x00, 0xCE, 0x3A,
+                             0x00, 0xCF, 0x19,
                              0x00, 0x90, 0x45, 0x7F,
                              0x60, 0x80, 0x45, 0x7F,
                              0x00, 0x91, 0x45, 0x7F,
@@ -142,8 +182,6 @@ def test_multi_channel():
                              0x60, 0x87, 0x45, 0x7F,
                              0x00, 0x98, 0x45, 0x7F,
                              0x60, 0x88, 0x45, 0x7F,
-                             0x00, 0x99, 0x45, 0x7F,
-                             0x60, 0x89, 0x45, 0x7F,
                              0x00, 0x9A, 0x45, 0x7F,
                              0x60, 0x8A, 0x45, 0x7F,
                              0x00, 0x9B, 0x45, 0x7F,
@@ -158,7 +196,7 @@ def test_multi_channel():
                              0x60, 0x8F, 0x45, 0x7F,
                              0x00, 0xFF, 0x2F, 0x00])
                              
-    trackLength = bytearray([0x00, 0x00, 0x00, 0xC3])
+    trackLength = bytearray([0x00, 0x00, 0x00, 0xB8])
     
     actualMIDI = copy(headerChunk)
     actualMIDI.extend(trackHeader)
@@ -171,28 +209,23 @@ def test_multi_channel():
 def test_many_notes():
     testJSON = """
     {
-        "subDivisions":96,
-        "tempo":120,
-        "instruments":[
-                          {"chan":0, "inst":0}
-                      ],
-        "notes":[
-                     {"pos":0, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":59, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":60, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":62, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":64, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":65, "vol":127, "noteOn":true},
-                     {"pos":0, "chan":0, "note":67, "vol":127, "noteOn":true},
-                     {"pos":96, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":59, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":60, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":62, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":64, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":65, "vol":127, "noteOn":false},
-                     {"pos":96, "chan":0, "note":67, "vol":127, "noteOn":false}
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"pos":0, "length":96, "note":57},
+                    {"pos":0, "length":96, "note":59},
+                    {"pos":0, "length":96, "note":60},
+                    {"pos":0, "length":96, "note":62},
+                    {"pos":0, "length":96, "note":64},
+                    {"pos":0, "length":96, "note":65},
+                    {"pos":0, "length":96, "note":67}
                 ]
-    }"""
+            }
+        ]
+    }
+    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -226,30 +259,24 @@ def test_many_notes():
 def test_delta_values():
     testJSON = """
     {
-        "subDivisions":96,
-        "tempo":120,
-        "instruments":[
-                          {"chan":0, "inst":0}
-                      ],
-        "notes":[
-                     {"pos":0, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":1, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":1, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":49, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":49, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":145, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":145, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":272, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":272, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":400, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":400, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":537, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":537, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":1056655, "chan":0, "note":57, "vol":127, "noteOn":false},
-                     {"pos":1056655, "chan":0, "note":57, "vol":127, "noteOn":true},
-                     {"pos":35713253, "chan":0, "note":57, "vol":127, "noteOn":false}
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"pos":0, "length":1, "note":57},
+                    {"pos":1, "length":48, "note":57},
+                    {"pos":49, "length":96, "note":57},
+                    {"pos":145, "length":127, "note":57},
+                    {"pos":272, "length":128, "note":57},
+                    {"pos":400, "length":137, "note":57},
+                    {"pos":537, "length":1056118, "note":57},
+                    {"pos":1056655, "length":34656598, "note":57}
                 ]
-    }"""
+            }
+        ]
+    }
+    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -286,22 +313,21 @@ def test_delta_values():
 def test_out_of_order():
     testJSON = """
     {
-        "subDivisions":96,
-        "tempo":120,
-        "instruments":[
-                          {"chan":0, "inst":0}
-                      ],
-        "notes":[
-                     {"id":3, "pos":288, "chan":0, "note":69, "vol":127, "noteOn":false},
-                     {"id":4, "pos":288, "chan":0, "note":69, "vol":127, "noteOn":true},
-                     {"id":1, "pos":0, "chan":0, "note":69, "vol":127, "noteOn":true},
-                     {"id":4, "pos":384, "chan":0, "note":69, "vol":127, "noteOn":false},
-                     {"id":2, "pos":192, "chan":0, "note":69, "vol":127, "noteOn":false},
-                     {"id":3, "pos":192, "chan":0, "note":69, "vol":127, "noteOn":true},
-                     {"id":1, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":false},
-                     {"id":2, "pos":96, "chan":0, "note":69, "vol":127, "noteOn":true}
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"pos":288, "length":96, "note":69},
+                    {"pos":0, "length":96, "note":69},
+                    {"pos":192, "length":96, "note":69},
+                    {"pos":96, "length":96, "note":69}
                 ]
-    }"""
+            }
+        ]
+    }
+    """
+    
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
                              0x00, 0xC0, 0x00,
@@ -324,3 +350,473 @@ def test_out_of_order():
     
     midiObtained = getMIDI(testJSON)
     assert actualMIDI == midiObtained, "Out of order"
+    
+#test when the JSON notes are out of order
+def test_out_of_order_2():
+    testJSON = """
+    {
+        "head": {"subDivisions":96, "tempo":120},
+        "tracks": [
+            {
+                "instrument":0,
+                "notes": [
+                    {"pos":384, "length":96, "note":69},
+                    {"pos":0, "length":384, "note":70},
+                    {"pos":96, "length":96, "note":69},
+                    {"pos":288, "length":96, "note":69},
+                    {"pos":0, "length":96, "note":69},
+                    {"pos":192, "length":96, "note":69}
+                ]
+            }
+        ]
+    }
+    """
+    
+    trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
+                             0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
+                             0x00, 0xC0, 0x00,
+                             0x00, 0x90, 0x46, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x46, 0x7F,
+                             0x00, 0x80, 0x45, 0x7F,
+                             0x00, 0x90, 0x45, 0x7F,
+                             0x60, 0x80, 0x45, 0x7F,
+                             0x00, 0xFF, 0x2F, 0x00])
+                             
+    trackLength = bytearray([0x00, 0x00, 0x00, 0x46])
+    
+    actualMIDI = copy(headerChunk)
+    actualMIDI.extend(trackHeader)
+    actualMIDI.extend(trackLength)
+    actualMIDI.extend(trackEvents)
+    
+    midiObtained = getMIDI(testJSON)
+    assert actualMIDI == midiObtained, "Out of order"
+    
+def test_bad_json_formats():
+    JSON = """
+    {}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "No Head"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'head'", "No Head"
+        
+    JSON = """
+    {"head": {"cats":2, "dogs":3}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "No Subdivisions"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'subDivisions' from head", "No Subdivisions"
+        
+    JSON = """
+    {"head": {"subDivisions":2, "dogs":3}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "No Tempo"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'tempo' from head", "No Tempo"
+        
+    JSON = """
+    {"head": {"subDivisions":65536, "tempo":120}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "too many Subdivisions"
+    except MIDIError as exep:
+        assert exep.message == "subDivisions is too large. Maximum value is 65535", "too many Subdivisions"
+        
+    JSON = """
+    {"head": {"subDivisions":65535, "tempo":3}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "tempo too small"
+    except MIDIError as exep:
+        assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
+        
+    JSON = """
+    {"head": {"subDivisions":65535, "tempo":0}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "tempo too small"
+    except MIDIError as exep:
+        assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
+        
+    JSON = """
+    {"head": {"subDivisions":0, "tempo":4}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "subDivisions too small"
+    except MIDIError as exep:
+        assert exep.message == "subDivisions is too small. Minimum value is 1", "subDivisions too small"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4}}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no tracks"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'tracks'", "no tracks"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [{}]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no instrument"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'instrument' from track", "no instrument"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no notes"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'notes' from track", "no notes"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":-1,
+                 "notes": [
+                 
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad instrument"
+    except MIDIError as exep:
+        assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":128,
+                 "notes": [
+                 
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad instrument"
+    except MIDIError as exep:
+        assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no pos"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'pos' from notes", "no pos"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no length"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'length' from notes", "no length"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":96}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "no note"
+    except MIDIError as exep:
+        assert exep.message == "Invalid Jingle JSON format. Missing 'note' from notes", "no note"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":96, "note":-1}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad note"
+    except MIDIError as exep:
+        assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":96, "note":128}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad note"
+    except MIDIError as exep:
+        assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":-1, "length":96, "note":0}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad pos"
+    except MIDIError as exep:
+        assert exep.message == "Invalid pos. Must not be negative", "bad pos"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":-1, "note":0}
+                 ]}
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "bad length"
+    except MIDIError as exep:
+        assert exep.message == "Invalid length. Must not be negative", "bad length"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":1, "note":127}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                }
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "too many tracks"
+    except MIDIError as exep:
+        assert exep.message == "Too many tracks. Maximum number of tracks is 15", "too many tracks"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":127}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":268435456, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                },
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":0, "note":0}
+                 ]
+                }
+            ]}
+    """
+    try:
+        getMIDI(JSON)
+        assert False, "just bad"
+    except MIDIError as exep:
+        assert exep.message == "A delta value was too big. The maximum difference in position values is 268,435,455 subDivisions", "just bad"
+        
+    JSON = """
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [
+                {"instrument":0,
+                 "notes": [
+                    {"pos":0, "length":268435455, "note":0}
+                 ]}
+            ]}
+    """
+    try:
+        midi = getMIDI(JSON)
+        assert True, "pass test"
+    except MIDIError as exep:
+        assert False, "pass test"
