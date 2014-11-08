@@ -1,48 +1,38 @@
-function initSocket(token) {
-	channel = new goog.appengine.Channel(token);
-    socket = channel.open();
-	socket.onopen = onOpened;
-	socket.onmessage = onMessage;
-	socket.onerror = onError;
-	socket.onclose = onClose;
-
-	
-}
-
-/*
- *	Handler function called when channel initially opened
- */
-function onOpened() {
-	//we can now make call to server to get notes json
-	$.ajax({
-		type : 'GET',
-		url : 'http://example.com',
-		dataType : 'JSON',
-		success : function(data) {
-			if(data.topic === 'tune') {
-				//we can now open up a socket using the token
-				loadNotesFromJSON(data);
-				loadPalette();
-			} else {
-				//deal with error here
-			}
+function ChannelHandler() {
+	this.socket = null;
+	/*
+	 *	Handler function called when channel initially opened
+	 */
+	this.onOpened = function() {
+		//we can now make call to server to get notes json
+		if(!ajaxHelper) {
+			var ajaxHelper = new AjaxHandler();
 		}
-	});
-}
-
-function onMessage(msg) {
-	//split this up based on what type of message we receive
-	if(msg.topic = 'token') {
-
-	} else if(msg.topic = '') {
+		ajaxHelper.getTuneJSON(function(data) {
+			loadNotesFromJSON(data);
+		});
 		
 	}
-}
+	this.onMessage = function(msg) {
+		//split this up based on what type of message we receive
+		if(msg.topic = 'token') {
 
-function onError() {
+		} else if(msg.topic = '') {
+			
+		}
+	}
+	this.onError = function() {
 
-}
+	}
+	this.onClose = function() {
 
-function onClose() {
-
+	}
+	this.initSocket = function(token) {
+		channel = new goog.appengine.Channel(token);
+	    this.socket = channel.open();
+		this.socket.onopen = this.onOpened;
+		this.socket.onmessage = this.onMessage;
+		this.socket.onerror = this.onError;
+		this.socket.onclose = this.onClose;
+	}
 }

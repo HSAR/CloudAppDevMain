@@ -15,6 +15,21 @@ function AjaxHandler() {
 
 		});
 	};
+	this.getTuneJSON = function(cb) {
+		$.ajax({
+			type : 'GET',
+			url : 'http://example-tune.com',
+			dataType : 'JSON',
+			success : function(data) {
+				if(data.topic === 'tune') {
+					//we can now open up a socket using the token
+					cb(data);
+				} else {
+					//deal with error here
+				}
+			}
+		});
+	};
 	this.notifySever = function(data) {
 		var targetURL;
 		switch(data.topic) {

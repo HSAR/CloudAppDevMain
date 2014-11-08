@@ -50,6 +50,50 @@ function MidiHandler() {
 	this.convertIndexToPitch = function(index) {
 		return (35 - index) + startingPitch;
 	}
+
+	this.writeKey = function() {
+		htmlString = '<div class="key">';
+		for(var i = 0; i < 36; i++) {
+			var pitch;
+			var note;
+			if(i < 12) {
+				pitch = "High";
+			} else if(i < 24) {
+				pitch = "Middle";
+			} else {
+				pitch = "Low";
+			}
+			if(i%12 === 0) {
+				note = "C";
+			} else if(i%12 === 1) {
+				note = "B";
+			} else if(i%12 === 1) {
+				note = "A#";
+			} else if(i%12 === 1) {
+				note = "A";
+			} else if(i%12 === 1) {
+				note = "G#";
+			} else if(i%12 === 1) {
+				note = "G";
+			} else if(i%12 === 1) {
+				note = "F#";
+			} else if(i%12 === 1) {
+				note = "F";
+			} else if(i%12 === 1) {
+				note = "E";
+			} else if(i%12 === 1) {
+				note = "D#";
+			} else if(i%12 === 1) {
+				note = "D";
+			} else {
+				note = "C#";
+			}
+			htmlString += '<div class="key-pitch">' + pitch + ' ' + note + "</div>"; 
+		}
+		htmlString += '</div>';
+		return htmlString;
+	};
+	
 }
 
 

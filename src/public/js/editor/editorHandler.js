@@ -7,9 +7,12 @@
 	}
 	var ajaxHelper = new AjaxHandler();
 	var midiHelper = new MidiHandler();
+	var channelHelper = new ChannelHandler();
+
+	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
+	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
 
 
-	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(12) + '</div>';
 
 	var tuneJSON;
 
@@ -17,6 +20,10 @@
 		quaver : 1,
 		crotchet : 2
 	}
+
+	var pageData = {
+		scrollLeft : 0
+	};
 
 	var barLength = 8;
 
@@ -50,6 +57,7 @@
 		loadTabs();
 		loadBars();
 		loadNotes();
+		updateKey();
 		
 		$('.pitch').droppable({
 			tolerance : 'pointer',
@@ -115,8 +123,22 @@
 
 			}
 		});
+	}
 
-
+	/*
+	This function is responsible for drawing a key to the left of the tabbed area showing which note values go where 
+	*/
+	function updateKey() {
+		$('.canvas .tab-pane').scroll(function() {
+			if($(this).scrollLeft() === pageData.scrollLeft) {
+				return;//only interested in horizontal scroll
+			} 
+			var scrollAmount = $(this).scrollLeft();
+			pageData.scrollLeft = scrollAmount;
+			$('.key').css({
+				'left' : scrollAmount
+			});
+		})
 	}
 
 	function drawPreview(event,noteLength) {
@@ -179,6 +201,7 @@
 	}
 
 	function loadBars() {
+		$('.canvas .tab-pane').append(midiHelper.writeKey());
 		$('.canvas .tab-pane').append(barHTML.repeat(tuneJSON.head.bars));
 	}
 
@@ -230,7 +253,7 @@
 	}
 
 	function getToken() {
-		
+		ajaxHelper.getToken();
 	}
 
 	function initEditor() {
