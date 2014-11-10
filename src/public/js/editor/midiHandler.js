@@ -67,23 +67,23 @@ function MidiHandler() {
 				note = "C";
 			} else if(i%12 === 1) {
 				note = "B";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 2) {
 				note = "A#";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 3) {
 				note = "A";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 4) {
 				note = "G#";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 5) {
 				note = "G";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 6) {
 				note = "F#";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 7) {
 				note = "F";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 8) {
 				note = "E";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 9) {
 				note = "D#";
-			} else if(i%12 === 1) {
+			} else if(i%12 === 10) {
 				note = "D";
 			} else {
 				note = "C#";
