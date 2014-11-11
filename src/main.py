@@ -32,9 +32,12 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 
 class MainHandler(webapp2.RequestHandler):
+    countTest = 0
+    
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello world!')
+        self.response.write('Hello world!' + str(MainHandler.countTest))
+        MainHandler.countTest += 1
 
 
 class TemplatePageHandler(webapp2.RequestHandler):
