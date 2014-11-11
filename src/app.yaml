@@ -3,7 +3,8 @@ version: 1
 runtime: python27
 api_version: 1
 threadsafe: yes
-
+inbound_services:
+- warmup
 handlers:
 - url: /favicon\.ico
   static_files: favicon.ico
@@ -21,6 +22,9 @@ handlers:
 
 - url: /auth.*
   script: auth.application
+
+- url: /_ah.*
+  script: admin.application
 
 - url: .*
   script: main.application
