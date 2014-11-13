@@ -38,7 +38,7 @@
 				if($('.preview').length) {
 					var noteValue = getNoteValue($(ui.helper));
 					if(noteValue) {
-						drawPreview(event,noteValue);
+						drawPreview(event,noteValue,$('.preview'));
 					}
 					
 				}
@@ -86,13 +86,22 @@
 					}
 				});
 				if(conflict) {
+					if(ui.draggable.hasClass('music-note')) {
+						ui.draggable.removeClass('no-display');//make original position visible again
+					}
 					$('.preview').remove();
 				} else {
+					if(ui.draggable.hasClass('music-note')) {
+						//deal with moving note here. Easiest thing is going to be to remove it and
+						//send a delete ajax
+						
+					}
+					
 					//we need to turn preview's position into a json to send to server
 					var left = $('.preview').position().left / $('.preview').parent().width();
 					var width = $('.preview').width() / $('.preview').parent().width();
 					var bar = $('.preview').parent().parent().index();//gets index of bar
-					$('.preview').addClass('music-note').removeClass('preview');
+					
 					var subdivisions = (tuneJSON.head.barLength * tuneJSON.head.subdivisions)
 					var notePosition = (bar * subdivisions) + Math.round(left * subdivisions);
 					var noteLength = Math.round(width * subdivisions);
@@ -107,6 +116,8 @@
 							position : notePitch
 						}
 					};
+					addNoteUI($('.preview'));//make it draggable etc
+					$('.preview').addClass('music-note').removeClass('preview');
 
 					$.ajax({
 						type : 'POST',
@@ -117,6 +128,8 @@
 							
 						}
 					});
+
+
 
 				}
 				
@@ -141,10 +154,13 @@
 		})
 	}
 
-	function drawPreview(event,noteLength) {
+	/*
+	We can use this to to keep track of moving draggable elements whether on initial drop or subsequent moves
+	*/
+	function drawPreview(event,noteLength,$target) {
 		//ok so we can use event.pageX - ui.offset and ignore ones where we get minus values as these are false events
-		var distanceFromLeft = event.pageX - $('.preview').parent().offset().left;
-		var width = $('.preview').parent().width();
+		var distanceFromLeft = event.pageX - $target.parent().offset().left;
+		var width = $target.parent().width();
 		if(distanceFromLeft >=0) { //if we are dragging over the correct box
 			var position = Math.floor((distanceFromLeft / width) * barLength);
 
@@ -154,13 +170,13 @@
 			var leftPos = ((position / barLength) * 100) + "%";
 			var length = ((noteLength / barLength) * 100) + "%";
 
-			$('.preview').css({
+			$target.css({
 				"position" : 'absolute',
 				'left' : leftPos,
 				'width' : length,
 				'visibility' : 'visable'
 			});
-			$('.preview').removeClass('no-display');
+			$target.removeClass('no-display');
 		}
 	}
 
@@ -236,6 +252,31 @@
 		$('.canvas').append('<h1>Connecting to server<h1>');
 	}
 
+	function addNoteUI($note) {
+		$note.draggable({
+			helper : 'clone',
+			appendTo : 'body',
+			revert : 'invalid',
+			start : function(event,ui) {
+				$note.addClass('no-display');
+				ui.helper.addClass('no-display');
+			},
+			drag : function(event,ui) {
+				//ok so we want to see if a preview div has been drawn, and if it has we will update it
+				if($('.preview').length) {
+					var noteValue = 2;
+					if(noteValue) {
+						drawPreview(event,noteValue,$('.preview'));
+					}
+					
+				}
+			} 
+		});
+		// $note.resizable({
+
+		// });
+	}
+
 	function getNoteValue($target) {
 		var note;
 		if($target.hasClass('note-crotchet')) {
@@ -246,25 +287,21 @@
 		return note;
 	}
 
-	function loadNotesFromJSON(data,cb) {
+	function loadNotesFromJSON(data) {
 		tuneJSON = data;
 		loadCanvas();
-		
 	}
 
 	function getToken() {
-		ajaxHelper.getToken();
+		ajaxHelper.getToken(function(token) {
+			channelHelper.initSocket(token);
+		});
 	}
 
 	function initEditor() {
 		//first thing to do is set up loading page until we can establish a connection
 		drawLoadScreen();
 		getToken();
-	}
-
-	function testLoading() {
-		
-
 	}
 
 	//what do we want to test? loading notes from JSON

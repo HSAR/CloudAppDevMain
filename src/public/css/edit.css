@@ -92,6 +92,7 @@ div {
 	height : inherit;
 	border : 1px dotted black;
 	background-color: gray;
+	height : 100%;
 }
 
 .music-note {
