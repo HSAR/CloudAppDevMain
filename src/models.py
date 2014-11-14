@@ -3,14 +3,18 @@ from google.appengine.ext import ndb
 class JinglrUser(ndb.Model):
 	user_id = ndb.StringProperty(required=True)
 	username = ndb.StringProperty(required=True)
-	number_of_songs = ndb.IntegerProperty()
 	bio = ndb.TextProperty()
-	tags = ndb.StringProperty(repeated=True) #I'm still not entirely convinced that tags for a user are worth the trouble
+	tags = ndb.StringProperty(repeated=True)
+	collab_songs = ndb.StringProperty(repeated=True)
 	
 class Jingle(ndb.Model):
+	jingle_id = ndb.StringProperty(required=True)
 	title = ndb.StringProperty(required=True)
+	author = ndb.StringProperty(required=True)
+	date_created = ndb.DateTimeProperty(auto_now_add=True)
 	genre = ndb.StringProperty()
-	length = ndb.IntegerProperty(required=True) #Seconds, I'm guessing
+	length = ndb.IntegerProperty()
 	tags = ndb.StringProperty(repeated=True)
-	jingle = ndb.JsonProperty(required=True)
-	rating = ndb.FloatProperty()
+	jingle = ndb.JsonProperty()
+	#rating = ndb.FloatProperty()
+	collab_users = ndb.StringProperty(repeated=True)
