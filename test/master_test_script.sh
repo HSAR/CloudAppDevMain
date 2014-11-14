@@ -15,5 +15,5 @@ echo "Test run complete: Jasmine"
 echo "----------------------------------------------------------------------"
 cd ..
 echo "Starting test run : QUnit"
-grunt --verbose --force
+grunt --verbose 
 echo "All tests complete."
