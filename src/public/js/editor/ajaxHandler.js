@@ -18,11 +18,12 @@ function AjaxHandler() {
 	this.getTuneJSON = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://example-tune.com',
+			url : 'http://jinglr-test.appspot.com/auth/token',
 			dataType : 'JSON',
 			success : function(data) {
 				if(data.topic === 'tune') {
 					//we can now open up a socket using the token
+					console.log('token retreived via ajax');
 					cb(data);
 				} else {
 					//deal with error here
@@ -30,7 +31,7 @@ function AjaxHandler() {
 			}
 		});
 	};
-	this.notifySever = function(data) {
+	this.notifyServer = function(data) {
 		var targetURL;
 		switch(data.topic) {
 			case 'add':
@@ -47,6 +48,7 @@ function AjaxHandler() {
 				//put error case here
 				break;		
 		}
+		console.log(data);
 		$.ajax({
 				type : 'POST',
 				url : targetURL,

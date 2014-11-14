@@ -1,6 +1,8 @@
 	/*
 	Handler script for the music editor. Still in early stages
 	*/
+
+	//TODO call draw preview on dragged between pitches divs so they dont disappear
 	String.prototype.repeat = function( num )
 	{
 	    return new Array( num + 1 ).join( this );
@@ -12,8 +14,6 @@
 	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
 	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
 
-
-
 	var tuneJSON;
 
 	var noteValues = {
@@ -22,7 +22,8 @@
 	}
 
 	var pageData = {
-		scrollLeft : 0
+		scrollLeft : 0,
+		quarantinedChanges : []
 	};
 
 	var barLength = 8;
@@ -45,7 +46,6 @@
 			}
 		}); //could be a dangerous game as moved out of pallete
 		//console.log($('.pallete'))
-		console.log('test');
 	}
 
 	function loadCanvas() {
@@ -62,6 +62,7 @@
 		$('.pitch').droppable({
 			tolerance : 'pointer',
 			over : function(event,ui) {
+				pageData.$currentPreviewDiv = $(this);
 				$(event.target).append("<div class='preview no-display'></div>");
 			},
 			out : function(event,ui) {
@@ -73,6 +74,10 @@
 				//ajax some shit here
 
 				//also need to handle two notes being dropped on top of each other.
+				if($('.preview').length !== 1) {
+					$('.preview').remove();
+					return;//something has gone wrong with drawing code so do not carry on!
+				}
 				var conflict = false;
 				$(event.target).children('.music-note').each(function(i) {
 					var left = $(this).position().left;
@@ -82,7 +87,9 @@
 					var newRight = newLeft + $('.preview').width();
 					console.log(left + " " + right + " " + newLeft + " " + newRight);
 					if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
-						conflict = true;
+						if($(this).attr('id') !== ui.draggable.attr('id')) {
+							conflict = true;//might want to conflict if remains exactly the same
+						}
 					}
 				});
 				if(conflict) {
@@ -94,11 +101,22 @@
 					if(ui.draggable.hasClass('music-note')) {
 						//deal with moving note here. Easiest thing is going to be to remove it and
 						//send a delete ajax
-						
+						var oldId = ui.draggable.attr('id');
+						var oldNote = deleteNote(oldId);//will also delete the note from json
+						$('#' + oldId).remove();
+						var oldNoteTrack = { track : $('.tab-pane.active').index() };//could be vulnerable to swift tab switch
+						var completeDeleteData = $.extend(oldNote,oldNoteTrack);
+						var deleteData = {
+							topic : 'delete',
+							data : completeDeleteData
+						};
+						ajaxHelper.notifyServer(deleteData);
+						pageData.quarantinedChanges.push(deleteData);
 					}
 					
 					//we need to turn preview's position into a json to send to server
 					var left = $('.preview').position().left / $('.preview').parent().width();
+					console.log("left " + left);
 					var width = $('.preview').width() / $('.preview').parent().width();
 					var bar = $('.preview').parent().parent().index();//gets index of bar
 					
@@ -107,35 +125,31 @@
 					var noteLength = Math.round(width * subdivisions);
 					var noteTrack = $('.tab-pane.active').index();
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
+					var noteId = 'note-' + generateId();//need new id even if just dragging
 					var data = {
 						topic : 'add',
 						data : {
 							pitch : notePitch,
 							track : noteTrack,
 							length : noteLength,
-							position : notePitch
+							position : notePosition,
+							id : noteId
 						}
 					};
+					ajaxHelper.notifyServer(data);
+					pageData.quarantinedChanges.push(data);
 					addNoteUI($('.preview'));//make it draggable etc
-					$('.preview').addClass('music-note').removeClass('preview');
-
-					$.ajax({
-						type : 'POST',
-						url : 'http://example.com',
-						data : data,
-						dataType : 'JSON',
-						success : function(data) {
-							
-						}
-					});
-
-
+					$('.preview').attr('id',noteId);
+					$('.preview').addClass('music-note').removeClass('preview').removeClass('no-display');
+					tuneJSON.tracks[noteTrack].notes.push(data.data);
 
 				}
 				
 
 			}
 		});
+
+		loadPalette();
 	}
 
 	/*
@@ -186,7 +200,7 @@
 		htmlToAppend += '<ul class="nav nav-tabs" role="tablist">';
 		if(tuneJSON.tracks.length > 0) {
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(i === 1) {
+				if(i === 0) {
 					htmlToAppend +='<li role="presentation" class="active"><a href="#track' + i +
 					 '" role="tab" data-toggle="tab">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + '</a></li>';
 				} else {
@@ -202,7 +216,7 @@
 		//now add the tab panels
 		if(tuneJSON.tracks.length > 0) {
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(i === 1) {
+				if(i === 0) {
 					htmlToAppend += '<div role="tabpanel" class="tab-pane active" id="track' + i +'"></div>';
 				} else {
 					htmlToAppend+= '<div role="tabpanel" class="tab-pane" id="track' + i +'"></div>';
@@ -232,6 +246,7 @@
 
 	function drawNote(note,$tab) {
 		//first we need to work out what bar note is in and where
+
 		var subdivisions = tuneJSON.head.subdivisions * tuneJSON.head.barLength;
 		var bar = Math.floor(note.position / subdivisions);
 		var pitch =  midiHelper.convertPitchToIndex(note.pitch);
@@ -244,7 +259,8 @@
 			'left' : left,
 			'width' : length
 		});
-		console.log($('.newNote').attr('id'));
+		addNoteUI($('.newNote'));
+		$('.newNote').attr('id','note-' + note.id);
 		$('.newNote').addClass('music-note').removeClass('newNote');
 	}
 
@@ -264,17 +280,84 @@
 			drag : function(event,ui) {
 				//ok so we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
-					var noteValue = 2;
+					var noteValue = Math.round($note.width() / $note.parent().width() * tuneJSON.head.barLength * tuneJSON.head.subdivisions);
 					if(noteValue) {
 						drawPreview(event,noteValue,$('.preview'));
 					}
 					
 				}
-			} 
+			},
+			stop : function(event, ui) {
+				$note.removeClass('no-display');
+			}
 		});
-		// $note.resizable({
-
-		// });
+		
+		$note.resizable({
+			handles : 'w,e',
+			containment : 'parent',
+			start : function(event,ui) {
+				var subdivisions = getSubdivisons();
+				pageData.previousLeft = Math.round(subdivisions * (ui.originalPosition.left / ui.element.parent().width()));
+				pageData.previousLength = Math.round(subdivisions * (ui.originalElement.width() / ui.element.parent().width()));
+				pageData.previousLeftRaw = ui.element.position().left;
+			},
+			resize : function(event,ui) {
+				var subdivisions = getSubdivisons();//saves overhead of repeated function calls
+				var left = Math.round(subdivisions * (ui.element.position().left / ui.element.parent().width()));
+				var leftPercent = (left / subdivisions) * 100 + '%';
+				var length;
+				if(left === pageData.previousLeft) {
+					if(ui.element.position().left !== pageData.previousLeftRaw) {
+						length = pageData.previousLength;
+					} else {
+						length = Math.round(subdivisions * (ui.element.width() / ui.element.parent().width()));
+					}
+				} else {
+					var leftDifference = left - pageData.previousLeft;
+					console.log(leftDifference);
+					length = pageData.previousLength - leftDifference;
+				}
+				var lengthPercent = (length / subdivisions) * 100 + '%';
+				ui.element.css({
+					'left' : leftPercent,
+					'width' : lengthPercent
+				});
+				pageData.previousLeft = left;
+				pageData.previousLength = length;
+				pageData.previousLeftRaw = ui.element.position().left;
+			},
+			stop : function(event,ui) {
+				var id = $note.attr('id');	
+				console.log(id);
+				var oldNote = deleteNote(id);
+				console.log(oldNote);	
+				var trackInfo = {track : $('.tab-pane.active').index()};
+				var deleteData = $.extend(oldNote,trackInfo)
+				var deleteInfo = {topic : 'delete', data : deleteData};
+				ajaxHelper.notifyServer(deleteInfo);
+				pageData.quarantinedChanges.push(deleteInfo);
+				var newId = generateId();
+				$note.attr('id',newId);
+				//need to put new size into a data and ajax it and update id of div
+				var subdivisions = getSubdivisons();//saves overhead of repeated function calls
+				var left = pageData.previousLeft;
+				var bar = $note.parent().parent().index();
+				var newPosition = bar * subdivisions + left;
+				var newLength = pageData.previousLength;
+				var newNoteData = {
+					id : newId,
+					position : newPosition,
+					pitch : deleteData.pitch,
+					length : newLength
+				};
+				tuneJSON.tracks[trackInfo.track].notes.push(newNoteData);
+				var newNoteInfo = $.extend(newNoteData,trackInfo);
+				var newNoteToSend = { topic: 'add',data : newNoteInfo};
+				ajaxHelper.notifyServer(newNoteToSend);
+				pageData.quarantinedChanges.push(newNoteToSend);
+			}
+			
+		});
 	}
 
 	function getNoteValue($target) {
@@ -283,6 +366,36 @@
 			note = noteValues.crotchet;
 		} else if($target.hasClass('note-quaver')) {
 			note = noteValues.quaver;
+		}
+		return note;
+	}
+
+	function generateId() {
+		
+		  function s4() {
+		    return Math.floor((1 + Math.random()) * 0x10000)
+		               .toString(16)
+		               .substring(1);
+		  }
+		  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+		    s4() + '-' + s4() + s4() + s4();
+		
+		
+	}
+
+	function deleteNote(id) {
+		var note;
+		if(id.substring(0,4) === 'note') {
+			id = id.replace('note-','');
+		}
+		console.log(id);
+		for(var i = 0; i < tuneJSON.tracks.length; i++) {
+			for(var j = 0; j < tuneJSON.tracks[i].notes.length; j++) {
+				if(tuneJSON.tracks[i].notes[j].id + '' === id) {//converts any numbers to strings for comparison
+					note = tuneJSON.tracks[i].notes[j];
+					tuneJSON.tracks[i].notes.splice(j,1);
+				}
+			}
 		}
 		return note;
 	}
@@ -296,6 +409,10 @@
 		ajaxHelper.getToken(function(token) {
 			channelHelper.initSocket(token);
 		});
+	}
+
+	function getSubdivisons() {
+		return tuneJSON.head.subdivisions * tuneJSON.head.barLength;
 	}
 
 	function initEditor() {
