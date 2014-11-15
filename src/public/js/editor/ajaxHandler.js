@@ -2,7 +2,7 @@ function AjaxHandler() {
 	this.getToken = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-test.appspot.com/auth/token',
+			url : 'http://jinglr-music.appspot.com/auth/token',
 			dataType : 'JSON',
 			success : function(data) {
 				if(data.token) {
