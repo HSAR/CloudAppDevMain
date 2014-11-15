@@ -5,6 +5,7 @@ function AjaxHandler() {
 			url : 'http://jinglr-music.appspot.com/auth/token',
 			dataType : 'JSON',
 			success : function(data) {
+				console.log(data);
 				if(data.token) {
 					console.log('token retreived via ajax');
 					//we can now open up a socket using the token
