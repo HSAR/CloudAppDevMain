@@ -15,10 +15,25 @@ function ChannelHandler() {
 	}
 	this.onMessage = function(msg) {
 		//split this up based on what type of message we receive
-		if(msg.topic = 'token') {
+		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
+			if(pageData.quarantinedChanges[i] === msg) {
+				quarantinedChanges.splice(i,1);
+				return;//remove for change list and return as already done locally
+			}
+		}
+		if(msg.topic === 'token') {
 
-		} else if(msg.topic = '') {
-			
+		} else if(msg.topic === 'add') {
+			var tab = $('.tab-pane.active').index();
+			tuneJSON.tracks[tab].notes.push(msg.data);
+			drawNote(msg.data,$('.tab-pane.active'));
+			//probably want to check quarantined changes at this point
+			//TODO check for conflicts with local version
+		} else if(msg.topic === 'delete') {
+			console.log('reached delete case');
+			var deletedNote = deleteNote(msg.data.id);
+			$('#' + msg.data.id).remove();
+			//then check quarantined changes
 		}
 	}
 	this.onError = function() {

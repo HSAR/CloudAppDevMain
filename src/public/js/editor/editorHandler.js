@@ -80,16 +80,8 @@
 				}
 				var conflict = false;
 				$(event.target).children('.music-note').each(function(i) {
-					var left = $(this).position().left;
-					var right = left + $(this).width();
-
-					var newLeft = $('.preview').position().left;
-					var newRight = newLeft + $('.preview').width();
-					console.log(left + " " + right + " " + newLeft + " " + newRight);
-					if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
-						if($(this).attr('id') !== ui.draggable.attr('id')) {
-							conflict = true;//might want to conflict if remains exactly the same
-						}
+					if($(this).attr('id') !== ui.draggable.attr('id') && isConflicting($(this),$('.preview'))) {
+						conflict = true;
 					}
 				});
 				if(conflict) {
@@ -125,7 +117,7 @@
 					var noteLength = Math.round(width * subdivisions);
 					var noteTrack = $('.tab-pane.active').index();
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
-					var noteId = 'note-' + generateId();//need new id even if just dragging
+					var noteId = generateId();//need new id even if just dragging
 					var data = {
 						topic : 'add',
 						data : {
@@ -260,7 +252,7 @@
 			'width' : length
 		});
 		addNoteUI($('.newNote'));
-		$('.newNote').attr('id','note-' + note.id);
+		$('.newNote').attr('id', note.id);
 		$('.newNote').addClass('music-note').removeClass('newNote');
 	}
 
@@ -300,6 +292,8 @@
 				pageData.previousLeft = Math.round(subdivisions * (ui.originalPosition.left / ui.element.parent().width()));
 				pageData.previousLength = Math.round(subdivisions * (ui.originalElement.width() / ui.element.parent().width()));
 				pageData.previousLeftRaw = ui.element.position().left;
+				pageData.originalLeft = pageData.previousLeft;
+				pageData.originalLength = pageData.previousLength;
 			},
 			resize : function(event,ui) {
 				var subdivisions = getSubdivisons();//saves overhead of repeated function calls
@@ -327,6 +321,22 @@
 				pageData.previousLeftRaw = ui.element.position().left;
 			},
 			stop : function(event,ui) {
+				var conflict = false;
+				ui.element.parent().children().each(function(i) {
+					if($(this).attr('id') !== ui.element.attr('id') && isConflicting(ui.element,$(this))) {
+						//check for possible conflicts
+						conflict = true;
+					}
+				}); 
+				if(conflict) {
+					var originalLeft = (pageData.originalLeft / getSubdivisons()) * 100 + '%';
+					var originalLength = (pageData.originalLength / getSubdivisons()) * 100 + '%';
+					ui.element.css({
+						'left' : originalLeft,
+						'width' : originalLength
+					});
+					return;
+				}	
 				var id = $note.attr('id');	
 				console.log(id);
 				var oldNote = deleteNote(id);
@@ -370,6 +380,19 @@
 		return note;
 	}
 
+	function isConflicting($element1,$element2) {//helper method to see if 2 elements overlap horizontally
+		var left = $element1.position().left;
+		var right = left + $element1.width();
+
+		var newLeft = $element2.position().left;
+		var newRight = newLeft + $element2.width();
+		console.log(left + " " + right + " " + newLeft + " " + newRight);
+		if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
+			return true;
+		}
+		return false;
+	}
+
 	function generateId() {
 		
 		  function s4() {
@@ -377,18 +400,16 @@
 		               .toString(16)
 		               .substring(1);
 		  }
-		  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+		  return 'note-' + s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 		    s4() + '-' + s4() + s4() + s4();
 		
 		
 	}
 
 	function deleteNote(id) {
+		id += ''; //make sure id is a string for comparisons
 		var note;
-		if(id.substring(0,4) === 'note') {
-			id = id.replace('note-','');
-		}
-		console.log(id);
+	
 		for(var i = 0; i < tuneJSON.tracks.length; i++) {
 			for(var j = 0; j < tuneJSON.tracks[i].notes.length; j++) {
 				if(tuneJSON.tracks[i].notes[j].id + '' === id) {//converts any numbers to strings for comparison

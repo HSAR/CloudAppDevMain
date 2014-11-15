@@ -2,10 +2,11 @@ function AjaxHandler() {
 	this.getToken = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://example.com',
+			url : 'http://jinglr-test.appspot.com/auth/token',
 			dataType : 'JSON',
 			success : function(data) {
 				if(data.token) {
+					console.log('token retreived via ajax');
 					//we can now open up a socket using the token
 					cb(data.token);
 				} else {
@@ -23,7 +24,7 @@ function AjaxHandler() {
 			success : function(data) {
 				if(data.topic === 'tune') {
 					//we can now open up a socket using the token
-					console.log('token retreived via ajax');
+					
 					cb(data);
 				} else {
 					//deal with error here
