@@ -20,13 +20,16 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 test_elements = [ { "name": "UKIP Calypso", "tags": ["racist", "clowns"],
                     "genre": "Comedy", "author": "The Independents",
-                    "rating": 100, "dateCreated": datetime.date(2014, 10, 20)},
+                    "rating": 100, "dateCreated": datetime.date(2014, 10, 20),
+                    "id": 2},
                   { "name": "Gangnam Style", "tags": ["meme", "irritating"],
                     "genre": "K-Pop", "author": "The Pumping Lemmas",
-                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15)},
+                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
+                    "id": 1},
                   { "name": "Zubion", "tags": ["ou", "est", "la", "gare"],
                     "genre": "French", "author": "The IT Crowd",
-                    "rating": 20, "dateCreated": datetime.date(1958, 10, 04)} ]
+                    "rating": 20, "dateCreated": datetime.date(1958, 10, 04),
+                    "id": 0} ]
 
 # XXX This is temporary, should use a better method when song class is written
 song_fields = [ "name", "tags", "genre", "author", "rating", "dateCreated" ]
