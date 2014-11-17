@@ -4,10 +4,11 @@ from main import application
 app = TestApp(application)
 
 # Expect 404 template page as appropriate
-def test_index():
+def test_404():
     response = app.get('/ifthisiseverathingtherewillbetrouble')
-    assert 'Error 404' in str(response)
+    assert str(404) in response.status
 
 # Expect 500 template page as appropriate
+def test_500():
     response = app.get('/timeout')
-    assert 'Error 500' in str(response)
+    assert str(500) in response.status

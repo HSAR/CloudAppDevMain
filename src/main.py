@@ -21,7 +21,9 @@ import webapp2
 import jinja2
 
 import json
+import logging
 
+from google.appengine import runtime
 from google.appengine.api import users
 from google.appengine.api import channel
 
@@ -33,7 +35,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class MainHandler(webapp2.RequestHandler):
     countTest = 0
-    
+
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write('Hello world!' + str(MainHandler.countTest))
@@ -68,27 +70,30 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(obj))
 
 
-class Error404Handler(webapp2.RequestHandler):
-    def get(self):
-        template_values = {
-        }
-        template = JINJA_ENVIRONMENT.get_template('templates/404.html')
-        self.response.write(template.render(template_values))
+def Error404Handler(request, response, exception):
+    logging.exception(exception)
+    template_values = {
+    }
+    template = JINJA_ENVIRONMENT.get_template('templates/404.html')
+    response.write(template.render(template_values))
+    response.set_status(404)
 
 
-class Error500Handler(webapp2.RequestHandler):
-    def get(self):
-        template_values = {
-        }
-        template = JINJA_ENVIRONMENT.get_template('templates/500.html')
-        self.response.write(template.render(template_values))
+def Error500Handler(request, response, exception):
+    logging.exception(exception)
+    template_values = {
+    }
+    template = JINJA_ENVIRONMENT.get_template('templates/500.html')
+    response.write(template.render(template_values))
+    response.set_status(500)
 
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
-                                          webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler, name='jsonParameterTest'),
+                                          webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler,
+                                                        name='jsonParameterTest'),
                                       ], debug=True)
 application.error_handlers[404] = Error404Handler
 application.error_handlers[500] = Error500Handler
