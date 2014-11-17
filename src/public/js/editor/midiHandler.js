@@ -36,7 +36,7 @@ function MidiHandler() {
 	instruments [32] =	'Guitar Harmonics';
 
 	this.getInstrumentName = function(number) {
-		var name = instruments[number];
+		var name = instruments[number + 1];
 		return name;//TODO check for exceptions
 	}
 

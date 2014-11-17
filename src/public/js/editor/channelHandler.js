@@ -44,6 +44,7 @@ function ChannelHandler() {
 	}
 	this.initSocket = function(token) {
 		channel = new goog.appengine.Channel(token);
+		console.log(channel);
 	    this.socket = channel.open();
 		this.socket.onopen = this.onOpened;
 		this.socket.onmessage = this.onMessage;

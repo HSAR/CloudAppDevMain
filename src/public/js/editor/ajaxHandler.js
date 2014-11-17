@@ -2,7 +2,7 @@ function AjaxHandler() {
 	this.getToken = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/auth/token',
+			url : 'http://localhost:9080/auth/token',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -20,7 +20,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-test.appspot.com/auth/token',
+			url : 'http://localhost:9080/songs/get/0',
 			dataType : 'JSON',
 			success : function(data) {
 				if(data.topic === 'tune') {
