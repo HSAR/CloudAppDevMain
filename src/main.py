@@ -70,6 +70,11 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(obj))
 
 
+class FiveHundredTestHandler(webapp2.RequestHandler):
+    def get(self, key):
+        raise runtime.DeadlineExceededError
+
+
 def Error404Handler(request, response, exception):
     logging.exception(exception)
     template_values = {
@@ -94,6 +99,8 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
                                           webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler,
                                                         name='jsonParameterTest'),
+                                          webapp2.Route(r'/fivehundred', handler=FiveHundredTestHandler,
+                                                        name='fivehundred'),
                                       ], debug=True)
 application.error_handlers[404] = Error404Handler
 application.error_handlers[500] = Error500Handler

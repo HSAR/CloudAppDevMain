@@ -10,5 +10,5 @@ def test_404():
 
 # Expect 500 template page as appropriate
 def test_500():
-    response = app.get('/timeout')
+    response = app.get('/fivehundred')
     assert str(500) in response.status
