@@ -26,6 +26,9 @@ handlers:
 - url: /_ah.*
   script: admin.application
 
+- url: /songs/.*
+  script: songs.application
+
 - url: .*
   script: main.application
 
