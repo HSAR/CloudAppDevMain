@@ -68,9 +68,27 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(obj))
 
 
+class Error404Handler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/404.html')
+        self.response.write(template.render(template_values))
+
+
+class Error500Handler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/500.html')
+        self.response.write(template.render(template_values))
+
+
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
                                           webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler, name='jsonParameterTest'),
                                       ], debug=True)
+application.error_handlers[404] = Error404Handler
+application.error_handlers[500] = Error500Handler
