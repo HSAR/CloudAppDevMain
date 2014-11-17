@@ -13,7 +13,7 @@ handlers:
 - url: /public
   static_dir: public
 
-- url: /editor/.*
+- url: /editor.*
   script: editor.application
   login: required
 

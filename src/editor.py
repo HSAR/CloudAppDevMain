@@ -27,5 +27,5 @@ class EditorPageHandler(webapp2.RequestHandler):
             self.error(401)
 
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/editor/', handler=EditorPageHandler, name='editor'),
+                                          webapp2.Route(r'/editor', handler=EditorPageHandler, name='editor'),
                                       ], debug=True)
