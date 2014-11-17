@@ -17,16 +17,14 @@
 	var tuneJSON;
 
 	var noteValues = {
-		quaver : 1,
-		crotchet : 2
+		quaver : 0.5,
+		crotchet : 1
 	}
 
 	var pageData = {
 		scrollLeft : 0,
 		quarantinedChanges : []
 	};
-
-	var barLength = 8;
 
 	function loadPalette() {
 		//we need to load the pallete items and then make em draggable etc.
@@ -165,16 +163,17 @@
 	*/
 	function drawPreview(event,noteLength,$target) {
 		//ok so we can use event.pageX - ui.offset and ignore ones where we get minus values as these are false events
+		var subdivisions = getSubdivisions();
 		var distanceFromLeft = event.pageX - $target.parent().offset().left;
 		var width = $target.parent().width();
 		if(distanceFromLeft >=0) { //if we are dragging over the correct box
-			var position = Math.floor((distanceFromLeft / width) * barLength);
+			var position = Math.floor((distanceFromLeft / width) * subdivisions);
 
-			if(position + noteLength > barLength) {
-				position = barLength - noteLength;//if overflows limit it to end of bar
+			if(position + noteLength > subdivisions) {
+				position = subdivisions - noteLength;//if overflows limit it to end of bar
 			}
-			var leftPos = ((position / barLength) * 100) + "%";
-			var length = ((noteLength / barLength) * 100) + "%";
+			var leftPos = ((position / subdivisions) * 100) + "%";
+			var length = ((noteLength / subdivisions) * 100) + "%";
 
 			$target.css({
 				"position" : 'absolute',
@@ -244,6 +243,8 @@
 		var pitch =  midiHelper.convertPitchToIndex(note.pitch);
 		var left = ((note.position % subdivisions) / subdivisions) * 100 + '%';//could potentially divide by 0 but js protects us
 		var length = (note.length / subdivisions) * 100 + '%';
+		console.log("bar " + bar);
+		console.log("subdivisions " + subdivisions);
 		$tab.children('.bar').eq(bar).children('.pitch').eq(pitch).append('<div class="newNote" id="note' + note.id +'"></div>');
 
 		$('.newNote').css({
@@ -272,7 +273,7 @@
 			drag : function(event,ui) {
 				//ok so we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
-					var noteValue = Math.round($note.width() / $note.parent().width() * tuneJSON.head.barLength * tuneJSON.head.subdivisions);
+					var noteValue = Math.round($note.width() / $note.parent().width() * getSubdivisions());
 					if(noteValue) {
 						drawPreview(event,noteValue,$('.preview'));
 					}
@@ -288,7 +289,7 @@
 			handles : 'w,e',
 			containment : 'parent',
 			start : function(event,ui) {
-				var subdivisions = getSubdivisons();
+				var subdivisions = getSubdivisions();
 				pageData.previousLeft = Math.round(subdivisions * (ui.originalPosition.left / ui.element.parent().width()));
 				pageData.previousLength = Math.round(subdivisions * (ui.originalElement.width() / ui.element.parent().width()));
 				pageData.previousLeftRaw = ui.element.position().left;
@@ -296,7 +297,7 @@
 				pageData.originalLength = pageData.previousLength;
 			},
 			resize : function(event,ui) {
-				var subdivisions = getSubdivisons();//saves overhead of repeated function calls
+				var subdivisions = getSubdivisions();//saves overhead of repeated function calls
 				var left = Math.round(subdivisions * (ui.element.position().left / ui.element.parent().width()));
 				var leftPercent = (left / subdivisions) * 100 + '%';
 				var length;
@@ -329,8 +330,8 @@
 					}
 				}); 
 				if(conflict) {
-					var originalLeft = (pageData.originalLeft / getSubdivisons()) * 100 + '%';
-					var originalLength = (pageData.originalLength / getSubdivisons()) * 100 + '%';
+					var originalLeft = (pageData.originalLeft / getSubdivisions()) * 100 + '%';
+					var originalLength = (pageData.originalLength / getSubdivisions()) * 100 + '%';
 					ui.element.css({
 						'left' : originalLeft,
 						'width' : originalLength
@@ -349,7 +350,7 @@
 				var newId = generateId();
 				$note.attr('id',newId);
 				//need to put new size into a data and ajax it and update id of div
-				var subdivisions = getSubdivisons();//saves overhead of repeated function calls
+				var subdivisions = getSubdivisions();//saves overhead of repeated function calls
 				var left = pageData.previousLeft;
 				var bar = $note.parent().parent().index();
 				var newPosition = bar * subdivisions + left;
@@ -373,9 +374,9 @@
 	function getNoteValue($target) {
 		var note;
 		if($target.hasClass('note-crotchet')) {
-			note = noteValues.crotchet;
+			note = tuneJSON.head.subdivisions * noteValues.crotchet;
 		} else if($target.hasClass('note-quaver')) {
-			note = noteValues.quaver;
+			note = tuneJSON.head.subdivisions * noteValues.quaver;
 		}
 		return note;
 	}
@@ -432,7 +433,7 @@
 		});
 	}
 
-	function getSubdivisons() {
+	function getSubdivisions() {
 		return tuneJSON.head.subdivisions * tuneJSON.head.barLength;
 	}
 

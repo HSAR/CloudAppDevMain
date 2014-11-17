@@ -48,7 +48,7 @@
     });
     QUnit.test( "Check if in correct bar", function( assert ) {
        
-      assert.equal($('#note1').parent().parent().index(), 3, "Loaded note should be in the 4th bar" );
+      assert.equal($('#note1').parent().parent().parent().children('.bar').index(), 3, "Loaded note should be in the 4th bar" );
     });
 
     QUnit.test("Check tab is displaying correct instrument name",function(assert) {

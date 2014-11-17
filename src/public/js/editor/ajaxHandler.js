@@ -23,9 +23,9 @@ function AjaxHandler() {
 			url : 'http://localhost:9080/songs/get/0',
 			dataType : 'JSON',
 			success : function(data) {
-				if(data.topic === 'tune') {
+				console.log(data);
+				if(data) {
 					//we can now open up a socket using the token
-					
 					cb(data);
 				} else {
 					//deal with error here
@@ -34,26 +34,30 @@ function AjaxHandler() {
 		});
 	};
 	this.notifyServer = function(data) {
-		var targetURL;
+		var url;
 		switch(data.topic) {
 			case 'add':
-				url = 'http://example-add.com';
+				url = 'http://jinglr-music.appspot.com/tune/delete';
 				break;
 			case 'delete':
-				url = 'http://example-delete.com';
+				url = 'http://jinglr-music.appspot.com/tune/add';
 				break;
 			case 'edit':
 				url = 'http://example-edit.com';
 				break;
 
 			default :
+				console.log("Ajax error");
+				console.log(data);
+				return;
 				//put error case here
 				break;		
 		}
 		console.log(data);
+		console.log(url);
 		$.ajax({
 				type : 'POST',
-				url : targetURL,
+				url : url,
 				data : data,
 				dataType : 'JSON',
 				success : function() {
