@@ -18,3 +18,9 @@ class Jingle(ndb.Model):
 	jingle = ndb.JsonProperty()
 	#rating = ndb.FloatProperty()
 	collab_users = ndb.StringProperty(repeated=True)
+    
+class JinglrMap(ndb.Model):
+    taskqueue_name = nbd.StringProperty(required=True)
+    jingle_id = ndb.StringProperty()
+    editor_tokens = nbd.StringProperty(repeated=True)
+    map_id = ndb.IntegerProperty(required=True)
