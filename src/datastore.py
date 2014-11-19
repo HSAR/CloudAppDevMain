@@ -254,25 +254,96 @@ def taskqueueNameForJingle(jid):
 	else:
 		return None
 
+#called when a client wants to start editing a jingle
+#in a success case it will return:
+#   {"token" : channelToken}
+#in a fail (because there are no free task queues) it will return:
+#   {"errorMessage" : errorMessage}
 def beginEditing(uid, jid):
     
-	channeltoken = channel.create_channel(uid)
-	
+    #first need to see if we are likely able to edit the jingle
+    #is there already a JinglrMap in use for this Jingle?
+    jm = JinglrMap.query(jingle_id == jid).fetch()
+    if not jm:
+        #well, maybe there is a free one we can use?
+        jm = JinglrMap.query(jingle_id == None).fetch()
+        if not jm:
+            #no JinglrMap available, give up :(
+            return {"errorMessage" : "Service currently busy. No available task queues"}
+            
+	#we think there is a JinglrMap free. Lets make a token of good faith
+    channelToken = channel.create_channel(uid)
+    
 	@ndb.transactional
-	def register_editor(jingleid, token):
-	
-		jm = JinglrMap.query(jingle_id==jingleid).fetch()
-		if not jm:
-			jm = JinglrMap.query(jingle_id=None).fetch()
+	def registerEditor():
+        
+		jm = JinglrMap.query(jingle_id == jid).fetch()
+		if jm:
+            #this is the JinglrMap already being used for this Jingle
+            #update it with the new channelToken for the new editor user
+            jingMap = jm[0]
+            jingMap.editor_tokens.append(channelToken)
+            jingMap.put()
+            return True
+        else:
+			jm = JinglrMap.query(jingle_id == None).fetch()
 			if jm:
-				jm.jingle_id = jingleid
-			else:
-				#No taskqueue available, abort
-		
-		jm.current_editors += 1
-		jm.editor_tokens.append(token)
-		jm.put()
-		
-	register_editor(jid, channeltoken)
-	
-	return token
+                #we have a list of unused JinglrMap entities
+                #select the first one to start with
+                jingMap = jm[0]
+                for map in jm:
+                    #loop through all maps and select the one with the lowest map_id
+                    if map.map_id < jingMap.map_id:
+                        jingMap = map
+                
+                #jingMap is now set to the map we want to use
+                jingMap.jingle_id = jid #first set it to be for this Jingle
+                jingMap.editor_tokens = [channelToken] #and set the first channelToken
+                jingMap.put()
+                return True
+            else:
+                return False
+    
+    
+    success = None
+    while True:
+        try:
+            success = registerEditor()
+            break
+        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
+            time.sleep(1)
+
+    if success:
+        return {"token" : channelToken}
+    else:
+        return {"errorMessage" : "Service currently busy. No available task queues"}
+        
+#removes an editor from a JinglrMap. If all the editors are gone, it frees up
+#the JinglrMap
+def stopEditing(jid, channelToken):
+    
+    @ndb.transactional
+    def removeEditor():
+        
+        #first get the JinglrMap for the specified jingle
+        jm = JinglrMap.query(jingle_id == jid).fetch()
+        if jm:
+            #jm is a list of results containing one result
+            jingMap = jm[0]
+            #get tokens. This is a list of channelTokens who are editing the song
+            tokens = jingMap.editor_tokens
+            if channelToken in tokens:
+                tokens.remove(channelToken)
+                jingMap.editor_tokens = tokens  #set the updated tokens back
+                if not tokens:  #if the tokens list is now empty
+                    jingMap.jingle_id = None    #remove this jingle from this JignlrMap to free it up
+                jingMap.put()
+    
+    
+    while True:
+        try:
+            removeEditor()
+            break
+        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
+            time.sleep(1)
+    
