@@ -17,8 +17,8 @@ handlers:
   script: editor.application
   login: required
 
-- url: /search.*
-  script: search.application
+- url: /songs/search.*
+  script: songs_search.application
 
 - url: /auth.*
   script: auth.application
@@ -26,8 +26,8 @@ handlers:
 - url: /_ah.*
   script: admin.application
 
-- url: /songs/.*
-  script: songs.application
+- url: /songs/get.*
+  script: songs_get.application
 
 - url: .*
   script: main.application

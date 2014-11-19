@@ -77,8 +77,8 @@ class SearchPageHandler(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-					webapp2.Route(r'/search', handler=SearchPageHandler, name='search'),
-                                        webapp2.Route(r'/search/<query>', handler=SearchPageHandler, name='search-query'),
-                                        webapp2.Route(r'/search/<query>/<sort>', handler=SearchPageHandler, name='search-query-sort'),
-                                        webapp2.Route(r'/search//<sort>', handler=SearchPageHandler, name='search-sort')
+					webapp2.Route(r'/songs/search', handler=SearchPageHandler, name='search'),
+                                        webapp2.Route(r'/songs/search/<query>', handler=SearchPageHandler, name='search-query'),
+                                        webapp2.Route(r'/songs/search/<query>/<sort>', handler=SearchPageHandler, name='search-query-sort'),
+                                        webapp2.Route(r'/songs/search//<sort>', handler=SearchPageHandler, name='search-sort')
 				      ], debug=True)
