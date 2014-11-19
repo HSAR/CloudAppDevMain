@@ -26,6 +26,22 @@ test_elements = [ { "name": "UKIP Calypso", "tags": ["racist", "clowns"],
                     "genre": "K-Pop", "author": "The Pumping Lemmas",
                     "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
                     "id": 1},
+                  { "name": "Steve Jobs", "tags": ["meme", "irritating"],
+                    "genre": "K-Pop", "author": "The Pumping Lemmas",
+                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
+                    "id": 3},
+                  { "name": "Super Mario Bros. Overworld", "tags": ["meme", "irritating"],
+                    "genre": "K-Pop", "author": "The Pumping Lemmas",
+                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
+                    "id": 4},
+                  { "name": "Tim Cook", "tags": ["meme", "irritating"],
+                    "genre": "K-Pop", "author": "The Pumping Lemmas",
+                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
+                    "id": 5},
+                  { "name": "Your Mum Is So Fat", "tags": ["meme", "irritating"],
+                    "genre": "K-Pop", "author": "The Fat Mothers",
+                    "rating": 90, "dateCreated": datetime.date(2012, 07, 15),
+                    "id": 6},
                   { "name": "Zubion", "tags": ["ou", "est", "la", "gare"],
                     "genre": "French", "author": "The IT Crowd",
                     "rating": 20, "dateCreated": datetime.date(1958, 10, 04),
@@ -57,9 +73,9 @@ class SearchPageHandler(webapp2.RequestHandler):
             results.sort(key=operator.itemgetter(sort))
         self.response.out.write(json.dumps(results, default=datetimejson))
 
-		
 
-		
+
+
 application = webapp2.WSGIApplication([
 					webapp2.Route(r'/search', handler=SearchPageHandler, name='search'),
                                         webapp2.Route(r'/search/<query>', handler=SearchPageHandler, name='search-query'),
