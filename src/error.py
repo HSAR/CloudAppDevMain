@@ -11,14 +11,13 @@ import logging
 
 
 def respond(status, message):
-    response = webapp2.Response
     error_id = hex(random.getrandbits(64))
-    logging.info('[' + error_id + '] HTTP ' + status + ' generated in response to: ' + message)
+    logging.info('[' + str(error_id) + '] HTTP ' + str(status) + ' generated in response to: ' + message)
     error_object = {
         'status': status,
         'message': message,
         'errorId': error_id
     }
-    response.write(json.dumps(error_object))
-    response.set_status(400)
+    response = webapp2.Response(json.dumps(error_object))
+    response.set_status(status)
     return response
