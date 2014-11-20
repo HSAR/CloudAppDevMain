@@ -233,7 +233,7 @@ class SongGetHandler(webapp2.RequestHandler):
 
 
 class NoteChangeHandler(webapp2.RequestHandler):
-    def delete(self, songid):
+    def post(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
         else:
@@ -243,7 +243,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
                     'track' in parsed_request_json)):
                     return error.respond(400, 'Missing property in request JSON')
                 else:
-                    datastore.removeNote(songid, parsed_request_json)
+                    datastore.removeNote(songid, self.request.body)
                     success_object = {
                         'status': 'true',
                     }
