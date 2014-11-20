@@ -5,23 +5,41 @@
 	<script type="text/javascript" src="../public/js/jquery.min.js"></script>
 	<script type="text/javascript" src="../public/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../public/js/bootstrap.min.js"></script>
-	
+
+	<script src="..public/js/editor/MIDI/AudioDetect.js" type="text/javascript"></script>
+	<script src="..public/js/editor/MIDI/LoadPlugin.js" type="text/javascript"></script>
+	<script src="..public/js/editor/MIDI/Plugin.js" type="text/javascript"></script>
+	<script src="..public/js/editor/MIDI/Player.js" type="text/javascript"></script>
+
+
+	<link href="../public/editor/css/MIDIPlayer.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" type="text/css" href="../public/css/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="../public/css/jquery-ui.min.css" />
-	<link rel="stylesheet" type="text/css" href="../public/css/edit.css" />
+	<link rel="stylesheet" type="text/css" href="../public/css/editor/edit.css" />
 </head>
 <body>
 	<div class="auth">{{auth_bar|safe}}</div>
 	<div class="container">
 		<h1>Jinglr editor page (WIP)</h1>
 		<br/>
-		<div class="editor">
-			<div class="palette col-md-2">
-				<div class="note note-crotchet"></div>
-				<div class="note note-quaver"></div>
-				<div class="note-bin"></div>
+		<div class="editor bordered">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="bordered top-bar"><h2>test</h2>
+						<button class="play-button">Play</button>
+					</div>
+				</div>
 			</div>
-			<div class="canvas col-md-10"></div>
+			<div class="row">
+				<div class="col-md-2 no-right-padding">
+					<div class="palette bordered">
+						<div class="note note-crotchet"></div>
+						<div class="note note-quaver"></div>
+						<div class="note-bin"></div>
+					</div>
+				</div>
+				<div class="col-md-10 no-left-padding"><div class="canvas bordered"></div></div>
+			</div>
 		</div>
 
 	</div>

@@ -1,6 +1,3 @@
-div {
-	border: 1px solid black;
-}
 
 .editor {
 	height : 500px; /*This will need to be changed later as just hard coded */
@@ -108,4 +105,26 @@ div {
 
 .ui-resizable-handle {
 	border : none;
+}
+
+.bordered {
+	border : 1px solid black;
+}
+
+.no-right-padding {
+	padding-right: 0px;
+}
+
+.no-left-padding {
+	padding-left : 0px;
+}
+
+.top-bar .play-button {
+	float : right;
+	display : inline;
+}
+
+.top-bar h2 {
+	display : inline;
+	vertical-align: middle;
 }
