@@ -8,8 +8,11 @@ import jinja2
 
 import json
 
+from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import channel
+
+import datastore
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -225,9 +228,7 @@ class SongGetHandler(webapp2.RequestHandler):
         else:
             self.abort(404)
 
-		
-
-		
 application = webapp2.WSGIApplication([
 					webapp2.Route(r'/songs/get/<songid>', handler=SongGetHandler, name='song-get-by-id'),
 				      ], debug=True)
+					

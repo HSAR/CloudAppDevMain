@@ -4,11 +4,14 @@ import webapp2
 
 import logging
 
+import taskqueue
+
 class Startup(webapp2.RequestHandler):
     def get(self):
         logging.info('======== Startup Running ========')
+        taskqueue.initialiseJinglrMaps()
         logging.info('======== Startup Complete =======')
 
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/_ah/warmup', handler=Startup, name='startup'),
-                                      ], debug=True)
+                                        webapp2.Route(r'/_ah/warmup', handler=Startup, name='startup'),
+                                        ], debug=True)

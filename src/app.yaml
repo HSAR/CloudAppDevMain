@@ -29,6 +29,10 @@ handlers:
 - url: /songs/get.*
   script: songs_get.application
 
+- url: /tasks/.*
+  script: taskqueue_handlers.application
+  login: admin
+  
 - url: .*
   script: main.application
 

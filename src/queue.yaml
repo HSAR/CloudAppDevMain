@@ -1,0 +1,50 @@
+queue:
+- name: TaskQueue0
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue1
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue2
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue3
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue4
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue5
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue6
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue7
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue8
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1
+  
+- name: TaskQueue9
+  rate: 1/s
+  bucket_size: 1
+  max_concurrent_requests: 1

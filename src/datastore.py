@@ -1,16 +1,18 @@
 from google.appengine.ext import ndb
 from google.appengine.ext import db
 from google.appengine.api import users
+from google.appengine.api import taskqueue
 
 import datetime
 import time
+import random
+import json
 from google.appengine.api import channel
 from models import JinglrUser, Jingle, JinglrMap
-from google.appengine.
 
 class Orderings:
-	Title, Date, Rating, Length = range(4)
-		
+    Title, Date, Rating, Length = range(4)
+        
 #we have two entity groups. Root keys are used to define the groups
 #the first group is the group of users
 root_user_key = ndb.Key('UserRoot', 'userroot')
@@ -21,7 +23,7 @@ def generate_jingle_id(uid):
     
     timestamp = datetime.datetime.now()
     rand = random.random()
-	return uid + str(rand) + str(timestamp)
+    return uid + str(rand) + str(timestamp)
 
 #takes a uid and a username
 #returns a dictionary.
@@ -54,7 +56,7 @@ def createUser(uid, username):
         return {"userKey":result}
     
     
-    if !username:
+    if not username:
         return {"errorMessage":"Please enter a username"}
     
     result = None
@@ -71,22 +73,22 @@ def createUser(uid, username):
 #takes a user id and returns the JingleUser Entity if one is found, or None
 def getUserById(uid):
     
-	user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-	user = user_key.get()
-	if user:
-		return user
-	else:
-		return None
+    user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
+    user = user_key.get()
+    if user:
+        return user
+    else:
+        return None
 
 #takes a username and returns the JingleUser Entity if one is foind, or None
 def getUserByUsername(username):
     
-	user_query = JinglrUser.query(ancestor=root_user_key).filter(JinglrUser.username == username)
-	user_list = user_query.fetch()
-	if user_list:
-		return user_list[0]
-	else:
-		return None
+    user_query = JinglrUser.query(ancestor=root_user_key).filter(JinglrUser.username == username)
+    user_list = user_query.fetch()
+    if user_list:
+        return user_list[0]
+    else:
+        return None
 
 #takes a user ID and a new username
 #returns a dictionary in the form:
@@ -96,13 +98,13 @@ def getUserByUsername(username):
 #on a fail          
 def updateUsername(uid, username):
     
-    if !username:
+    if not username:
         return {"errorMessage":"Please enter a username"}
     
     user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-	user = user_key.get()
+    user = user_key.get()
     
-    if !user:
+    if not user:
         return {"errorMessage" : "That is not a valid user"}
     
     @ndb.transactional
@@ -133,9 +135,9 @@ def updateUsername(uid, username):
 #if that user does not exist
 def updateBio(uid, bio):
     
-	user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-	user = user_key.get()
-	if user:
+    user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
+    user = user_key.get()
+    if user:
         result = None
         while True:
             try:
@@ -144,18 +146,18 @@ def updateBio(uid, bio):
                 break
             except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
                 time.sleep(1)
-		
-		return result
-	else:
-		return None
+        
+        return result
+    else:
+        return None
 
 #takes a user ID and a new list of tags. Returns the user entity key on success
 #or None if that user does not exist
 def updateTags(uid, tags):
-	
-	user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-	user = user_key.get()
-	if user:
+    
+    user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
+    user = user_key.get()
+    if user:
         result = None
         while True:
             try:
@@ -164,23 +166,28 @@ def updateTags(uid, tags):
                 break
             except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
                 time.sleep(1)
-		
-		return result
-	else:
-		return None
+        
+        return result
+    else:
+        return None
 
 #takes stuff to create a jingle entity
 #returns new jingle entity key once successful
 def createJingle(uid, title, genre=None, tags=None):
-	
-	gen_id = self.generate_jingle_id(uid)
-	
-	jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
-	if genre:
-		jingle.genre = genre
-	if tags:
-		jingle.tags = tags
-	
+    
+    gen_id = generate_jingle_id(uid)
+    
+    jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
+    if genre:
+        jingle.genre = genre
+    if tags:
+        jingle.tags = tags
+    
+    jingle_json = {}
+    jingle_json['head'] = {'subDivisions':4, 'tempo':120}
+    jingle_json['tracks'] = []
+    jingle.jingle = jingle_json
+    
     result = None
     while True:
         try:
@@ -193,67 +200,92 @@ def createJingle(uid, title, genre=None, tags=None):
 
 #returns jingle entity it it exists, or None
 def getJingleById(jingle_id):
-	
-	jingle_key = ndb.Key('Jingle', jingle_id)
-	jingle = jingle_key.get()
-	if jingle:
-		return jingle
-	else:
-		return None	
+    
+    jingle_key = ndb.Key('Jingle', jingle_id)
+    jingle = jingle_key.get()
+    if jingle:
+        return jingle
+    else:
+        return None	
 
 #returns paged results with a specific ordering
 def getAllJingles(order=Orderings.Date, reverse_order=False, max_results=20, cursor_url=None):
-	
-	jingle_query = Jingle.query()
-	
-	if order==Orderings.Title:
-		if reverse_order:
-			jingle_query=jingle_query.order(-Jingle.title, -Jingle.date_created)
-		else:
-			jingle_query=jingle_query.order(Jingle.title, Jingle.date_created)
-			
-	elif order==Orderings.Date:
-		if reverse_order:
-			jingle_query=jingle_query.order(-Jingle.date_created, -Jingle.title)
-		else:
-			jingle_query=jingle_query.order(Jingle.date_created, Jingle.title)
-			
-	elif order==Orderings.Rating:
-		if reverse_order:
-			jingle_query=jingle_query.order(-Jingle.rating, -Jingle.title)
-		else:
-			jingle_query=jingle_query.order(Jingle.rating, Jingle.title)
-			
-	elif order==Orderings.Length:
-		if reverse_order:
-			jingle_query=jingle_query.order(-Jingle.length, -Jingle.title)
-		else:
-			jingle_query=jingle_query.order(Jingle.length, Jingle.title)
-			
-	else:
-		return None
-	
-	query_tuple = None
-	if cursor_url:
-		qc = Cursor(urlsafe=cursor_url)
-		query_tuple = jingle_query.fetch_page(page_size=max_results, start_cursor=qc, projection=[Jingle.title, Jingle.author, Jingle.date_created, Jingle.genre, Jingle.length, Jingle.tags, Jingle.rating, Jingle.collab_users])
-	else:
-		query_tuple = jingle_query.fetch_page(page_size=max_results, projection=[Jingle.title, Jingle.author, Jingle.date_created, Jingle.genre, Jingle.length, Jingle.tags, Jingle.rating, Jingle.collab_users])
-	
-	cursor_string = query_tuple[1].urlsafe()
-	query_tuple[1] = cursor_string
-	return query_tuple
-	
+    
+    jingle_query = Jingle.query()
+    
+    if order==Orderings.Title:
+        if reverse_order:
+            jingle_query=jingle_query.order(-Jingle.title, -Jingle.date_created)
+        else:
+            jingle_query=jingle_query.order(Jingle.title, Jingle.date_created)
+            
+    elif order==Orderings.Date:
+        if reverse_order:
+            jingle_query=jingle_query.order(-Jingle.date_created, -Jingle.title)
+        else:
+            jingle_query=jingle_query.order(Jingle.date_created, Jingle.title)
+            
+    elif order==Orderings.Rating:
+        if reverse_order:
+            jingle_query=jingle_query.order(-Jingle.rating, -Jingle.title)
+        else:
+            jingle_query=jingle_query.order(Jingle.rating, Jingle.title)
+            
+    elif order==Orderings.Length:
+        if reverse_order:
+            jingle_query=jingle_query.order(-Jingle.length, -Jingle.title)
+        else:
+            jingle_query=jingle_query.order(Jingle.length, Jingle.title)
+            
+    else:
+        return None
+    
+    query_tuple = None
+    if cursor_url:
+        qc = Cursor(urlsafe=cursor_url)
+        query_tuple = jingle_query.fetch_page(page_size=max_results, start_cursor=qc, projection=[Jingle.title, Jingle.author, Jingle.date_created, Jingle.genre, Jingle.length, Jingle.tags, Jingle.rating, Jingle.collab_users])
+    else:
+        query_tuple = jingle_query.fetch_page(page_size=max_results, projection=[Jingle.title, Jingle.author, Jingle.date_created, Jingle.genre, Jingle.length, Jingle.tags, Jingle.rating, Jingle.collab_users])
+    
+    cursor_string = query_tuple[1].urlsafe()
+    query_tuple[1] = cursor_string
+    return query_tuple
+    
 #Get the name of the task queue allocated to the jingle, or None if there isn't one
 def taskqueueNameForJingle(jid):
-	
-	map_query = JinglrMap.query(jingle_id==jid)
-	jm = map_query.fetch()
-	if jm:
-		return jm[0].taskqueue_name
-	else:
-		return None
+    
+    map_query = JinglrMap.query(JinglrMap.jingle_id==jid)
+    jm = map_query.fetch()
+    if jm:
+        return jm[0].taskqueue_name
+    else:
+        return None
+        
+def taskqueueWithName(name):
 
+    key = ndb.Key('JinglrMap', name, parent=root_jinglrmap_key)
+    
+    jm = key.get()
+    if jm:
+        return jm
+    else:
+        return None
+
+def removeNote(jid, action):
+    
+    queue = taskqueueNameForJingle(jid)
+    if queue:
+        action = json.loads(action)
+        action['jid'] = jid
+        action['taskqueueName'] = queue
+        action = json.dumps(action)
+        taskqueue.add(url = '/tasks/removenote',
+                        queue_name = queue,
+                        headers = {'Content-Type':'application/json'},
+                        payload = action
+                    )
+    
+        
 #called when a client wants to start editing a jingle
 #in a success case it will return:
 #   {"token" : channelToken}
@@ -263,22 +295,22 @@ def beginEditing(uid, jid):
     
     #first need to see if we are likely able to edit the jingle
     #is there already a JinglrMap in use for this Jingle?
-    jm = JinglrMap.query(jingle_id == jid).fetch()
+    jm = JinglrMap.query(JinglrMap.jingle_id == jid).fetch()
     if not jm:
         #well, maybe there is a free one we can use?
-        jm = JinglrMap.query(jingle_id == None).fetch()
+        jm = JinglrMap.query(JinglrMap.jingle_id == None).fetch()
         if not jm:
             #no JinglrMap available, give up :(
             return {"errorMessage" : "Service currently busy. No available task queues"}
             
-	#we think there is a JinglrMap free. Lets make a token of good faith
+    #we think there is a JinglrMap free. Lets make a token of good faith
     channelToken = channel.create_channel(uid)
     
-	@ndb.transactional
-	def registerEditor():
+    @ndb.transactional
+    def registerEditor():
         
-		jm = JinglrMap.query(jingle_id == jid).fetch()
-		if jm:
+        jm = JinglrMap.query(ancestor=root_jinglrmap_key).filter(JinglrMap.jingle_id == jid).fetch()
+        if jm:
             #this is the JinglrMap already being used for this Jingle
             #update it with the new channelToken for the new editor user
             jingMap = jm[0]
@@ -286,8 +318,8 @@ def beginEditing(uid, jid):
             jingMap.put()
             return True
         else:
-			jm = JinglrMap.query(jingle_id == None).fetch()
-			if jm:
+            jm = JinglrMap.query(ancestor=root_jinglrmap_key).filter(JinglrMap.jingle_id == None).fetch()
+            if jm:
                 #we have a list of unused JinglrMap entities
                 #select the first one to start with
                 jingMap = jm[0]
