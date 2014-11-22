@@ -9,3 +9,32 @@ indexes:
 # manually, move them above the marker line.  The index.yaml file is
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
+
+- kind: Jingle
+  properties:
+  - name: author
+  - name: collab_users
+  - name: date_created
+  - name: genre
+  - name: jingle_id
+  - name: length
+  - name: tags
+  - name: title
+
+- kind: Jingle
+  properties:
+  - name: collab_users
+  - name: date_created
+  - name: genre
+  - name: jingle_id
+  - name: length
+  - name: tags
+  - name: title
+
+- kind: Jingle
+  properties:
+  - name: date_created
+  - name: genre
+  - name: jingle_id
+  - name: length
+  - name: title

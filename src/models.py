@@ -5,7 +5,7 @@ class JinglrUser(ndb.Model):
     username = ndb.StringProperty(required=True)
     bio = ndb.TextProperty()
     tags = ndb.StringProperty(repeated=True)
-    collab_songs = ndb.StringProperty(repeated=True)
+    collab_invites = ndb.StringProperty(repeated=True)
     
 class Jingle(ndb.Model):
     jingle_id = ndb.StringProperty(required=True)
