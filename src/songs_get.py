@@ -256,6 +256,29 @@ class NoteChangeHandler(webapp2.RequestHandler):
             else:
                 return error.respond(400, 'Missing request parameter(s)')
 
+    def put(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not (('note' in parsed_request_json) and ('actionId' in parsed_request_json)):
+                    return error.respond(400, 'Missing property in request JSON')
+                elif not ('id' in parsed_request_json['note'] and 'pos' in parsed_request_json['note'] and 'track' in
+                    parsed_request_json['note'] and 'note' in parsed_request_json['note'] and 'length' in
+                    parsed_request_json['note']):
+                    return error.respond(400, 'Missing property in request JSON note object')
+                else:
+                    # datastore.addNote(songid, self.request.body)
+                    success_object = {
+                        'status': 'true',
+                    }
+                    self.response.write(json.dumps(success_object))
+                    self.response.set_status(200)
+                    return
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/get/<songid>', handler=SongGetHandler,
