@@ -329,5 +329,7 @@ application = webapp2.WSGIApplication([
                                                         name='song-get-by-id'),
                                           webapp2.Route(r'/songs/<songid>/notes', handler=NoteChangeHandler,
                                                         name='notechanges'),
+                                          webapp2.Route(r'/songs/<songid>/instruments', handler=InstrumentChangeHandler,
+                                                        name='instrument-changes'),
                                       ], debug=True)
 					
