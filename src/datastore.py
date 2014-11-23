@@ -78,8 +78,8 @@ def getUserById(uid):
     if user:
         if dumb_value in user.tags:
             user.tags.remove(dumb_value)
-        if dumb_value in user.collab_invites
-        user.collab_invites.remove(dumb_value)
+        if dumb_value in user.collab_invites:
+            user.collab_invites.remove(dumb_value)
         return user
     else:
         return None
@@ -94,8 +94,8 @@ def getUserByUsername(username):
         user = user_list[0]
         if dumb_value in user.tags:
             user.tags.remove(dumb_value)
-        if dumb_value in user.collab_invites
-        user.collab_invites.remove(dumb_value)
+        if dumb_value in user.collab_invites:
+            user.collab_invites.remove(dumb_value)
         return user
     else:
         return None
