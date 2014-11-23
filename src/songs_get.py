@@ -280,6 +280,50 @@ class NoteChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
+class InstrumentChangeHandler(webapp2.RequestHandler):
+    def delete(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            actionId = self.request.get("actionId")
+            instrumentTrack = self.request.get("instrumentTrack")
+            if actionId and instrumentTrack:
+                datastore_request_object = {
+                    'actionId': actionId,
+                    'instrumentTrack': instrumentTrack,
+                }
+                # datastore.removeInstrument(songid, json.dumps(datastore_request_object))
+                success_object = {
+                    'status': 'true',
+                }
+                self.response.write(json.dumps(success_object))
+                self.response.set_status(200)
+                return
+            else:
+                return error.respond(400, 'Missing request parameter(s)')
+
+    def put(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not ('instrument' in parsed_request_json and 'actionId' in parsed_request_json):
+                    return error.respond(400, 'Missing property in request JSON')
+                elif not ('track' in parsed_request_json['note'] and 'inst' in parsed_request_json['note']):
+                    return error.respond(400, 'Missing property in request JSON note object')
+                else:
+                    # datastore.addInstrument(songid, self.request.body)
+                    success_object = {
+                        'status': 'true',
+                    }
+                    self.response.write(json.dumps(success_object))
+                    self.response.set_status(200)
+                    return
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
+
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/get/<songid>', handler=SongGetHandler,
                                                         name='song-get-by-id'),
