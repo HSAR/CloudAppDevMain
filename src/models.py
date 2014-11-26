@@ -20,7 +20,6 @@ class Jingle(ndb.Model):
     collab_users = ndb.StringProperty(repeated=True)
     
 class JinglrMap(ndb.Model):
-    taskqueue_name = ndb.StringProperty(required=True)
-    jingle_id = ndb.StringProperty()
+    jingle_id = ndb.StringProperty(required=True)
     editor_tokens = ndb.StringProperty(repeated=True)
-    map_id = ndb.IntegerProperty(required=True)
+    is_being_edited = ndb.ComputedProperty(lambda self: len(self.editor_tokens) == 0)

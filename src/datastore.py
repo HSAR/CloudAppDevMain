@@ -3,12 +3,13 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import taskqueue
 from google.appengine.api import memcache
+from google.appengine.api import channel
+from google.appengine.runtime import apiproxy_errors
 
 import datetime
 import time
 import random
 import json
-from google.appengine.api import channel
 from models import JinglrUser, Jingle, JinglrMap
 
 class Orderings:
@@ -17,8 +18,6 @@ class Orderings:
 #we have two entity groups. Root keys are used to define the groups
 #the first group is the group of users
 root_user_key = ndb.Key('UserRoot', 'userroot')
-#the second group is the group of jinglr maps
-root_jinglrmap_key = ndb.Key('JinglrMapRoot', 'jinglrmaproot')
 #MORE GOD DAMN GAE
 dumb_value = "!62DJkTpFqQ#faV3qDa6Fk=K%MdqFMM=kpdrcRKT" # it's pretty dumb
 
@@ -29,29 +28,6 @@ def generate_jingle_id(uid):
     timestamp = datetime.datetime.now()
     rand = random.random()
     return uid + str(rand) + str(timestamp)
-
-
-#Get the name of the task queue allocated to the jingle, or None if there isn't one
-def getTaskqueueNameForJingle(jid):
-    
-    map_query = JinglrMap.query(JinglrMap.jingle_id==jid)
-    jm = map_query.fetch()
-    if jm:
-        return jm[0].taskqueue_name
-    else:
-        return None
-
-
-def getTaskqueueWithName(name):
-    
-    key = ndb.Key('JinglrMap', name, parent=root_jinglrmap_key)
-    
-    jm = key.get()
-    if jm:
-        return jm
-    else:
-        return None
-
 
 def getUsernameByUID(uid):
     
@@ -215,6 +191,16 @@ def getJingleById(jingle_id, json=True):
     else:
         return None
 
+#returns a list of JingleUser entities who are collaborators to this Jingle. returns None if jid is not valid
+def getCollaborators(jid):
+
+    jingle = getJingleById(jid, False)
+    if jingle:
+        collabs_list = []
+        for uid in jingle.collab_users:
+            collabs_list.append(getUserById(uid))
+        return collabs_list
+    return None
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ BLOCKING WRITE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #takes a uid and a username
@@ -363,6 +349,8 @@ def createJingle(uid, title, genre=None, tags=None):
     jingle_json = {}
     jingle_json['head'] = {'subDivisions':4, 'tempo':120}
     jingle_json['tracks'] = []
+    for i in range(0,15):
+        jingle_json['tracks'].append({})
     jingle.jingle = jingle_json
     
     jingle.collab_users = [dumb_value]
@@ -371,11 +359,63 @@ def createJingle(uid, title, genre=None, tags=None):
     while True:
         try:
             result = jingle.put()
+            
+            map_name = gen_id + 'Map'
+            jm = JinglrMap(id=map_name, jingle_id=gen_id, editor_tokens = [])
+            jm.put()
             break
         except (db.Timeout, db.InternalError) as exep:
             time.sleep(1)
     
     return result
+
+#returns the Jingle entity key on success, or None if jid is not valid
+def changeTitle(jid, title):
+
+           if not tokens:  #if the tokens list is now empty
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+                
+            jingle.title = title
+            return jingle.put()
+        except (db.Timeout, db.InternalError) as exep:
+            time.sleep(1)
+
+#returns the Jingle entity key on success, or None if jid is not valid
+def changeGenre(jid, genre):
+
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+                
+            jingle.genre = genre
+            return jingle.put()
+        except (db.Timeout, db.InternalError) as exep:
+            time.sleep(1)
+
+#returns the Jingle entity key on success, or None if jid is not valid
+def changeTags(jid, tags):
+
+    while True:
+        try:
+                   if not tokens:  #if the tokens list is now empty
+    jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+            
+            tags.append(dumb_value)
+            jingle.tags = tags 
+            return jingle.put()
+        except (db.Timeout, db.InternalError) as exep:
+            time.sleep(1)
 
 
 #called when a client wants to start editing a jingle
@@ -387,47 +427,25 @@ def beginEditing(uid, jid):
     
     #first need to see if we are likely able to edit the jingle
     #is there already a JinglrMap in use for this Jingle?
-    jm = JinglrMap.query(JinglrMap.jingle_id == jid).fetch()
+        #we think there is a JinglrMap free. Lets make a token of good faith
+    jm = ndb.Key('JinglrMap', jid+'Map').get()
     if not jm:
-        #well, maybe there is a free one we can use?
-        jm = JinglrMap.query(JinglrMap.jingle_id == None).fetch()
-        if not jm:
-            #no JinglrMap available, give up :(
-            return {"errorMessage" : "Service currently busy. No available task queues"}
-            
-    #we think there is a JinglrMap free. Lets make a token of good faith
-    channelToken = channel.create_channel(uid)
+        return {"errorMessage" : "Invalid Jingle ID"}
+    try:
+        channelToken = channel.create_channel(uid)
+    except apiproxy_errors.OverQuotaError:
+        return {"errorMessage" : "Channels quota met: no more channels"}
     
     @ndb.transactional
     def registerEditor():
-        
-        jm = JinglrMap.query(ancestor=root_jinglrmap_key).filter(JinglrMap.jingle_id == jid).fetch()
-        if jm:
-            #this is the JinglrMap already being used for this Jingle
-            #update it with the new channelToken for the new editor user
-            jingMap = jm[0]
-            jingMap.editor_tokens.append(channelToken)
-            jingMap.put()
-            return True
-        else:
-            jm = JinglrMap.query(ancestor=root_jinglrmap_key).filter(JinglrMap.jingle_id == None).fetch()
-            if jm:
-                #we have a list of unused JinglrMap entities
-                #select the first one to start with
-                jingMap = jm[0]
-                for map in jm:
-                    #loop through all maps and select the one with the lowest map_id
-                    if map.map_id < jingMap.map_id:
-                        jingMap = map
-                
-                #jingMap is now set to the map we want to use
-                jingMap.jingle_id = jid #first set it to be for this Jingle
-                jingMap.editor_tokens = [channelToken] #and set the first channelToken
-                jingMap.put()
-                return True
-            else:
-                return False
-    
+
+        jm = ndb.Key('JinglrMap', jid+'Map').get()
+        if not jm:
+            return False
+
+        jm.editor_tokens.append(channelToken)
+        jm.put()
+        return True    
     
     success = None
     while True:
@@ -440,7 +458,7 @@ def beginEditing(uid, jid):
     if success:
         return {"token" : channelToken}
     else:
-        return {"errorMessage" : "Service currently busy. No available task queues"}
+        return {"errorMessage" : "Invalid Jingle ID"}
 
 
 #removes an editor from a JinglrMap. If all the editors are gone, it frees up
@@ -451,18 +469,14 @@ def stopEditing(jid, channelToken):
     def removeEditor():
         
         #first get the JinglrMap for the specified jingle
-        jm = JinglrMap.query(jingle_id == jid).fetch()
+        jm = ndb.Key('JinglrMap', jid+'Map').get()
         if jm:
-            #jm is a list of results containing one result
-            jingMap = jm[0]
             #get tokens. This is a list of channelTokens who are editing the song
-            tokens = jingMap.editor_tokens
+            tokens = jm.editor_tokens
             if channelToken in tokens:
                 tokens.remove(channelToken)
-                jingMap.editor_tokens = tokens  #set the updated tokens back
-                if not tokens:  #if the tokens list is now empty
-                    jingMap.jingle_id = None    #remove this jingle from this JignlrMap to free it up
-                jingMap.put()
+                jm.editor_tokens = tokens  #set the updated tokens back
+            jm.put()
     
     
     while True:
@@ -474,6 +488,22 @@ def stopEditing(jid, channelToken):
             
             
 #~~~~~~~~~~~~~~~~~~~~~~~~~ NON BLOCKING WRITES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def submitAction(jid, action):
+    
+    client = memcache.Client()
+    while True:
+        actionList = client.gets(jid)
+        if actionList == None:
+            val = json.dumps([action])
+            if client.cas(jid, val):
+                break
+        else:
+            actionList = json.loads(actionList)
+            actionList.append(action)
+            actionList = json.dumps(actionList)
+            if client.cas(jid, actionList):
+                break
 
 def removeNote(jid, action):
     
@@ -489,6 +519,18 @@ def removeNote(jid, action):
                         )
 
 
+def addInstrument(jid, action):
+    
+    queue = getTaskqueueNameForJingle(jid)
+    if queue:
+        action['jid'] = jid
+        action['taskqueueName'] = queue
+        action = json.dumps(action)
+        taskqueue.add(url = '/tasks/addinstrument',
+                        queue_name = queue,
+                        headers = {'Content-Type':'application/json'},
+                        payload = action
+                        )
 
 
 
