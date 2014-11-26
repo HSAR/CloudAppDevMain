@@ -36,6 +36,9 @@ handlers:
 - url: /tasks/.*
   script: taskqueue_handlers.application
   login: admin
+
+- url: /users.*
+  script: users.application
   
 - url: .*
   script: main.application
