@@ -38,3 +38,14 @@ indexes:
   - name: jingle_id
   - name: length
   - name: title
+
+- kind: Jingle
+  properties:
+  - name: jingle_id
+  - name: author
+  - name: collab_users
+  - name: date_created
+  - name: genre
+  - name: length
+  - name: tags
+  - name: title

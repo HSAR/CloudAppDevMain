@@ -9,7 +9,6 @@ import taskqueue
 class Startup(webapp2.RequestHandler):
     def get(self):
         logging.info('======== Startup Running ========')
-        taskqueue.initialiseJinglrMaps()
         logging.info('======== Startup Complete =======')
 
 application = webapp2.WSGIApplication([

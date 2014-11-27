@@ -2,44 +2,61 @@ import webapp2
 
 import json
 import threading
+import logging
 
 from google.appengine.ext import ndb
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import channel
-
-import memcache
+from google.appengine.api import memcache
+from google.appengine.api import taskqueue
 
 import datastore
+import jingle_update
+
+from models import JinglrMap, Jingle
 
 number_of_queues = 10
 
+class StartAutoHandler(webapp2.RequestHandler):
+    def get(self):
+        taskqueue.add(url='/tasks/work')
+    
+
 class AutoHandler(webapp2.RequestHandler):
     def post(self):
+        logging.info("first")
         client = memcache.Client()
         edited_jingles = JinglrMap.query(JinglrMap.is_being_edited == True).fetch()
         key_list = []
         for jm in edited_jingles:
             key_list.append(jm.jingle_id)
 
-        actions = client.get_multi(key=key_list, for_cas=True)
+        actions = client.get_multi(keys=key_list, for_cas=True)
         actions_removed = {}
         for key in actions:
-            actions_removed[key] = []
+            print "removing an action"
+            actions_removed[key] = json.dumps([])
 
         remaining_keys = client.cas_multi(mapping=actions_removed)
 
         while len(remaining_keys) > 0:
-            newer_actions = client.get_multi(key=remaining_keys, for_cas=True)
+            newer_actions = client.get_multi(keys=remaining_keys, for_cas=True)
             actions_removed = {}
-            for key, val in newer_actions:
+            for key, val in newer_actions.iteritems():
                 actions[key] = val
-                actions_removed[key] = []
+                actions_removed[key] = json.dumps([])
 
             remaining_keys = client.cas_multi(mapping=actions_removed)
+            
+        actions_loaded = {}
+        for key in actions:
+            actions_loaded[key] = json.loads(actions[key])
 
         key_list.sort()
-
+        
+        print "just sorted"
+        
         jingles_per_queue = 5
         while (jingles_per_queue * number_of_queues) < len(key_list):
             jingles_per_queue += 1
@@ -54,18 +71,28 @@ class AutoHandler(webapp2.RequestHandler):
             end += jingles_per_queue
             items_processed += len(current_slice)
             
-            action_slice = {}
-            for key in current_slice:
-                action_slice[key] = actions[key]
-
             
-            queue_name = "TaskQueue" + str(current_queue)
-            payload = json.dumps(action_slice)
-            taskqueue.add(url = '/tasks/processjinglesactions',
-                            queue_name = queue_name,
-                            headers = {'Content-Type':'application/json'},
-                            payload = payload
-                            )
+            action_slice = {}
+            logging.info("Should always happen")
+            for key in current_slice:
+                if key in actions_loaded and actions_loaded[key] != []:
+                    print actions[key]
+                    action_slice[key] = actions_loaded[key]
+
+            if len(action_slice) > 0:
+                print "Running update"
+                queue_name = "TaskQueue" + str(current_queue)
+                payload = json.dumps(action_slice)
+                taskqueue.add(url = '/tasks/processjinglesactions',
+                                queue_name = queue_name,
+                                headers = {'Content-Type':'application/json'},
+                                payload = payload
+                                )
+                            
+            current_queue += 1
+            
+            
+        taskqueue.add(url='/tasks/work')
 
 class UpdateHandler(webapp2.RequestHandler):    
 
@@ -80,39 +107,42 @@ class UpdateHandler(webapp2.RequestHandler):
                 
                 jingle = datastore.getJingleById(jid)
                 jingle_json = jingle.jingle
+                new_action_list = []
 
                 for action in action_list:
                 
                     if action["action"] == "noteAdd":
-
+                        print "Not here yet, fool!"
                 
                     elif action["action"] == "noteRm":
-
+                        jingle_json, new_action = jingle_update.remove_note(jingle_json, action)
+                        new_action_list.append(new_action)
 
                     elif action["action"] == "tempo":
-
+                        print "gone fishing"
 
                     elif action["action"] == "subDivisions":
-
+                        print "overtime calls me"
 
                     elif action["action"] == "instrumentAdd":
-
+                        print "be back soon honey"
 
                     elif action["action"] == "instrumentRm":
-
+                        print "FAAAAAAAAAAK"
 
                     elif action["action"] == "instrumentEdit":
-
+                        print "internet connection lost"
 
                     else:
-                        #Invalid
+                        print "Invalid"
 
                 jingle.jingle = jingle_json
                 jingle.put()
 
                 jm = ndb.Key('JinglrMap', jid + 'Map').get()
                 if jm:
-                    for 
+                    for token in jm.editor_tokens:
+                        channel.send_message(token, json.dumps(new_action_list))
 
             while True:
                 try:
@@ -122,229 +152,30 @@ class UpdateHandler(webapp2.RequestHandler):
                     time.sleep(1)
                 
 
-        for jid, action_list_json in action_dict:
-            action_list = json.loads(action_list_json)
-            
+        threads = []
+        for jid, action_list in action_dict.iteritems():
             work_thread = threading.Thread(target=update_jingle, kwargs={"jid":jid, "action_list":action_list})
-            work_thread.start()              
+            threads.append(work_thread)
+            work_thread.start()
+
+        for thread in threads:
+            thread.join()
+        
+        self.response.set_status(200)
 
 
-          
-
-class RemoveNoteHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        @ndb.transactional(xg=True)
-        def removeNote():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_track = action['track']
-                action_noteid = action['noteId']
-                
-                track = jingle_json['tracks'][action_track]
-                if len(track) != 0:
-                    noteRemoved = False
-                    for note in track['notes']:
-                        if note['id'] == action_noteid:
-                            track['notes'].remove(note)
-                            noteRemoved = True
-                            break
-                    if noteRemoved:
-                        jingle_json['tracks'][action_track] = track
-                        jingle.jingle = jingle_json
-                        jingle.put()
-                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            removeNote()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
 
 
-class TempoHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        
-        
-        @ndb.transactional(xg=True)
-        def changeTempo():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_tempo = action['tempo']
-                jingle_json['head']['tempo'] = action_tempo                    
-                jingle.jingle = jingle_json
-                jingle.put()
-                                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            changeTempo()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
-
-class SubDivHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        
-        
-        @ndb.transactional(xg=True)
-        def changeSubDiv():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_subdiv = action['subDivisions']
-                jingle_json['head']['subDivisions'] = action_subdiv                    
-                jingle.jingle = jingle_json
-                jingle.put()
-                                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            changeSubDiv()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
-
-
-class AddInstrumentHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        
-        
-        @ndb.transactional(xg=True)
-        def addInstrument():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_tracknum = action['intrument']['track']
-                action_instrument = action['instrument']['inst']
-                jingle_tracks = jingle_json['tracks']
-
-                if len(jingle_tracks[action_tracknum]) == 0:
-                    
-                    jingle.jingle = jingle_json
-                    jingle.put()
-                else:
-                    
-                                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            addInstrument()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
-
-
-class RemoveInstrumentHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        
-        
-        @ndb.transactional(xg=True)
-        def removeInstrument():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_tracknum = action['instrumentTrack']
-                jingle_json['tracks'][action_tracknum] = {}                    
-                jingle.jingle = jingle_json
-                jingle.put()
-                                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            removeInstrument()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
-
-
-class EditInstrumentHandler(webapp2.RequestHandler):
-    def post(self):
-        actionjson = self.request.body
-        action = json.loads(actionjson)
-        jid = action['jid']
-        taskqueue = action['taskqueueName']
-        
-        
-        
-        @ndb.transactional(xg=True)
-        def editInstrument():
-            jingle = datastore.getJingleById(jid)
-            if jingle:
-                jingle_json = jingle.jingle
-                action_tracknum = action['instrumentTrack']
-                action_instrument = action['instrumentNumber']
-                jingle_tracks = jingle_json['tracks']
-
-                if len(jingle_tracks[action_tracknum]) != 0:
-                    jingle_tracks[action_tracknum]['instrument'] = action_instrument
-                    jingle_json['tracks'] = jingle_tracks
-                    jingle.jingle = jingle_json
-                    jingle.put()
-                else:
-                    #discard
-                                
-                jm = datastore.taskqueueWithName(taskqueue)
-                if jm:
-                    for token in jm.editor_tokens:
-                        channel.send_message(token, actionjson)
-        
-        try:
-            editInstrument()
-            self.response.set_status(200)
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            self.response.set_status(500)
 
                         
 application = webapp2.WSGIApplication([
-                    webapp2.Route(r'/tasks/startautoqueue', handler=AutoHandler, name='auto-start'),
+                    webapp2.Route(r'/tasks/work', handler=AutoHandler, name='auto-handler'),
+                    webapp2.Route(r'/tasks/startautoqueue', handler=StartAutoHandler, name='auto-start'),
                     webapp2.Route(r'/tasks/processjinglesactions', handler=UpdateHandler, name='update'),
-                    webapp2.Route(r'/tasks/removenote', handler=RemoveNoteHandler, name='note-remove'),
-                    webapp2.Route(r'/tasks/tempo', handler=TempoHandler, name='tempo'),
-                    webapp2.Route(r'/tasks/subdiv', handler=SubDivHandler, name='subdiv'),
-                    webapp2.Route(r'/tasks/addinstrument', handler=AddInstrumentHandler, name='instrument-add'),
-                    webapp2.Route(r'/tasks/removeinstrument', handler=RemoveInstrumentHandler, name='instrument-remove'),
-                    webapp2.Route(r'/tasks/editinstrument', handler=EditInstrumentHandler, name='instrument-edit'),
+                    #webapp2.Route(r'/tasks/removenote', handler=RemoveNoteHandler, name='note-remove'),
+                    #webapp2.Route(r'/tasks/tempo', handler=TempoHandler, name='tempo'),
+                    #webapp2.Route(r'/tasks/subdiv', handler=SubDivHandler, name='subdiv'),
+                    #webapp2.Route(r'/tasks/addinstrument', handler=AddInstrumentHandler, name='instrument-add'),
+                    #webapp2.Route(r'/tasks/removeinstrument', handler=RemoveInstrumentHandler, name='instrument-remove'),
+                    #webapp2.Route(r'/tasks/editinstrument', handler=EditInstrumentHandler, name='instrument-edit'),
                       ], debug=True)

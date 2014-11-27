@@ -81,13 +81,7 @@ def getUserByUsername(username):
 def getUsersSongs(uid):
     
     jingle_query = Jingle.query(Jingle.author == uid)
-    jingle_list = jingle_query.fetch(projection=[Jingle.jingle_id,
-                                                 Jingle.title,
-                                                 Jingle.date_created,
-                                                 Jingle.genre,
-                                                 Jingle.length,
-                                                 Jingle.tags,
-                                                 Jingle.collab_users])
+    jingle_list = jingle_query.fetch()
     for jingle in jingle_list:
         if dumb_value in jingle.tags:
             jingle.tags.remove(dumb_value)
@@ -105,14 +99,7 @@ def getUsersSongs(uid):
 def getUserCollabs(uid):
     
     jingle_query = Jingle.query(Jingle.collab_users == uid)
-    jingle_list = jingle_query.fetch(projection=[Jingle.jingle_id,
-                                                 Jingle.title,
-                                                 Jingle.author,
-                                                 Jingle.date_created,
-                                                 Jingle.genre,
-                                                 Jingle.length,
-                                                 Jingle.tags,
-                                                 Jingle.collab_users])
+    jingle_list = jingle_query.fetch()
     for jing in jingle_list:
         jing.username = getUsernameByUID(jing.author)
         
@@ -155,26 +142,15 @@ def getCollabInvites(uid):
 
 
 #returns jingle entity it it exists, or None
-def getJingleById(jingle_id, json=True):
+def getJingleById(jingle_id):
     
     jingle = None
-    if json:
-        jingle_key = ndb.Key('Jingle', jingle_id)
-        jingle = jingle_key.get()
-    else:
-        jingle_query = Jingle.query(Jingle.jingle_id == jingle_id)
-        jingle_list = jingle_query.fetch(projection=[Jingle.jingle_id,
-                                                     Jingle.title,
-                                                     Jingle.author,
-                                                     Jingle.date_created,
-                                                     Jingle.genre,
-                                                     Jingle.length,
-                                                     Jingle.tags,
-                                                     Jingle.collab_users])
-        if jingle_list:
-            jingle = jingle_list[0]
+    
+    jingle_key = ndb.Key('Jingle', jingle_id)
+    jingle = jingle_key.get()
             
     if jingle:
+        jingle.jingle_id = jingle_id
         jingle.username = getUsernameByUID(jingle.author)
         
         if dumb_value in jingle.tags:
@@ -372,7 +348,6 @@ def createJingle(uid, title, genre=None, tags=None):
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeTitle(jid, title):
 
-           if not tokens:  #if the tokens list is now empty
     while True:
         try:
             jingle_key = ndb.Key('Jingle', jid)
@@ -405,8 +380,7 @@ def changeTags(jid, tags):
 
     while True:
         try:
-                   if not tokens:  #if the tokens list is now empty
-    jingle_key = ndb.Key('Jingle', jid)
+            jingle_key = ndb.Key('Jingle', jid)
             jingle = jingle_key.get()
             if not jingle:
                 return None
@@ -496,7 +470,7 @@ def submitAction(jid, action):
         actionList = client.gets(jid)
         if actionList == None:
             val = json.dumps([action])
-            if client.cas(jid, val):
+            if client.add(jid, val):
                 break
         else:
             actionList = json.loads(actionList)

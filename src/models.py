@@ -22,4 +22,4 @@ class Jingle(ndb.Model):
 class JinglrMap(ndb.Model):
     jingle_id = ndb.StringProperty(required=True)
     editor_tokens = ndb.StringProperty(repeated=True)
-    is_being_edited = ndb.ComputedProperty(lambda self: len(self.editor_tokens) == 0)
+    is_being_edited = ndb.ComputedProperty(lambda self: len(self.editor_tokens) != 0)
