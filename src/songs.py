@@ -351,9 +351,9 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/songs/get/<songid>', handler=SongGetHandler,
+                                          webapp2.Route(r'/songs/<songid>', handler=SongGetHandler,
                                                         name='song-get-by-id'),
-                                          webapp2.Route(r'/songs/get/midi/<songid>', handler=SongGetMidiHandler,
+                                          webapp2.Route(r'/songs/<songid>/midi', handler=SongGetMidiHandler,
                                                         name='song-get-midi-by-id'),
                                           webapp2.Route(r'/songs/<songid>/notes', handler=NoteChangeHandler,
                                                         name='notechanges'),
