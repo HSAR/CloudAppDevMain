@@ -23,7 +23,6 @@
 	float : left;
 	white-space: nowrap;
 	width: 100%;
-	display: block;
 	overflow-y : scroll;
 }
 
@@ -31,9 +30,14 @@
 	border: 1px solid black;
 }
 
-.note-crotchet {
-	background-image: url('../img/quarter_note.png');
+.nav li {
+	width : 16%;
 }
+
+.note-crotchet {
+	background-image: url('../../img/quarter_note.png');
+}
+
 
 .note { 
 	height : 75px;
@@ -41,11 +45,11 @@
 }
 
 .note-quaver {
-	background-image: url('../img/eighth_note.png');
+	background-image: url('../../img/eighth_note.png');
 }
 
 .note-bin {
-	background-image : url('../img/bin.png');
+	background-image : url('../../img/bin.png');
 	height: 128px;
 	width : 128px;
 }
@@ -54,7 +58,7 @@
 	width : 100%;
 	height : 6.2%;
 	position : relative;
-
+	border : 1px solid black;
 }
 
 .bar {
@@ -63,7 +67,7 @@
 	display : inline-block;
 	position : relative;
 	vertical-align:  top;
-
+	border : 1px solid black;
 }
 
 .key {
@@ -74,6 +78,7 @@
 	overflow: visible;
 	z-index: 20;
 	vertical-align: top;
+	border : 1px solid black;
 }
 
 .key-pitch {
@@ -82,7 +87,7 @@
 	position : relative;
 	background-color: red;
 	overflow: hidden;
-	
+	border : 1px solid black;
 }
 
 .preview {
@@ -127,4 +132,20 @@
 .top-bar h2 {
 	display : inline;
 	vertical-align: middle;
+}
+
+.top-row {
+	height : 10%;
+}
+
+.main-row {
+	height : 90%;
+} 
+
+.max-height {
+	height : 100%;
+}
+
+.tab-content { 
+	overflow: hidden;
 }

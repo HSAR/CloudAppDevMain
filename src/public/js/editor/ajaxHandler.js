@@ -37,10 +37,10 @@ function AjaxHandler() {
 		var url;
 		switch(data.topic) {
 			case 'add':
-				url = 'http://jinglr-music.appspot.com/tune/delete';
+				url = 'http://jinglr-music.appspot.com/tune/add';
 				break;
 			case 'delete':
-				url = 'http://jinglr-music.appspot.com/tune/add';
+				url = 'http://jinglr-music.appspot.com/tune/delete';
 				break;
 			case 'edit':
 				url = 'http://example-edit.com';
@@ -80,5 +80,38 @@ function AjaxHandler() {
 			}
 		});
 	};
+
+	this.changeInstrument = function(data) {
+		$.ajax({
+			type : 'POST',
+			url : 'http://example-change.com',
+			data  : data,
+			success : function() {
+				//TODO
+			}
+		});
+	}
+
+	this.addInstrument = function(data) {
+		$.ajax({
+			type : 'POST',
+			url : 'http://example-cadd-instrument.com',
+			data  : data,
+			success : function() {
+				//TODO
+			}
+		});
+	}
+
+	this.deleteInstrument = function(data) {
+		$.ajax({
+			type : 'POST',
+			url : 'http://example-delete-instrument.com',
+			data  : data,
+			success : function() {
+				//TODO
+			}
+		})
+	}
 
 }

@@ -23,11 +23,15 @@
 
 	var pageData = {
 		scrollLeft : 0,
-		quarantinedChanges : []
+		quarantinedChanges : [],
+		instrumentFunction : null,
+		tabCount : 0,
+		maxTabs : 6
 	};
 
 	function loadPalette() {
 		//we need to load the pallete items and then make em draggable etc.
+		buildDialogs();
 		$('.editor .note').draggable({
 			helper : 'clone',
 			appendTo : 'body',
@@ -53,11 +57,19 @@
 		$('.canvas').children().remove(); //get rid of loading message
 
 		loadTabs();
-		loadBars();
+		$('.canvas .tab-pane').each(function() {loadBars($(this))});//load bars for each tab
 		loadNotes();
 		updateKey();
-		
-		$('.pitch').droppable({
+
+		setUpDroppable();
+
+		loadPalette();
+		setPlayButton();
+	}
+
+	function setUpDroppable() {
+
+		$('.pitch').droppable({//remove any previous droppable handlers
 			tolerance : 'pointer',
 			over : function(event,ui) {
 				pageData.$currentPreviewDiv = $(this);
@@ -138,8 +150,22 @@
 
 			}
 		});
+	}
 
-		loadPalette();
+	function setPlayButton() {
+		$('.play-button').click(function(event,ui) {
+			ajaxHelper.compileTune(function(data) {
+				playMidi(data);
+			});
+		});
+	}
+
+	function playMidi(data) {
+		if(MIDI) {
+			MIDI.player.loadFile(data,function() {
+				MIDI.player.start();
+			});
+		}
 	}
 
 	/*
@@ -187,43 +213,53 @@
 
 	function loadTabs() {
 		//lets handle the lack of tracks here if necessary
+		var currentTabCount = pageData.tabCount;//save the current tab count
 		var htmlToAppend = '';
-		htmlToAppend += '<ul class="nav nav-tabs" role="tablist">';
+		htmlToAppend += '<ul class="nav nav-tabs">';
 		if(tuneJSON.tracks.length > 0) {
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(i === 0) {
-					htmlToAppend +='<li role="presentation" class="active"><a href="#track' + i +
-					 '" role="tab" data-toggle="tab">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + '</a></li>';
+					htmlToAppend +='<li class="active"><a href="#track' + pageData.tabCount +
+					 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+					 '</span></a></li>';
 				} else {
-					htmlToAppend += '<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab">' +
-					midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + '</a></li>';
+					htmlToAppend += '<li role="presentation"><a href="#track' + pageData.tabCount + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
+					midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+					'</span><button class="remove-tab-button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
 				}
+				pageData.tabCount++;
 				
 			}
 		} else {//add default tab
-			$('.canvas').append('<li role="presentation" class="active"><a href="#default" role="tab" data-toggle="tab"></a></li>');
+			$('.canvas').append('<li class="active"><a href="#default"  data-toggle="tab"></a></li>');
 		}
 		htmlToAppend += '</ul><div class="tab-content">';
 		//now add the tab panels
 		if(tuneJSON.tracks.length > 0) {
+			pageData.tabCount = currentTabCount;
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(i === 0) {
-					htmlToAppend += '<div role="tabpanel" class="tab-pane active" id="track' + i +'"></div>';
+					htmlToAppend += '<div  class="tab-pane active" id="track' + pageData.tabCount +'"></div>';
 				} else {
-					htmlToAppend+= '<div role="tabpanel" class="tab-pane" id="track' + i +'"></div>';
+					htmlToAppend+= '<div  class="tab-pane" id="track' + pageData.tabCount +'"></div>';
 				}
+				pageData.tabCount++;
 				
 			}
 		} else {
-			$('.canvas').append('<div role="tabpanel" class="tab-pane" id="default"></div>');
+			$('.canvas').append('<div class="tab-pane" id="default"></div>');
 		}
 		htmlToAppend += '</div>';
 		$('.canvas').append(htmlToAppend);
+
+		$('.remove-note-button').click(function() {
+			deleteInstrument($(this).parent().parent().index());
+		});
 	}
 
-	function loadBars() {
-		$('.canvas .tab-pane').append(midiHelper.writeKey());
-		$('.canvas .tab-pane').append(barHTML.repeat(tuneJSON.head.bars));
+	function loadBars($target) {
+		$target.append(midiHelper.writeKey());
+		$target.append(barHTML.repeat(tuneJSON.head.bars));
 	}
 
 	function loadNotes() {
@@ -407,7 +443,57 @@
 		
 	}
 
-	function deleteNote(id) {
+	function buildDialogs() {
+
+
+		$('.instrument-dialog').dialog({
+			modal : true,
+			title : 'Add Instrument',
+			autoOpen : false,
+			buttons : [{text : 'OK', click : function() {
+				//need to work out the instrument to add/change
+				var familyIndex  = parseInt($('select#instrument-class').val());
+				var instrumentIndex = parseInt($('select#instrument-choice').val());
+				//TODO check cast is safe
+				console.log(familyIndex);
+				console.log(instrumentIndex);
+				pageData.instrumentFunction(familyIndex * 8 + instrumentIndex);
+				$('.instrument-dialog').dialog("close");
+			}},
+			{text : 'Cancel', click : function() {
+				$('.instrument-dialog').dialog("close");
+			}}]
+		});
+
+		$('select#instrument-class').change(function() {
+			var index = $(this).val();
+			$('select#instrument-choice').empty();//remove any current entries
+			for(var i = 0; i < 8; i++) {//loop through family of instruments
+				var instrumentNo = index * 8 + i;
+				$('select#instrument-choice').append("<option value='" + i + "'>" + midiHelper.getInstrumentName(instrumentNo) + "</option>");
+			}
+		});
+		$('select#instrument-class').change();//call it once to set fill it in initially
+
+		$('button.add-instrument').click(function() {
+			if(tuneJSON.tracks.length >= pageData.maxTabs) {
+				return;//we have reached maximum number of tabs
+			}
+			$('.ui-dialog-titlebar').html("Add Instrument");
+			pageData.instrumentFunction = addInstrument;
+			$('.instrument-dialog').removeClass('no-display');
+			$('.instrument-dialog').dialog('open');
+		});
+
+		$('button.change-instrument').click(function() {
+			$('.ui-dialog-titlebar').html("Change Instrument");
+			pageData.instrumentFunction = changeInstrument;
+			$('.instrument-dialog').removeClass('no-display');
+			$('.instrument-dialog').dialog('open');
+		});
+	}
+
+	function deleteNote(id) {//deletes a note from the tune json and returns the deleted note
 		id += ''; //make sure id is a string for comparisons
 		var note;
 	
@@ -420,6 +506,57 @@
 			}
 		}
 		return note;
+	}
+
+	function addInstrument(id) {
+		var tabsLength = pageData.tabCount;
+
+		var htmlToAppend ='<li><a href="#track' + tabsLength +
+					 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(id) + 
+					 '</span><button class="remove-tab-button newtag"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
+		$('.nav-tabs').append(htmlToAppend);
+		htmlToAppend = '<div class="tab-pane" id="track' + tabsLength +'"></div>';
+		$('.tab-content').append(htmlToAppend);
+		loadBars($('.tab-content').children().last());
+		pageData.tabCount++;
+
+		$('.nav-tabs a:last').tab('show');
+
+		setUpDroppable();
+
+		tuneJSON.tracks.push({instrument : id, notes : []});
+		ajaxHelper.addInstrument({instrument : id});//TODO might need to send where also
+		//TODO quarantine the change
+		$('.newtag').click(function() {
+			deleteInstrument($(this).parent().parent().index());
+		});
+		$('.newtag').removeClass('newtag');//class is just used for flagging the new button created
+
+		if(tuneJSON.tracks.length >= pageData.maxTabs) {
+			$('button.add-instrument').attr("disabled","disabled");
+		}
+	}
+
+	function changeInstrument(id) {
+		$('span.instrument-name').html(midiHelper.getInstrumentName(id));
+		var track = $('.tab-pane.active').index();
+		tuneJSON.tracks[track].instrument = id;
+		ajaxHelper.changeInstrument({track : track,instrument : id});
+
+		//TODO quarantine the change
+	}
+
+	function deleteInstrument(tabIndex) {
+		if($('.tab-pane.active').index() === tabIndex) {
+			$('.nav-tabs li a').eq(tabIndex - 1).tab("show");//show the tab to the left
+		} 
+		$('.nav-tabs').children().eq(tabIndex).remove();
+		$('.tab-content').children().eq(tabIndex).remove();
+
+		 var oldTrack = tuneJSON.tracks.splice(tabIndex,1);
+		 $('button.add-instrument').removeAttr("disabled");//removes the disable on the button if it exists
+		 ajaxHelper.deleteInstrument({track : tabIndex, instrument : oldTrack.instrument});
+		 
 	}
 
 	function loadNotesFromJSON(data) {
