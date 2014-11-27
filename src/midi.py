@@ -132,53 +132,56 @@ def getMIDI(midiJSON):
             
         if currentChannel > 15:
             raise MIDIError("Too many tracks. Maximum number of tracks is 15")
-        if not 'instrument' in channel:
-            raise MIDIError("Invalid Jingle JSON format. Missing 'instrument' from track")
-        if not 'notes' in channel:
-            raise MIDIError("Invalid Jingle JSON format. Missing 'notes' from track")
-        
-        instrument = channel['instrument']
-        notes = channel['notes']
-        
-        if instrument < 0 or instrument > 127:
-            raise MIDIError("Invalid instrument number. Must be in range of 0 to 127")
-        
-        #here we actually set an instrument to the current channel
-        setInstrumentEvent = bytearray([0, 192+currentChannel, instrument])
-        trackEvents.extend(setInstrumentEvent)
-        
-        for noteData in notes:
-            if not 'position' in noteData:
-                raise MIDIError("Invalid Jingle JSON format. Missing 'position' from notes")
-        
-        for noteData in sorted(notes, key=lambda k: k['position']):
-            if not 'length' in noteData:
-                raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
-            if not 'pitch' in noteData:
-                raise MIDIError("Invalid Jingle JSON format. Missing 'pitch' from notes")
-            if noteData['pitch'] < 0 or noteData['pitch'] > 127:
-                raise MIDIError("Invalid pitch number. Must be in range of 0 to 127")
-            if noteData['position'] < 0:
-                raise MIDIError("Invalid position. Must not be negative")
-            if noteData['length'] < 0:
-                raise MIDIError("Invalid length. Must not be negative")
+            
+        if len(channel) > 0: #need to ignore the empty tracks
+            
+            if not 'instrument' in channel:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'instrument' from track")
+            if not 'notes' in channel:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'notes' from track")
+            
+            instrument = channel['instrument']
+            notes = channel['notes']
+            
+            if instrument < 0 or instrument > 127:
+                raise MIDIError("Invalid instrument number. Must be in range of 0 to 127")
+            
+            #here we actually set an instrument to the current channel
+            setInstrumentEvent = bytearray([0, 192+currentChannel, instrument])
+            trackEvents.extend(setInstrumentEvent)
+            
+            for noteData in notes:
+                if not 'position' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'position' from notes")
+            
+            for noteData in sorted(notes, key=lambda k: k['position']):
+                if not 'length' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
+                if not 'pitch' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'pitch' from notes")
+                if noteData['pitch'] < 0 or noteData['pitch'] > 127:
+                    raise MIDIError("Invalid pitch number. Must be in range of 0 to 127")
+                if noteData['position'] < 0:
+                    raise MIDIError("Invalid position. Must not be negative")
+                if noteData['length'] < 0:
+                    raise MIDIError("Invalid length. Must not be negative")
+                    
+                noteOnEvent = {
+                    "position": noteData['position'],
+                    "chan":     currentChannel,
+                    "pitch":    noteData['pitch'],
+                    "noteOn":   True
+                }
                 
-            noteOnEvent = {
-                "position": noteData['position'],
-                "chan":     currentChannel,
-                "pitch":    noteData['pitch'],
-                "noteOn":   True
-            }
-            
-            noteOffEvent = {
-                "position": noteData['position'] + noteData['length'],
-                "chan":     currentChannel,
-                "pitch":    noteData['pitch'],
-                "noteOn":   False
-            }
-            
-            allNoteEvents.append(noteOnEvent)
-            allNoteEvents.append(noteOffEvent)
+                noteOffEvent = {
+                    "position": noteData['position'] + noteData['length'],
+                    "chan":     currentChannel,
+                    "pitch":    noteData['pitch'],
+                    "noteOn":   False
+                }
+                
+                allNoteEvents.append(noteOnEvent)
+                allNoteEvents.append(noteOffEvent)
             
         currentChannel += 1
     
@@ -190,7 +193,7 @@ def getMIDI(midiJSON):
     for noteEvent in noteEventsSorted:
         position = noteEvent['position']
         #need to get the relative position i.e. delta. This is how much the position
-        #has changed since the lase note event
+        #has changed since the last note event
         relativePosition = position - currentPosition
         currentPosition = position
         delta = getVLQ(relativePosition)
