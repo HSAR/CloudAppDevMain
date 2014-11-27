@@ -148,33 +148,33 @@ def getMIDI(midiJSON):
         trackEvents.extend(setInstrumentEvent)
         
         for noteData in notes:
-            if not 'pos' in noteData:
-                raise MIDIError("Invalid Jingle JSON format. Missing 'pos' from notes")
+            if not 'position' in noteData:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'position' from notes")
         
-        for noteData in sorted(notes, key=lambda k: k['pos']):
+        for noteData in sorted(notes, key=lambda k: k['position']):
             if not 'length' in noteData:
                 raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
-            if not 'note' in noteData:
-                raise MIDIError("Invalid Jingle JSON format. Missing 'note' from notes")
-            if noteData['note'] < 0 or noteData['note'] > 127:
-                raise MIDIError("Invalid note number. Must be in range of 0 to 127")
-            if noteData['pos'] < 0:
-                raise MIDIError("Invalid pos. Must not be negative")
+            if not 'pitch' in noteData:
+                raise MIDIError("Invalid Jingle JSON format. Missing 'pitch' from notes")
+            if noteData['pitch'] < 0 or noteData['pitch'] > 127:
+                raise MIDIError("Invalid pitch number. Must be in range of 0 to 127")
+            if noteData['position'] < 0:
+                raise MIDIError("Invalid position. Must not be negative")
             if noteData['length'] < 0:
                 raise MIDIError("Invalid length. Must not be negative")
                 
             noteOnEvent = {
-                "pos":    noteData['pos'],
-                "chan":   currentChannel,
-                "note":   noteData['note'],
-                "noteOn": True
+                "position": noteData['position'],
+                "chan":     currentChannel,
+                "pitch":    noteData['pitch'],
+                "noteOn":   True
             }
             
             noteOffEvent = {
-                "pos":    noteData['pos'] + noteData['length'],
-                "chan":   currentChannel,
-                "note":   noteData['note'],
-                "noteOn": False
+                "position": noteData['position'] + noteData['length'],
+                "chan":     currentChannel,
+                "pitch":    noteData['pitch'],
+                "noteOn":   False
             }
             
             allNoteEvents.append(noteOnEvent)
@@ -185,10 +185,10 @@ def getMIDI(midiJSON):
     
     #Now it's time for the notes
     #first make sure the notes are sorted on position
-    noteEventsSorted = sorted(allNoteEvents, key=lambda k: k['pos'])
+    noteEventsSorted = sorted(allNoteEvents, key=lambda k: k['position'])
     currentPosition = 0
     for noteEvent in noteEventsSorted:
-        position = noteEvent['pos']
+        position = noteEvent['position']
         #need to get the relative position i.e. delta. This is how much the position
         #has changed since the lase note event
         relativePosition = position - currentPosition
@@ -203,7 +203,7 @@ def getMIDI(midiJSON):
             offset = 0x90
         else:
             offset = 0x80
-        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], 127]) #use a hard coded volume. 127 is max
+        note = bytearray([offset + noteEvent['chan'], noteEvent['pitch'], 127]) #use a hard coded volume. 127 is max
         delta.extend(note)
         trackEvents.extend(delta)
         
