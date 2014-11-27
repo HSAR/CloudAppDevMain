@@ -10,6 +10,7 @@ import json
 
 import datastore
 import error
+import midi
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -222,15 +223,25 @@ class SongGetHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             self.abort(400)
-        # This stuff will be handled by the database; this is just temporary to
-        # test the web stuff
-        if songid == "0":
-            self.response.out.write(json.dumps(song0))
-        elif songid == "1":
-            self.response.out.write(json.dumps(song1))
+        jingle = datastore.getJingleById(songid, json=False)
+        if jingle:
+            self.response.out.write(json.dumps(jingle))
         else:
             self.abort(404)
 
+class SongGetMidiHandler(webapp2.RequestHandler):
+    def get(self, songid):
+        if not songid:
+            self.abort(400)
+        jingle = datastore.getJingleById(songid, json=False)
+        if jingle:
+            try:
+                self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
+            except midi.MIDIError:
+                self.response.out.write(midi.MIDIError.message)
+                self.abort(500)
+        else:
+            self.abort(404)
 
 class NoteChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
@@ -327,6 +338,8 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/get/<songid>', handler=SongGetHandler,
                                                         name='song-get-by-id'),
+                                          webapp2.Route(r'/songs/get/midi/<songid>', handler=SongGetMidiHandler,
+                                                        name='song-get-midi-by-id'),
                                           webapp2.Route(r'/songs/<songid>/notes', handler=NoteChangeHandler,
                                                         name='notechanges'),
                                           webapp2.Route(r'/songs/<songid>/instruments', handler=InstrumentChangeHandler,
