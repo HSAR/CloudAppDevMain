@@ -77,18 +77,18 @@ def getMIDI(midiJSON):
     
     midiHead = midi['head']
     
-    if not 'subDivisions' in midiHead:
-        raise MIDIError("Invalid Jingle JSON format. Missing 'subDivisions' from head")
+    if not 'subdivisions' in midiHead:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'subdivisions' from head")
     
-    if midiHead['subDivisions'] < 1:
-        raise MIDIError("subDivisions is too small. Minimum value is 1")
+    if midiHead['subdivisions'] < 1:
+        raise MIDIError("subdivisions is too small. Minimum value is 1")
     
     TIME_DIV = None;
     try:
         #time division is stored as 2 bytes
-        TIME_DIV = numberToByteArray(midiHead['subDivisions'], 2)
+        TIME_DIV = numberToByteArray(midiHead['subdivisions'], 2)
     except MIDIError as exep:
-        raise MIDIError("subDivisions is too large. Maximum value is 65535")
+        raise MIDIError("subdivisions is too large. Maximum value is 65535")
 
     #Build up the complete header chunk
     HEADER_CHUNK = HEAD_CHUNK_ID
@@ -196,7 +196,7 @@ def getMIDI(midiJSON):
         delta = getVLQ(relativePosition)
         
         if len(delta) > 4:
-            raise MIDIError("A delta value was too big. The maximum difference in position values is 268,435,455 subDivisions")
+            raise MIDIError("A delta value was too big. The maximum difference in position values is 268,435,455 subdivisions")
         
         offset = 0
         if noteEvent['noteOn']:
