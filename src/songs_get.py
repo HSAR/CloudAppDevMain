@@ -97,7 +97,7 @@ song1 = {
     # this song is an A minor harmonic scale, with notes starting at two semibreves and decreasing in length. This time there are two instruments, playing it in contrary motion (ie starting on the same note, one going up, one going down).
     "head":
         {
-            "subDivisions": 16,
+            "subdivisions": 16,
             "tempo": 120,
             "title": "Gangnam Style",
             "length": 16,
@@ -223,9 +223,15 @@ class SongGetHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             self.abort(400)
-        jingle = datastore.getJingleById(songid, json=False)
-        if jingle:
-            self.response.out.write(json.dumps(jingle))
+        # datastore currently broken
+        #jingle = datastore.getJingleById(songid, json=False)
+        #if jingle:
+            #self.response.out.write(json.dumps(jingle))
+        # so instead, hardcode songs for testing
+        if songid == "0":
+            self.response.out.write(json.dumps(song0))
+        elif songid == "1":
+            self.response.out.write(json.dumps(song1))
         else:
             self.abort(404)
 
@@ -233,11 +239,19 @@ class SongGetMidiHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             self.abort(400)
-        jingle = datastore.getJingleById(songid, json=False)
+        # datastore not working
+        #jingle = datastore.getJingleById(songid, json=False)
+        # hardcode songs for testing
+        jingle = None
+        if songid == "0":
+            jingle = song0
+        elif songid == "1":
+            jingle = song1
         if jingle:
             try:
                 self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
-            except midi.MIDIError:
+            except midi.MIDIError as exc:
+                raise exc
                 self.response.out.write(midi.MIDIError.message)
                 self.abort(500)
         else:
