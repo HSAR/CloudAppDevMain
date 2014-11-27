@@ -224,9 +224,9 @@ class SongGetHandler(webapp2.RequestHandler):
         if not songid:
             self.abort(400)
         # datastore currently broken
-        #jingle = datastore.getJingleById(songid, json=False)
+        #jingle = datastore.getJingleById(songid)
         #if jingle:
-            #self.response.out.write(json.dumps(jingle))
+        #    self.response.out.write(json.dumps(jingle.jingle))
         # so instead, hardcode songs for testing
         if songid == "0":
             self.response.out.write(json.dumps(song0))
@@ -240,7 +240,7 @@ class SongGetMidiHandler(webapp2.RequestHandler):
         if not songid:
             self.abort(400)
         # datastore not working
-        #jingle = datastore.getJingleById(songid, json=False)
+        #jingle = datastore.getJingleById(songid)
         # hardcode songs for testing
         jingle = None
         if songid == "0":
@@ -249,6 +249,7 @@ class SongGetMidiHandler(webapp2.RequestHandler):
             jingle = song1
         if jingle:
             try:
+                #self.response.out.write(midi.getMIDIBase64(json.dumps(jingle.jingle)))
                 self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
             except midi.MIDIError as exc:
                 raise exc
