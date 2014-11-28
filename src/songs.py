@@ -9,6 +9,7 @@ import jinja2
 import json
 
 import datastore
+import permission
 import error
 import midi
 
@@ -262,6 +263,8 @@ class NoteChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
         else:
             actionId = self.request.get("actionId")
             track = self.request.get("track")
@@ -285,6 +288,8 @@ class NoteChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
                 parsed_request_json = json.loads(self.request.body)
@@ -310,6 +315,8 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
         else:
             actionId = self.request.get("actionId")
             instrumentTrack = self.request.get("instrumentTrack")
@@ -331,6 +338,8 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
                 parsed_request_json = json.loads(self.request.body)
