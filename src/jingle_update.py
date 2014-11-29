@@ -27,16 +27,11 @@ def remove_note(jingle, action):
 
 
 
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
 
 
 def generate_checksum(jingle):

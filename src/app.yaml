@@ -5,6 +5,7 @@ api_version: 1
 threadsafe: yes
 inbound_services:
 - warmup
+- channel_presence
 handlers:
 - url: /favicon\.ico
   static_files: favicon.ico

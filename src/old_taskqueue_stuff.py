@@ -203,3 +203,45 @@ class EditInstrumentHandler(webapp2.RequestHandler):
             self.response.set_status(200)
         except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
             self.response.set_status(500)
+            
+            
+            
+            
+            
+            
+def removeNote(jid, action):
+    
+    queue = getTaskqueueNameForJingle(jid)
+    if queue:
+        action['jid'] = jid
+        action['taskqueueName'] = queue
+        action = json.dumps(action)
+        taskqueue.add(url = '/tasks/removenote',
+                        queue_name = queue,
+                        headers = {'Content-Type':'application/json'},
+                        payload = action
+                        )
+
+
+def addInstrument(jid, action):
+    
+    queue = getTaskqueueNameForJingle(jid)
+    if queue:
+        action['jid'] = jid
+        action['taskqueueName'] = queue
+        action = json.dumps(action)
+        taskqueue.add(url = '/tasks/addinstrument',
+                        queue_name = queue,
+                        headers = {'Content-Type':'application/json'},
+                        payload = action
+                        )
+
+
+
+
+
+
+
+
+
+

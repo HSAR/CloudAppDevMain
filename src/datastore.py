@@ -1,7 +1,5 @@
 from google.appengine.ext import ndb
 from google.appengine.ext import db
-from google.appengine.api import users
-from google.appengine.api import taskqueue
 from google.appengine.api import memcache
 from google.appengine.api import channel
 from google.appengine.runtime import apiproxy_errors
@@ -9,39 +7,52 @@ from google.appengine.runtime import apiproxy_errors
 import datetime
 import time
 import random
+import string
 import json
 from models import JinglrUser, Jingle, JinglrMap
 
+import taskqueue_handlers
+
 class Orderings:
     Title, Date, Rating, Length = range(4)
-        
+
 #we have two entity groups. Root keys are used to define the groups
 #the first group is the group of users
 root_user_key = ndb.Key('UserRoot', 'userroot')
-#MORE GOD DAMN GAE
-dumb_value = "!62DJkTpFqQ#faV3qDa6Fk=K%MdqFMM=kpdrcRKT" # it's pretty dumb
+edited_jingles_key = 'Edited Jingles'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ INTERNAL FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#generates unique IDs for jingles
 def generate_jingle_id(uid):
     
     timestamp = datetime.datetime.now()
     rand = random.random()
     return uid + str(rand) + str(timestamp)
 
+
+#enables us to return the corresponding username for a UID on an entity so
+#that clients can display the username
 def getUsernameByUID(uid):
     
     username = memcache.get(uid)
-    if username is not None:
+    if username != None:
         return username
     else:
         user = getUserById(uid)
-        if user is not None:
+        if user != None:
             username = user.username
             memcache.add(uid, username, 3600)
             return username
         else:
             return None
+
+
+#generates a securely random client ID for use with channels
+def generate_client_id(size=32, chars=string.ascii_lowercase
+                                    + string.ascii_uppercase
+                                    + string.digits):
+    return ''.join(random.SystemRandom().choice(chars) for _ in range(size))
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ READ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,10 +63,6 @@ def getUserById(uid):
     user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
     user = user_key.get()
     if user:
-        if dumb_value in user.tags:
-            user.tags.remove(dumb_value)
-        if dumb_value in user.collab_invites:
-            user.collab_invites.remove(dumb_value)
         return user
     else:
         return None
@@ -64,50 +71,41 @@ def getUserById(uid):
 #takes a username and returns the JingleUser Entity if one is found, or None
 def getUserByUsername(username):
     
-    user_query = JinglrUser.query(ancestor=root_user_key).filter(JinglrUser.username == username)
+    user_query = JinglrUser.query(ancestor=root_user_key)
+    user_query = user_query.filter(JinglrUser.username == username)
     user_list = user_query.fetch()
     if user_list:
-        user = user_list[0]
-        if dumb_value in user.tags:
-            user.tags.remove(dumb_value)
-        if dumb_value in user.collab_invites:
-            user.collab_invites.remove(dumb_value)
-        return user
+        return user_list[0]
     else:
         return None
 
 
-#takes a user id and returns the list of jingles (possibly empty) that they created
+#takes a user id and returns the list of jingles (possibly empty) that they
+#created. It adds another property called collab_usernames which is a list of
+#the usernames of the collaborators for each jingle.
 def getUsersSongs(uid):
     
     jingle_query = Jingle.query(Jingle.author == uid)
     jingle_list = jingle_query.fetch()
     for jingle in jingle_list:
-        if dumb_value in jingle.tags:
-            jingle.tags.remove(dumb_value)
-        if dumb_value in jingle.collab_users:
-            jingle.collab_users.remove(dumb_value)
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
         jingle.collab_usernames = username_list
-        
+    
     return jingle_list
 
 
-#takes a user id and returns the list of jingles (possibly empty) that the user is collaborating on
+#takes a user id and returns the list of jingles (possibly empty) that the
+#user is collaborating on. 
 def getUserCollabs(uid):
     
     jingle_query = Jingle.query(Jingle.collab_users == uid)
     jingle_list = jingle_query.fetch()
     for jing in jingle_list:
         jing.username = getUsernameByUID(jing.author)
-        
+    
     for jingle in jingle_list:
-        if dumb_value in jingle.tags:
-            jingle.tags.remove(dumb_value)
-        if dumb_value in jingle.collab_users:
-            jingle.collab_users.remove(dumb_value)
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
@@ -116,7 +114,8 @@ def getUserCollabs(uid):
     return jingle_list
 
 
-#takes a user id and returns a list of jingles (possibly empty) that they have been invited to collaborate on
+#takes a user id and returns a list of jingles (possibly empty) that they have
+#been invited to collaborate on. Returns None if uid is not valid
 def getCollabInvites(uid):
     
     user = getUserById(uid)
@@ -124,39 +123,25 @@ def getCollabInvites(uid):
         invite_list = user.collab_invites
         jingle_list = []
         for jid in invite_list:
-            current_jingle = getJingleById(jid, False)
-            current_jingle.username = getUsernameByUID(current_jingle.author)
+            current_jingle = getJingleById(jid)
             jingle_list.append(current_jingle)
-            
-        for jingle in jingle_list:
-            if dumb_value in jingle.tags:
-                jingle.tags.remove(dumb_value)
-            if dumb_value in jingle.collab_users:
-                jingle.collab_users.remove(dumb_value)
-            username_list = []
-            for user_id in jingle.collab_users:
-                username_list.append(getUsernameByUID(user_id))
-            jingle.collab_usernames = username_list
         
         return jingle_list
+    else:
+        return None
 
 
-#returns jingle entity it it exists, or None
+#returns jingle entity it it exists, or None.
+#It also adds a username property which is the username of the author and
+#collab_usernames which is a list of the usernames of the collaborators for
+#each jingle.
 def getJingleById(jingle_id):
-    
-    jingle = None
     
     jingle_key = ndb.Key('Jingle', jingle_id)
     jingle = jingle_key.get()
-            
+    
     if jingle:
-        jingle.jingle_id = jingle_id
         jingle.username = getUsernameByUID(jingle.author)
-        
-        if dumb_value in jingle.tags:
-            jingle.tags.remove(dumb_value)
-        if dumb_value in jingle.collab_users:
-            jingle.collab_users.remove(dumb_value)
         
         username_list = []
         for user_id in jingle.collab_users:
@@ -167,16 +152,44 @@ def getJingleById(jingle_id):
     else:
         return None
 
-#returns a list of JingleUser entities who are collaborators to this Jingle. returns None if jid is not valid
-def getCollaborators(jid):
 
-    jingle = getJingleById(jid, False)
+#returns a list of JingleUser entities who are collaborators to this Jingle.
+#Returns None if jid is not valid.
+def getCollaborators(jid):
+    
+    jingle = getJingleById(jid)
     if jingle:
         collabs_list = []
         for uid in jingle.collab_users:
             collabs_list.append(getUserById(uid))
         return collabs_list
-    return None
+    else:
+        return None
+
+
+#queries the JinglrMaps for the currently edited jingles and returns a dict
+#where the keys are the jingle Ids and the values is a list of client ids
+def getEditedJingles():
+    
+    edited_jingles = JinglrMap.query(JinglrMap.is_being_edited==True).fetch()
+    edited_jingles_dict = {}
+    
+    for jm in edited_jingles:
+        edited_jingles_dict[jm.jingle_id] = jm.client_ids
+        
+    return edited_jingles_dict
+
+
+def getJingleJSON(jid):
+    
+    jingle_key = ndb.Key('Jingle', jid)
+    jingle = jingle_key.get()
+    
+    if jingle:
+        return jingle.jingle
+    else:
+        return None
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ BLOCKING WRITE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #takes a uid and a username
@@ -194,20 +207,20 @@ def createUser(uid, username):
         
         if existingUser:
             return {"errorMessage":"You have already registered an account"}
-            
-            
+        
+        
         existingUser = getUserByUsername(username)
         
         if existingUser:
             return {"errorMessage":"That username has already been taken"}
-            
         
-        ju = JinglrUser(parent=root_user_key, 
-                        id=uid, 
+        
+        ju = JinglrUser(parent=root_user_key,
+                        id=uid,
                         user_id=uid, 
                         username=username,
-                        tags=[dumb_value],
-                        collab_invites=[dumb_value]
+                        tags=[],
+                        collab_invites=[]
                        )
         
         result = ju.put()
@@ -223,7 +236,7 @@ def createUser(uid, username):
         try:
             result = createUserInternal()
             break
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
+        except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
     
     return result
@@ -234,7 +247,7 @@ def createUser(uid, username):
 #   {"userKey" : userkey}
 #when successful or:
 #   {"errorMessage" : errorMessage}
-#on a fail          
+#on a fail
 def updateUsername(uid, username):
     
     if not username:
@@ -248,9 +261,8 @@ def updateUsername(uid, username):
         
         if existingUser:
             return {"errorMessage" : "That username has already been taken"}
-            
-        user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-        user = user_key.get()
+        
+        user = getUserById(uid)
         
         if not user:
             return {"errorMessage" : "That is not a valid user"}
@@ -266,7 +278,7 @@ def updateUsername(uid, username):
         try:
             result = updateUsernameInternal()
             break
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
+        except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
     
     return result
@@ -278,32 +290,29 @@ def updateBio(uid, bio):
     
     while True:
         try:
-            user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-            user = user_key.get()
+            user = getUserById(uid)
             if not user:
                 return None
-                
+            
             user.bio = bio
             return user.put()
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
 
 
-#takes a user ID and a new list of tags. Returns the user entity key on success
-#or None if that user does not exist
+#takes a user ID and a new list of tags. Returns the user entity key on
+#success or None if that user does not exist
 def updateTags(uid, tags):
     
-    tags.append(dumb_value)
     while True:
         try:
-            user_key = ndb.Key('JinglrUser', uid, parent=root_user_key)
-            user = user_key.get()
+            user = getUserById(uid)
             if not user:
                 return None
-                
+            
             user.tags = tags
             return user.put()
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
 
 
@@ -317,10 +326,9 @@ def createJingle(uid, title, genre=None, tags=None):
     if genre:
         jingle.genre = genre
     if tags:
-        tags.append(dumb_value)
         jingle.tags = tags
     else:
-        jingle.tags = [dumb_value]
+        jingle.tags = []
     
     jingle_json = {}
     jingle_json['head'] = {'subDivisions':4, 'tempo':120}
@@ -329,7 +337,7 @@ def createJingle(uid, title, genre=None, tags=None):
         jingle_json['tracks'].append({})
     jingle.jingle = jingle_json
     
-    jingle.collab_users = [dumb_value]
+    jingle.collab_users = []
     
     result = None
     while True:
@@ -337,32 +345,34 @@ def createJingle(uid, title, genre=None, tags=None):
             result = jingle.put()
             
             map_name = gen_id + 'Map'
-            jm = JinglrMap(id=map_name, jingle_id=gen_id, editor_tokens = [])
+            jm = JinglrMap(id=map_name, jingle_id=gen_id, client_ids = [])
             jm.put()
             break
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
     
     return result
 
+
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeTitle(jid, title):
-
+    
     while True:
         try:
             jingle_key = ndb.Key('Jingle', jid)
             jingle = jingle_key.get()
             if not jingle:
                 return None
-                
+            
             jingle.title = title
             return jingle.put()
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
+
 
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeGenre(jid, genre):
-
+    
     while True:
         try:
             jingle_key = ndb.Key('Jingle', jid)
@@ -372,12 +382,13 @@ def changeGenre(jid, genre):
                 
             jingle.genre = genre
             return jingle.put()
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
+
 
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeTags(jid, tags):
-
+    
     while True:
         try:
             jingle_key = ndb.Key('Jingle', jid)
@@ -385,84 +396,130 @@ def changeTags(jid, tags):
             if not jingle:
                 return None
             
-            tags.append(dumb_value)
             jingle.tags = tags 
             return jingle.put()
-        except (db.Timeout, db.InternalError) as exep:
+        except (db.Timeout, db.InternalError):
+            time.sleep(1)
+
+
+def changeJingle(jid, jingle_json):
+    
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+            
+            jingle.jingle = jingle_json
+            return jingle.put()
+        except (db.Timeout, db.InternalError):
             time.sleep(1)
 
 
 #called when a client wants to start editing a jingle
 #in a success case it will return:
 #   {"token" : channelToken}
-#in a fail (because there are no free task queues) it will return:
+#in a fail (because we went over our channel quota) it will return:
 #   {"errorMessage" : errorMessage}
-def beginEditing(uid, jid):
-    
-    #first need to see if we are likely able to edit the jingle
-    #is there already a JinglrMap in use for this Jingle?
-        #we think there is a JinglrMap free. Lets make a token of good faith
+def beginEditing(jid):
+    #first get the JinglrMap entity for this Jingle
     jm = ndb.Key('JinglrMap', jid+'Map').get()
     if not jm:
         return {"errorMessage" : "Invalid Jingle ID"}
+    
+    #next try to create a channel token using a randomly generated client ID
+    channelToken = None
+    client_id = generate_client_id()
     try:
-        channelToken = channel.create_channel(uid)
+        channelToken = channel.create_channel(client_id)
     except apiproxy_errors.OverQuotaError:
         return {"errorMessage" : "Channels quota met: no more channels"}
     
+    #now update persistent storage with the new client ID
     @ndb.transactional
     def registerEditor():
-
+        
         jm = ndb.Key('JinglrMap', jid+'Map').get()
         if not jm:
             return False
-
-        jm.editor_tokens.append(channelToken)
+        
+        jm.client_ids.append(client_id)
         jm.put()
-        return True    
+        return True
     
     success = None
     while True:
         try:
             success = registerEditor()
             break
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
+        except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
-
+    
+    #now update memcache with the new value
+    #{edited_jingles_key : {jid1 : [client_id_list], jid2 : [client_id_list]}}
     if success:
+        client = memcache.Client()
+        while True:
+            edited_jingles = client.gets(edited_jingles_key)
+            if edited_jingles == None:
+                new_edited_jingles = getEditedJingles()
+                if jid in new_edited_jingles:
+                    if client_id not in new_edited_jingles[jid]:
+                        new_edited_jingles[jid].append(client_id)
+                else:
+                    new_edited_jingles[jid] = [client_id]
+                    
+                new_edited_jingles = json.dumps(new_edited_jingles)
+                
+                if client.add(edited_jingles_key, new_edited_jingles, 300):
+                    break
+            else:
+                edited_jingles = json.loads(edited_jingles)
+                if jid in edited_jingles:
+                    edited_jingles[jid].append(client_id)
+                else:
+                    edited_jingles[jid] = [client_id]
+                
+                edited_jingles = json.dumps(edited_jingles)
+                if client.cas(edited_jingles_key, edited_jingles, 300):
+                    break
+                    
+        taskqueue_handlers.makeSureTaskHandlerIsRunning()
+        
         return {"token" : channelToken}
     else:
         return {"errorMessage" : "Invalid Jingle ID"}
 
 
-#removes an editor from a JinglrMap. If all the editors are gone, it frees up
-#the JinglrMap
-def stopEditing(jid, channelToken):
+#removes an editor from a JinglrMap.
+def stopEditing(client_id):
     
     @ndb.transactional
-    def removeEditor():
-        
-        #first get the JinglrMap for the specified jingle
-        jm = ndb.Key('JinglrMap', jid+'Map').get()
-        if jm:
-            #get tokens. This is a list of channelTokens who are editing the song
-            tokens = jm.editor_tokens
-            if channelToken in tokens:
-                tokens.remove(channelToken)
-                jm.editor_tokens = tokens  #set the updated tokens back
-            jm.put()
+    def removeEditor(jm_key):
+        jm = jm_key.get()
+        jm.client_ids.remove(client_id)
+        jm.put()
     
     
-    while True:
-        try:
-            removeEditor()
-            break
-        except (db.Timeout, db.TransactionFailedError, db.InternalError) as exep:
-            time.sleep(1)
-            
-            
+    jinglr_query = JinglrMap.query(JinglrMap.client_ids == client_id)
+    jinglr_list = jinglr_query.fetch()
+    
+    if len(jinglr_list) > 0:
+        jm = jinglr_list[0]
+ 
+        while True:
+            try:
+                removeEditor(jm.key)
+                break
+            except (db.Timeout, db.TransactionFailedError, db.InternalError):
+                time.sleep(1)
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~ NON BLOCKING WRITES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#submits an action to processed on a jingle json. jid is the id of the jingle
+#to be edited and action is a dictionary of the action as defined in protocols
 def submitAction(jid, action):
     
     client = memcache.Client()
@@ -478,42 +535,6 @@ def submitAction(jid, action):
             actionList = json.dumps(actionList)
             if client.cas(jid, actionList):
                 break
-
-def removeNote(jid, action):
-    
-    queue = getTaskqueueNameForJingle(jid)
-    if queue:
-        action['jid'] = jid
-        action['taskqueueName'] = queue
-        action = json.dumps(action)
-        taskqueue.add(url = '/tasks/removenote',
-                        queue_name = queue,
-                        headers = {'Content-Type':'application/json'},
-                        payload = action
-                        )
-
-
-def addInstrument(jid, action):
-    
-    queue = getTaskqueueNameForJingle(jid)
-    if queue:
-        action['jid'] = jid
-        action['taskqueueName'] = queue
-        action = json.dumps(action)
-        taskqueue.add(url = '/tasks/addinstrument',
-                        queue_name = queue,
-                        headers = {'Content-Type':'application/json'},
-                        payload = action
-                        )
-
-
-
-
-
-
-
-
-
 
 
 
