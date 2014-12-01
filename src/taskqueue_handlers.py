@@ -14,8 +14,6 @@ from google.appengine.api import taskqueue
 import datastore
 import jingle_update
 
-from models import JinglrMap, Jingle
-
 number_of_queues = 10
 edited_jingles_key = 'Edited Jingles'
 taskHandlerRunning = False
@@ -146,7 +144,7 @@ class UpdateHandler(webapp2.RequestHandler):
             @ndb.transactional
             def update_jingle_internal(jid, data_dict):
                 
-                jingle_json = datastore.getJingleJSON(jid)
+                jingle = datastore.getJingleJSON(jid)
                 new_action_list = []
                 
                 for action in data_dict["actions"]:
@@ -155,28 +153,33 @@ class UpdateHandler(webapp2.RequestHandler):
                         print "Not here yet, fool!"
                     
                     elif action["action"] == "noteRm":
-                        jingle_json, new_action = jingle_update.remove_note(jingle_json, action)
+                        jingle, new_action = jingle_update.remove_note(jingle, action)
                         new_action_list.append(new_action)
                     
                     elif action["action"] == "tempo":
-                        print "gone fishing"
+                        jingle, new_action = jingle_update.change_tempo(jingle, action)
+                        new_action_list.append(new_action)
                     
                     elif action["action"] == "subDivisions":
-                        print "overtime calls me"
+                        jingle, new_action = jingle_update.change_sub_divisions(jingle, action)
+                        new_action_list.append(new_action)
                     
                     elif action["action"] == "instrumentAdd":
-                        print "be back soon honey"
+                        jingle, new_action = jingle_update.add_instrument(jingle, action)
+                        new_action_list.append(new_action)
                     
                     elif action["action"] == "instrumentRm":
-                        print "FAAAAAAAAAAK"
+                        jingle, new_action = jingle_update.remove_instrument(jingle, action)
+                        new_action_list.append(new_action)
                     
                     elif action["action"] == "instrumentEdit":
-                        print "internet connection lost"
+                        jingle, new_action = jingle_update.edit_instrument(jingle, action)
+                        new_action_list.append(new_action)
                     
                     else:
                         print "Invalid"
                     
-                datastore.changeJingle(jid, jingle_json)
+                datastore.changeJingle(jid, jingle)
                 
                 for client_id in data_dict["client_ids"]:
                     channel.send_message(client_id, json.dumps(new_action_list))
