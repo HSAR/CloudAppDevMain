@@ -5,6 +5,85 @@ import logging
 #it returns the updated jingle, and an updated action
 #   updated actions contain the checksums
 
+def add_note(jingle, action):
+    
+    action_note_id     = action['note']['id']
+    action_note_pos    = action['note']['pos']
+    action_note_track  = action['note']['track']
+    action_note_note   = action['note']['note']
+    action_note_length = action['note']['length']
+    
+    if type(action_note_id) is str:
+        if type(action_note_pos) is int:
+            if type(action_note_track) is int:
+                if type(action_note_note) is int:
+                    if type(action_note_length) is int:
+                        
+                        if action_note_pos >= 0:
+                            if action_note_track >=0 and action_note_track <= 14:
+                                if action_note_note >=0 and action_note_note <= 127:
+                                    if action_note_length > 0:
+                                    
+                                        track = jingle['tracks'][action_note_track]
+                                        if len(track) > 0:
+                                            notes = track['notes']
+                                            note_start = action_note_pos
+                                            note_end = action_note_pos + action_note_length
+                                            note_pitch = action_note_note
+                                            
+                                            note_unique = True
+                                            
+                                            for note in notes:
+                                                if note['id'] == action_note_id:
+                                                    note_unique = False
+                                                    break
+                                                
+                                            if note_unique:
+                                                
+                                                new_note = {}
+                                                new_note['id']     = action_note_id
+                                                new_note['pos']    = action_note_pos
+                                                new_note['length'] = action_note_length
+                                                new_note['note']   = action_note_note
+                                        
+                                                for note in notes:
+                                                    current_start = note['pos']
+                                                    current_end = current_start + note['length']
+                                                    current_pitch = note['note']
+                                                    
+                                                    if not (current_end <= note_start or current_start >= note_end or current_pitch != note_pitch):
+                                                        notes.remove(note)
+                                                    
+                                                notes.append(new_note)
+                                                track['notes'] = notes
+                                                jingle['tracks'][action_note_track] = track
+                                        
+                                    else:
+                                        logging.warning('A non positive length was provided: ' + str(action_note_length))
+                                else:
+                                    logging.warning('A note number was not in the valid range: ' + str(action_note_note))
+                            else:
+                                logging.warning('A track number was not in the valid range: ' + str(action_track))
+                        else:
+                            logging.warning('A negative position was provided: ' + str(action_note_pos))
+                            
+                    else:
+                        logging.warning('A non int length was given: ' + str(action_note_length))
+                else:
+                    logging.warning('A non int note was given: ' + str(action_note_note))
+            else:
+                logging.warning('A non int track number was given: ' + str(action_note_track))
+        else:
+            logging.warning('A non int position was given: ' + str(action_note_pos))
+    else:
+        logging.warning('A non string note id was given: ' + str(action_note_id))
+    
+    
+    action['checksum'] = generate_checksum(jingle)
+    
+    return [jingle, action]
+
+
 def remove_note(jingle, action):
     
     action_track = action['track']

@@ -150,7 +150,8 @@ class UpdateHandler(webapp2.RequestHandler):
                 for action in data_dict["actions"]:
                     
                     if action["action"] == "noteAdd":
-                        print "Not here yet, fool!"
+                        jingle, new_action = jingle_update.remove_note(jingle, action)
+                        new_action_list.append(new_action)
                     
                     elif action["action"] == "noteRm":
                         jingle, new_action = jingle_update.remove_note(jingle, action)
