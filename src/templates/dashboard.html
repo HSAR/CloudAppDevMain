@@ -1,39 +1,74 @@
 {% extends "base.html" %}
 {% block head %}
 	{{ super() }}
-	<link rel="stylesheet" type="text/css" href="/public/css/dashboard.css" />
+	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
+	<script type="text/javascript" src="/public/js/dash/dashHandler.js"></script>
+	<link rel="stylesheet" type="text/css" href="/public/css/styles.css" />
 {% endblock %}
 {% block content %}
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          My Songs
-        </a>
-      </h4>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-        UKIP Calypso by The Independents
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Collaborated Songs
-        </a>
-      </h4>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-        Zubion by the IT Crowd
-        Gangnam Style by The Pumping Lemmas
-      </div>
-    </div>
-  </div>
-</div>
+<!-- upper section -->
+  <div class="row">
+	<div class="col-sm-3">
+      <!-- left -->
+      <h3><i class="glyphicon glyphicon-briefcase"></i>Favourite Tags</h3>
+      <hr>
+      
+      <ul class="nav nav-stacked">
+        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Fast</a></li>
+        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Trumpet</a></li>
+        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Short</a></li>
+      </ul>
+      
+      <hr>
+      
+  	</div><!-- /span-3 -->
+    <div class="col-sm-9">
+      	
+      <!-- column 2 -->	
+       <h3><i class="glyphicon glyphicon-dashboard"></i>TestUser's Dashboard</h3>  
+            
+       <hr>
+      
+	   <div class="row">
+            <!-- center left-->	
+         	<div class="col-md-7">
+			  <div class="panel panel-default">
+                  <div class="panel-heading"><h4>My Contributed Songs</h4></div>
+                  <div class="panel-body">
+                  <table class="table table-striped">
+			        <thead>
+			          <tr><th>Song Name</th><th>Tags</th><th>Genre</th><th>Rating</th></tr>
+			        </thead>
+			        <tbody>
+    			      <tr><td>Ode to a Relational Database</td><td>Cry, GAE</td><td>Baroque</td><td>3%</td></tr>
+    			    </tbody>
+     			  </table>
+                  </div><!--/panel-body-->
+              </div><!--/panel-->  
+              
+              <hr>
+              
+              <div class="panel panel-default">
+                  <div class="panel-heading"><h4>My Created Songs</h4></div>
+                  <div class="panel-body">
+                  <table class="table table-striped">
+			        <thead>
+			          <tr><th>Song Name</th><th>Tags</th><th>Genre</th><th>Rating</th></tr>
+			        </thead>
+			        <tbody>
+    			      <tr><td>Ukip Calypso</td><td>Trumpets, Racist</td><td>Rock</td><td>69%</td></tr>
+    			      <tr><td>Sam Chen Takes Control</td><td>Inspiring, Leadership</td><td>Metal</td><td>100%</td></tr>
+    			    </tbody>
+     			  </table>
+                  </div><!--/panel-body-->
+              </div><!--/panel-->                     
+              
+          	</div><!--/col-->
+     
+       </div><!--/row-->
+  	</div><!--/col-span-9-->
+    
+  </div><!--/row-->
+  <!-- /upper section -->
 
 {% endblock %}
