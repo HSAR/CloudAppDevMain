@@ -42,6 +42,15 @@ class MainHandler(webapp2.RequestHandler):
         MainHandler.countTest += 1
 
 
+class SearchPageHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {
+            'name': "Generic User",
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/search.html')
+        self.response.write(template.render(template_values))
+
+
 class TemplatePageHandler(webapp2.RequestHandler):
     def get(self):
         template_values = {
@@ -95,6 +104,7 @@ def Error500Handler(request, response, exception):
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
+                                          webapp2.Route(r'/search', handler=SearchPageHandler, name='home'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
                                           webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler,
