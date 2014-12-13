@@ -266,16 +266,17 @@ class NoteChangeHandler(webapp2.RequestHandler):
         elif not permission.allowed(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
-            actionId = self.request.get("actionId")
+            action_id = self.request.get("actionId")
             track = self.request.get("track")
-            noteId = self.request.get("noteId")
-            if actionId and track and noteId:
+            note_id = self.request.get("noteId")
+            if action_id and track and note_id:
                 datastore_request_object = {
-                    'actionId': actionId,
+                    'action': 'noteRm',
+                    'actionId': action_id,
                     'track': track,
-                    'noteId': noteId
+                    'noteId': note_id
                 }
-                datastore.removeNote(songid, json.dumps(datastore_request_object))
+                datastore.submitAction(songid, datastore_request_object)
                 success_object = {
                     'status': 'true',
                 }
@@ -300,7 +301,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
                     parsed_request_json['note']):
                     return error.respond(400, 'Missing property in request JSON note object')
                 else:
-                    # datastore.addNote(songid, self.request.body)
+                    datastore.submitAction(songid, parsed_request_json)
                     success_object = {
                         'status': 'true',
                     }
@@ -318,14 +319,15 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
         elif not permission.allowed(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
-            actionId = self.request.get("actionId")
-            instrumentTrack = self.request.get("instrumentTrack")
-            if actionId and instrumentTrack:
+            action_id = self.request.get("actionId")
+            instrument_track = self.request.get("instrumentTrack")
+            if action_id and instrument_track:
                 datastore_request_object = {
-                    'actionId': actionId,
-                    'instrumentTrack': instrumentTrack,
+                    'action': 'instrumentRm',
+                    'actionId': action_id,
+                    'instrumentTrack': instrument_track,
                 }
-                # datastore.removeInstrument(songid, json.dumps(datastore_request_object))
+                datastore.submitAction(songid, datastore_request_object)
                 success_object = {
                     'status': 'true',
                 }
@@ -348,7 +350,7 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
                 elif not ('track' in parsed_request_json['note'] and 'inst' in parsed_request_json['note']):
                     return error.respond(400, 'Missing property in request JSON note object')
                 else:
-                    # datastore.addInstrument(songid, self.request.body)
+                    datastore.submitAction(songid, parsed_request_json)
                     success_object = {
                         'status': 'true',
                     }
