@@ -23,14 +23,6 @@ edited_jingles_key = 'Edited Jingles'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ INTERNAL FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#generates unique IDs for jingles
-def generate_jingle_id(uid):
-    
-    timestamp = datetime.datetime.now()
-    rand = random.random()
-    return uid + str(rand) + str(timestamp)
-
-
 #enables us to return the corresponding username for a UID on an entity so
 #that clients can display the username
 def getUsernameByUID(uid):
@@ -48,8 +40,8 @@ def getUsernameByUID(uid):
             return None
 
 
-#generates a securely random client ID for use with channels
-def generate_client_id(size=32, chars=string.ascii_lowercase
+#generates a securely random ID for use with things
+def generate_id(size=32, chars=string.ascii_lowercase
                                     + string.ascii_uppercase
                                     + string.digits):
     return ''.join(random.SystemRandom().choice(chars) for _ in range(size))
@@ -320,7 +312,7 @@ def updateTags(uid, tags):
 #returns new jingle entity key once successful
 def createJingle(uid, title, genre=None, tags=None):
     
-    gen_id = generate_jingle_id(uid)
+    gen_id = generate_id();
     
     jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
     if genre:
@@ -430,7 +422,7 @@ def beginEditing(jid):
     
     #next try to create a channel token using a randomly generated client ID
     channelToken = None
-    client_id = generate_client_id()
+    client_id = generate_id()
     try:
         channelToken = channel.create_channel(client_id)
     except apiproxy_errors.OverQuotaError:

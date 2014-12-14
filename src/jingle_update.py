@@ -118,7 +118,7 @@ def change_tempo(jingle, action):
         if action_tempo >= 4:
             jingle['head']['tempo'] = action_tempo
         else:
-            logging.warning('A too small tempo was given: ' = str(action_tempo))
+            logging.warning('A too small tempo was given: ' + str(action_tempo))
     else:
         logging.warning('A non int tempo was given: ' + str(action_tempo))
     
