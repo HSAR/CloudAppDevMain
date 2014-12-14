@@ -20,7 +20,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/songs/get/0',
+			url : 'http://localhost:9080/songs/0',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -69,7 +69,7 @@ function AjaxHandler() {
 		//asks the server to compile the tune into a midi file and send it back
 		$.ajax({
 			type : 'GET',
-			url : 'http://example-play.com',
+			url : 'http://localhost:9080/songs/0/midi',
 			success : function(data) {
 				if(true) {
 					//TODO add some file validation here
