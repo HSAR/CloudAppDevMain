@@ -17,10 +17,6 @@ handlers:
 - url: /admin/.*
   script: google.appengine.ext.admin.application
   login: admin
-  
-- url: /editor.*
-  script: editor.application
-  login: required
 
 - url: /songs/search.*
   script: songs_search.application
