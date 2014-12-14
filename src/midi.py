@@ -77,18 +77,18 @@ def getMIDI(midiJSON):
     
     midiHead = midi['head']
     
-    if not 'subdivisions' in midiHead:
-        raise MIDIError("Invalid Jingle JSON format. Missing 'subdivisions' from head")
+    if not 'subDivisions' in midiHead:
+        raise MIDIError("Invalid Jingle JSON format. Missing 'subDivisions' from head")
     
-    if midiHead['subdivisions'] < 1:
-        raise MIDIError("subdivisions is too small. Minimum value is 1")
+    if midiHead['subDivisions'] < 1:
+        raise MIDIError("subDivisions is too small. Minimum value is 1")
     
     TIME_DIV = None;
     try:
         #time division is stored as 2 bytes
-        TIME_DIV = numberToByteArray(midiHead['subdivisions'], 2)
+        TIME_DIV = numberToByteArray(midiHead['subDivisions'], 2)
     except MIDIError as exep:
-        raise MIDIError("subdivisions is too large. Maximum value is 65535")
+        raise MIDIError("subDivisions is too large. Maximum value is 65535")
 
     #Build up the complete header chunk
     HEADER_CHUNK = HEAD_CHUNK_ID
@@ -151,32 +151,32 @@ def getMIDI(midiJSON):
             trackEvents.extend(setInstrumentEvent)
             
             for noteData in notes:
-                if not 'position' in noteData:
-                    raise MIDIError("Invalid Jingle JSON format. Missing 'position' from notes")
+                if not 'pos' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'pos' from notes")
             
-            for noteData in sorted(notes, key=lambda k: k['position']):
+            for noteData in sorted(notes, key=lambda k: k['pos']):
                 if not 'length' in noteData:
                     raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
-                if not 'pitch' in noteData:
-                    raise MIDIError("Invalid Jingle JSON format. Missing 'pitch' from notes")
-                if noteData['pitch'] < 0 or noteData['pitch'] > 127:
-                    raise MIDIError("Invalid pitch number. Must be in range of 0 to 127")
-                if noteData['position'] < 0:
-                    raise MIDIError("Invalid position. Must not be negative")
+                if not 'note' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'note' from notes")
+                if noteData['note'] < 0 or noteData['note'] > 127:
+                    raise MIDIError("Invalid note number. Must be in range of 0 to 127")
+                if noteData['pos'] < 0:
+                    raise MIDIError("Invalid pos. Must not be negative")
                 if noteData['length'] < 0:
                     raise MIDIError("Invalid length. Must not be negative")
                     
                 noteOnEvent = {
-                    "position": noteData['position'],
+                    "pos": noteData['pos'],
                     "chan":     currentChannel,
-                    "pitch":    noteData['pitch'],
+                    "note":    noteData['note'],
                     "noteOn":   True
                 }
                 
                 noteOffEvent = {
-                    "position": noteData['position'] + noteData['length'],
+                    "pos": noteData['pos'] + noteData['length'],
                     "chan":     currentChannel,
-                    "pitch":    noteData['pitch'],
+                    "note":    noteData['note'],
                     "noteOn":   False
                 }
                 
@@ -188,10 +188,10 @@ def getMIDI(midiJSON):
     
     #Now it's time for the notes
     #first make sure the notes are sorted on position
-    noteEventsSorted = sorted(allNoteEvents, key=lambda k: k['position'])
+    noteEventsSorted = sorted(allNoteEvents, key=lambda k: k['pos'])
     currentPosition = 0
     for noteEvent in noteEventsSorted:
-        position = noteEvent['position']
+        position = noteEvent['pos']
         #need to get the relative position i.e. delta. This is how much the position
         #has changed since the last note event
         relativePosition = position - currentPosition
@@ -206,7 +206,7 @@ def getMIDI(midiJSON):
             offset = 0x90
         else:
             offset = 0x80
-        note = bytearray([offset + noteEvent['chan'], noteEvent['pitch'], 127]) #use a hard coded volume. 127 is max
+        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], 127]) #use a hard coded volume. 127 is max
         delta.extend(note)
         trackEvents.extend(delta)
         

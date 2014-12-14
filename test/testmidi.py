@@ -20,12 +20,12 @@ trackHeader = bytearray([0x4D, 0x54, 0x72, 0x6B])
 def test_one_note_midi():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"id":1, "position":0, "length":96, "pitch":69}
+                    {"id":1, "pos":0, "length":96, "note":69}
                 ]
             }
         ]
@@ -51,96 +51,96 @@ def test_one_note_midi():
 def test_multi_channel():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"position":0, "length":96, "pitch":69}
+                    {"pos":0, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":4,
                 "notes": [
-                    {"position":96, "length":96, "pitch":69}
+                    {"pos":96, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":20,
                 "notes": [
-                    {"position":192, "length":96, "pitch":69}
+                    {"pos":192, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":28,
                 "notes": [
-                    {"position":288, "length":96, "pitch":69}
+                    {"pos":288, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":65,
                 "notes": [
-                    {"position":384, "length":96, "pitch":69}
+                    {"pos":384, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":70,
                 "notes": [
-                    {"position":480, "length":96, "pitch":69}
+                    {"pos":480, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":72,
                 "notes": [
-                    {"position":576, "length":96, "pitch":69}
+                    {"pos":576, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":77,
                 "notes": [
-                    {"position":672, "length":96, "pitch":69}
+                    {"pos":672, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":80,
                 "notes": [
-                    {"position":768, "length":96, "pitch":69}
+                    {"pos":768, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":57,
                 "notes": [
-                    {"position":864, "length":96, "pitch":69}
+                    {"pos":864, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":81,
                 "notes": [
-                    {"position":960, "length":96, "pitch":69}
+                    {"pos":960, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":18,
                 "notes": [
-                    {"position":1056, "length":96, "pitch":69}
+                    {"pos":1056, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":51,
                 "notes": [
-                    {"position":1152, "length":96, "pitch":69}
+                    {"pos":1152, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":58,
                 "notes": [
-                    {"position":1248, "length":96, "pitch":69}
+                    {"pos":1248, "length":96, "note":69}
                 ]
             },
             {
                 "instrument":25,
                 "notes": [
-                    {"position":1344, "length":96, "pitch":69}
+                    {"pos":1344, "length":96, "note":69}
                 ]
             }
         ]
@@ -209,18 +209,18 @@ def test_multi_channel():
 def test_many_notes():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"position":0, "length":96, "pitch":57},
-                    {"position":0, "length":96, "pitch":59},
-                    {"position":0, "length":96, "pitch":60},
-                    {"position":0, "length":96, "pitch":62},
-                    {"position":0, "length":96, "pitch":64},
-                    {"position":0, "length":96, "pitch":65},
-                    {"position":0, "length":96, "pitch":67}
+                    {"pos":0, "length":96, "note":57},
+                    {"pos":0, "length":96, "note":59},
+                    {"pos":0, "length":96, "note":60},
+                    {"pos":0, "length":96, "note":62},
+                    {"pos":0, "length":96, "note":64},
+                    {"pos":0, "length":96, "note":65},
+                    {"pos":0, "length":96, "note":67}
                 ]
             }
         ]
@@ -259,19 +259,19 @@ def test_many_notes():
 def test_delta_values():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"position":0, "length":1, "pitch":57},
-                    {"position":1, "length":48, "pitch":57},
-                    {"position":49, "length":96, "pitch":57},
-                    {"position":145, "length":127, "pitch":57},
-                    {"position":272, "length":128, "pitch":57},
-                    {"position":400, "length":137, "pitch":57},
-                    {"position":537, "length":1056118, "pitch":57},
-                    {"position":1056655, "length":34656598, "pitch":57}
+                    {"pos":0, "length":1, "note":57},
+                    {"pos":1, "length":48, "note":57},
+                    {"pos":49, "length":96, "note":57},
+                    {"pos":145, "length":127, "note":57},
+                    {"pos":272, "length":128, "note":57},
+                    {"pos":400, "length":137, "note":57},
+                    {"pos":537, "length":1056118, "note":57},
+                    {"pos":1056655, "length":34656598, "note":57}
                 ]
             }
         ]
@@ -313,15 +313,15 @@ def test_delta_values():
 def test_out_of_order():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"position":288, "length":96, "pitch":69},
-                    {"position":0, "length":96, "pitch":69},
-                    {"position":192, "length":96, "pitch":69},
-                    {"position":96, "length":96, "pitch":69}
+                    {"pos":288, "length":96, "note":69},
+                    {"pos":0, "length":96, "note":69},
+                    {"pos":192, "length":96, "note":69},
+                    {"pos":96, "length":96, "note":69}
                 ]
             }
         ]
@@ -355,17 +355,17 @@ def test_out_of_order():
 def test_out_of_order_2():
     testJSON = """
     {
-        "head": {"subdivisions":96, "tempo":120},
+        "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
                 "instrument":0,
                 "notes": [
-                    {"position":384, "length":96, "pitch":69},
-                    {"position":0, "length":384, "pitch":70},
-                    {"position":96, "length":96, "pitch":69},
-                    {"position":288, "length":96, "pitch":69},
-                    {"position":0, "length":96, "pitch":69},
-                    {"position":192, "length":96, "pitch":69}
+                    {"pos":384, "length":96, "note":69},
+                    {"pos":0, "length":384, "note":70},
+                    {"pos":96, "length":96, "note":69},
+                    {"pos":288, "length":96, "note":69},
+                    {"pos":0, "length":96, "note":69},
+                    {"pos":192, "length":96, "note":69}
                 ]
             }
         ]
@@ -416,10 +416,10 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "No Subdivisions"
     except MIDIError as exep:
-        assert exep.message == "Invalid Jingle JSON format. Missing 'subdivisions' from head", "No Subdivisions"
+        assert exep.message == "Invalid Jingle JSON format. Missing 'subDivisions' from head", "No SubDivisions"
         
     JSON = """
-    {"head": {"subdivisions":2, "dogs":3}}
+    {"head": {"subDivisions":2, "dogs":3}}
     """
     try:
         getMIDI(JSON)
@@ -428,16 +428,16 @@ def test_bad_json_formats():
         assert exep.message == "Invalid Jingle JSON format. Missing 'tempo' from head", "No Tempo"
         
     JSON = """
-    {"head": {"subdivisions":65536, "tempo":120}}
+    {"head": {"subDivisions":65536, "tempo":120}}
     """
     try:
         getMIDI(JSON)
         assert False, "too many Subdivisions"
     except MIDIError as exep:
-        assert exep.message == "subdivisions is too large. Maximum value is 65535", "too many Subdivisions"
+        assert exep.message == "subDivisions is too large. Maximum value is 65535", "too many SubDivisions"
         
     JSON = """
-    {"head": {"subdivisions":65535, "tempo":3}}
+    {"head": {"subDivisions":65535, "tempo":3}}
     """
     try:
         getMIDI(JSON)
@@ -446,7 +446,7 @@ def test_bad_json_formats():
         assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
         
     JSON = """
-    {"head": {"subdivisions":65535, "tempo":0}}
+    {"head": {"subDivisions":65535, "tempo":0}}
     """
     try:
         getMIDI(JSON)
@@ -455,16 +455,16 @@ def test_bad_json_formats():
         assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
         
     JSON = """
-    {"head": {"subdivisions":0, "tempo":4}}
+    {"head": {"subDivisions":0, "tempo":4}}
     """
     try:
         getMIDI(JSON)
         assert False, "subdivisions too small"
     except MIDIError as exep:
-        assert exep.message == "subdivisions is too small. Minimum value is 1", "subdivisions too small"
+        assert exep.message == "subDivisions is too small. Minimum value is 1", "subDivisions too small"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4}}
+    {"head": {"subDivisions":1, "tempo":4}}
     """
     try:
         getMIDI(JSON)
@@ -473,8 +473,8 @@ def test_bad_json_formats():
         assert exep.message == "Invalid Jingle JSON format. Missing 'tracks'", "no tracks"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
-     "tracks": [{"notes":[{"position":0, "length":0, "pitch":0}]}]}
+    {"head": {"subDivisions":1, "tempo":4},
+     "tracks": [{"notes":[{"pos":0, "length":0, "note":0}]}]}
     """
     try:
         getMIDI(JSON)
@@ -483,7 +483,7 @@ def test_bad_json_formats():
         assert exep.message == "Invalid Jingle JSON format. Missing 'instrument' from track", "no instrument"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0}
             ]}
@@ -495,7 +495,7 @@ def test_bad_json_formats():
         assert exep.message == "Invalid Jingle JSON format. Missing 'notes' from track", "no notes"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":-1,
                  "notes": [
@@ -510,7 +510,7 @@ def test_bad_json_formats():
         assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":128,
                  "notes": [
@@ -525,7 +525,7 @@ def test_bad_json_formats():
         assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
@@ -537,14 +537,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "no position"
     except MIDIError as exep:
-        assert exep.message == "Invalid Jingle JSON format. Missing 'position' from notes", "no position"
+        assert exep.message == "Invalid Jingle JSON format. Missing 'pos' from notes", "no position"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0}
+                    {"pos":0}
                  ]}
             ]}
     """
@@ -555,11 +555,11 @@ def test_bad_json_formats():
         assert exep.message == "Invalid Jingle JSON format. Missing 'length' from notes", "no length"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":96}
+                    {"pos":0, "length":96}
                  ]}
             ]}
     """
@@ -567,14 +567,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "no note"
     except MIDIError as exep:
-        assert exep.message == "Invalid Jingle JSON format. Missing 'pitch' from notes", "no note"
+        assert exep.message == "Invalid Jingle JSON format. Missing 'note' from notes", "no note"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":96, "pitch":-1}
+                    {"pos":0, "length":96, "note":-1}
                  ]}
             ]}
     """
@@ -582,14 +582,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "bad note"
     except MIDIError as exep:
-        assert exep.message == "Invalid pitch number. Must be in range of 0 to 127", "bad note"
+        assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":96, "pitch":128}
+                    {"pos":0, "length":96, "note":128}
                  ]}
             ]}
     """
@@ -597,14 +597,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "bad note"
     except MIDIError as exep:
-        assert exep.message == "Invalid pitch number. Must be in range of 0 to 127", "bad note"
+        assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":-1, "length":96, "pitch":0}
+                    {"pos":-1, "length":96, "note":0}
                  ]}
             ]}
     """
@@ -612,14 +612,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "bad position"
     except MIDIError as exep:
-        assert exep.message == "Invalid position. Must not be negative", "bad position"
+        assert exep.message == "Invalid pos. Must not be negative", "bad position"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":-1, "pitch":0}
+                    {"pos":0, "length":-1, "note":0}
                  ]}
             ]}
     """
@@ -630,86 +630,86 @@ def test_bad_json_formats():
         assert exep.message == "Invalid length. Must not be negative", "bad length"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":1, "pitch":127}
+                    {"pos":0, "length":1, "note":127}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 }
             ]}
@@ -721,81 +721,81 @@ def test_bad_json_formats():
         assert exep.message == "Too many tracks. Maximum number of tracks is 15", "too many tracks"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":127}
+                    {"pos":0, "length":0, "note":127}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":268435456, "pitch":0}
+                    {"pos":0, "length":268435456, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":0, "pitch":0}
+                    {"pos":0, "length":0, "note":0}
                  ]
                 }
             ]}
@@ -807,11 +807,11 @@ def test_bad_json_formats():
         assert exep.message == "A delta value was too big. The maximum difference in position values is 268,435,455 subdivisions", "just bad"
         
     JSON = """
-    {"head": {"subdivisions":1, "tempo":4},
+    {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"position":0, "length":268435455, "pitch":0}
+                    {"pos":0, "length":268435455, "note":0}
                  ]}
             ]}
     """
