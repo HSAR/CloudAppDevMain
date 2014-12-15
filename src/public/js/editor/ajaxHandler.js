@@ -17,10 +17,10 @@ function AjaxHandler() {
 
 		});
 	};
-	this.getTuneJSON = function(cb) {
+	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/songs/0',
+			url : 'http://localhost:9080/songs/' + id,
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -33,19 +33,17 @@ function AjaxHandler() {
 			}
 		});
 	};
-	this.notifyServer = function(data) {
+	this.notifyServer = function(id,data) {
 		var url;
 		switch(data.topic) {
 			case 'add':
-				url = 'http://jinglr-music.appspot.com/tune/add';
+				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes';
+				type = 'PUT';
 				break;
 			case 'delete':
-				url = 'http://jinglr-music.appspot.com/tune/delete';
+				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes'
+				type = 'GET'
 				break;
-			case 'edit':
-				url = 'http://example-edit.com';
-				break;
-
 			default :
 				console.log("Ajax error");
 				console.log(data);
@@ -65,11 +63,11 @@ function AjaxHandler() {
 				}
 			});
 	};
-	this.compileTune = function(cb) {
+	this.compileTune = function(id,cb) {
 		//asks the server to compile the tune into a midi file and send it back
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/songs/0/midi',
+			url : 'http://localhost:9080/songs/' + id + '/midi',
 			success : function(data) {
 				if(true) {
 					//TODO add some file validation here

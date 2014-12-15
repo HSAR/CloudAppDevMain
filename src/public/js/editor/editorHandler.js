@@ -26,7 +26,8 @@
 		quarantinedChanges : [],
 		instrumentFunction : null,
 		tabCount : 0,
-		maxTabs : 6
+		maxTabs : 6,
+		songId : 0//TODO
 	};
 
 	function loadPalette() {
@@ -108,11 +109,19 @@
 						$('#' + oldId).remove();
 						var oldNoteTrack = { track : $('.tab-pane.active').index() };//could be vulnerable to swift tab switch
 						var completeDeleteData = $.extend(oldNote,oldNoteTrack);
+						
+						var actionId = generateId('delete');//generate action id
+
 						var deleteData = {
 							topic : 'delete',
-							data : completeDeleteData
+							data : {
+								note : completeDeleteData,
+								actionId : actionId
+							}
 						};
-						ajaxHelper.notifyServer(deleteData);
+
+						
+						ajaxHelper.notifyServer(pageData.songId,deleteData);
 						pageData.quarantinedChanges.push(deleteData);
 					}
 					
@@ -128,17 +137,22 @@
 					var noteTrack = $('.tab-pane.active').index();
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
 					var noteId = generateId();//need new id even if just dragging
+					var actionId = generateId('add');
 					var data = {
 						topic : 'add',
 						data : {
-							pitch : notePitch,
-							track : noteTrack,
-							length : noteLength,
-							position : notePosition,
-							id : noteId
+							actionId : actionId,
+							note : {
+								pitch : notePitch,
+								track : noteTrack,
+								length : noteLength,
+								position : notePosition,
+								id : noteId
+							}
+							
 						}
 					};
-					ajaxHelper.notifyServer(data);
+					ajaxHelper.notifyServer(pageData.songId,data);
 					pageData.quarantinedChanges.push(data);
 					addNoteUI($('.preview'));//make it draggable etc
 					$('.preview').attr('id',noteId);
@@ -154,7 +168,7 @@
 
 	function setPlayButton() {
 		$('.play-button').click(function(event,ui) {
-			ajaxHelper.compileTune(function(data) {
+			ajaxHelper.compileTune(pageData.songId,function(data) {
 				playMidi(data);
 			});
 		});
@@ -399,8 +413,10 @@
 				};
 				tuneJSON.tracks[trackInfo.track].notes.push(newNoteData);
 				var newNoteInfo = $.extend(newNoteData,trackInfo);
+
+				var actionId = generateId();
 				var newNoteToSend = { topic: 'add',data : newNoteInfo};
-				ajaxHelper.notifyServer(newNoteToSend);
+				ajaxHelper.notifyServer(pageData.songId,newNoteToSend);
 				pageData.quarantinedChanges.push(newNoteToSend);
 			}
 			
@@ -430,14 +446,18 @@
 		return false;
 	}
 
-	function generateId() {
-		
+	function generateId(word) {
+		var prefix = 'note-';//default prefix if none supplied
+		if(word) {
+			prefix = word + '-';
+		}
+
 		  function s4() {
 		    return Math.floor((1 + Math.random()) * 0x10000)
 		               .toString(16)
 		               .substring(1);
 		  }
-		  return 'note-' + s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+		  return prefix + s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 		    s4() + '-' + s4() + s4() + s4();
 		
 		

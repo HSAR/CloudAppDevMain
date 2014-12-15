@@ -8,7 +8,7 @@ function ChannelHandler() {
 		if(!ajaxHelper) {
 			var ajaxHelper = new AjaxHandler();
 		}
-		ajaxHelper.getTuneJSON(function(data) {
+		ajaxHelper.getTuneJSON(pageData.songId,function(data) {
 			loadNotesFromJSON(data);
 		});
 		
