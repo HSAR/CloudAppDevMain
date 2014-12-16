@@ -13,7 +13,7 @@ def add_note(jingle, action):
     action_note_note   = action['note']['note']
     action_note_length = action['note']['length']
     
-    if type(action_note_id) is str:
+    if type(action_note_id) is unicode:
         if type(action_note_pos) is int:
             if type(action_note_track) is int:
                 if type(action_note_note) is int:
@@ -76,7 +76,7 @@ def add_note(jingle, action):
         else:
             logging.warning('A non int position was given: ' + str(action_note_pos))
     else:
-        logging.warning('A non string note id was given: ' + str(action_note_id))
+        logging.warning('A non string (' + str(type(action_note_id)) + ') note id was given: ' + str(action_note_id))
     
     
     action['checksum'] = generate_checksum(jingle)
