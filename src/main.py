@@ -39,11 +39,6 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write('Hello world!' + str(MainHandler.countTest))
-        user = users.get_current_user()
-        if user:
-            self.response.write(users.get_current_user().nickname())
-        else:
-            self.redirect(users.create_login_url(self.request.uri))
         MainHandler.countTest += 1
 
 
