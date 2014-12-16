@@ -183,6 +183,53 @@ def getJingleJSON(jid):
         return None
 
 
+# Basic search for a jingle. Pass in a partial jingle object with the fields to
+# be searched. Note that only prefix matching will be performed, and only on
+# the song name. Returns (results, cursor, more) where cursor is what's passed
+# to resumeSearch and more is a flag true if there are more pages
+def searchJingle(jingle, sort):
+    author = None
+    if hasattr(jingle, "author"):
+        author = jingle.author
+    if hasattr(jingle, "title"):
+        sort = Jingle.title # limitation of datastore
+    elif sort == "genre":
+        sort = Jingle.genre
+    elif sort == "date_created":
+        sort = Jingle.date_created
+    elif sort == "author":
+        sort = Jingle.author
+    else:
+        sort = Jingle.title
+    jingle_query = Jingle.query(Jingle.AND(Jingle.title >= jingle.title,
+            jingle.title < jingle.title + u"\ufffd")
+            if hasattr(jingle, "title") else True,
+            Jingle.author == author if author else True,
+            Jingle.genre == jingle.genre if hasattr(jingle, genre) else True,
+            Jingle.tags.IN(jingle.tags) if hasattr(jingle, tags) else True
+            ).order(sort)
+    value = jingle_query.fetch_page(10)
+    for jingle in value[0]: # results
+        username_list = []
+        for user_id in jingle.collab_users:
+            username_list.append(getUsernameByUID(user_id))
+        jingle.collab_usernames = username_list
+    
+    return value
+
+# Resume search by passing a cursor (second item in returned tuple from search)
+# Returns same as searchJingle
+def resumeSearch(cursor):
+    value = Jingle.query().fetch_page(10, start_cursor=cursor)
+    for jingle in value[0]: # results
+        username_list = []
+        for user_id in jingle.collab_users:
+            username_list.append(getUsernameByUID(user_id))
+        jingle.collab_usernames = username_list
+    
+    return value
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~ BLOCKING WRITE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #takes a uid and a username
 #returns a dictionary.
