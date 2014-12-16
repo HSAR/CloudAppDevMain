@@ -31,6 +31,10 @@ handlers:
 - url: /_ah.*
   script: admin.application
 
+- url: /songs/.*/editor
+  script: songs.application
+  login: required
+
 - url: /songs.*
   script: songs.application
 

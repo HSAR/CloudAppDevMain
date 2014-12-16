@@ -174,7 +174,7 @@ class EditorPageHandler(webapp2.RequestHandler):
             datastore.beginEditing(songid)
             self.response.write(template.render(template_values))
         else:
-            self.error(401)
+            error.respond(401, "User is not signed in")
 
 
 application = webapp2.WSGIApplication([
