@@ -93,7 +93,9 @@ class NoteChangeHandler(webapp2.RequestHandler):
         else:
             try:
                 parsed_request_json = json.loads(self.request.body)
-                if not (('note' in parsed_request_json) and ('actionId' in parsed_request_json)):
+                if not ('action' in parsed_request_json and
+                                'note' in parsed_request_json and
+                                'actionId' in parsed_request_json):
                     return error.respond(400, 'Missing property in request JSON')
                 elif not ('id' in parsed_request_json['note'] and 'pos' in parsed_request_json['note'] and 'track' in
                     parsed_request_json['note'] and 'note' in parsed_request_json['note'] and 'length' in
@@ -144,7 +146,9 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
         else:
             try:
                 parsed_request_json = json.loads(self.request.body)
-                if not ('instrument' in parsed_request_json and 'actionId' in parsed_request_json):
+                if not ('action' in parsed_request_json and
+                                'instrument' in parsed_request_json and
+                                'actionId' in parsed_request_json):
                     return error.respond(400, 'Missing property in request JSON')
                 elif not ('track' in parsed_request_json['instrument'] and 'inst' in parsed_request_json['instrument']):
                     return error.respond(400, 'Missing property in request JSON note object')
