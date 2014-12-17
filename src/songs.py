@@ -164,6 +164,80 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
+class TempoChangeHandler(webapp2.RequestHandler):
+    def put(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not ('action' in parsed_request_json and
+                                'tempo' in parsed_request_json and
+                                'actionId' in parsed_request_json):
+                    return error.respond(400, 'Missing property in request JSON')
+                else:
+                    datastore.submitAction(songid, parsed_request_json)
+                    success_object = {
+                        'status': 'true',
+                    }
+                    self.response.write(json.dumps(success_object))
+                    self.response.set_status(200)
+                    return
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
+
+class SubdivisionChangeHandler(webapp2.RequestHandler):
+    def put(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not ('action' in parsed_request_json and
+                                'subDivisions' in parsed_request_json and
+                                'actionId' in parsed_request_json):
+                    return error.respond(400, 'Missing property in request JSON')
+                else:
+                    datastore.submitAction(songid, parsed_request_json)
+                    success_object = {
+                        'status': 'true',
+                    }
+                    self.response.write(json.dumps(success_object))
+                    self.response.set_status(200)
+                    return
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
+
+class StateDumpHandler(webapp2.RequestHandler):
+    def get(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            action_id = self.request.get("actionId")
+            if not action_id:
+                return error.respond(400, 'Missing request parameter')
+            else:
+                datastore_request_object = {
+                    'action': 'stateDump',
+                    'actionId': action_id,
+                }
+                datastore.submitAction(songid, datastore_request_object)
+                success_object = {
+                    'status': 'true',
+                }
+                self.response.write(json.dumps(success_object))
+                self.response.set_status(200)
+                return
+
+
 class EditorPageHandler(webapp2.RequestHandler):
     def get(self, songid):
         user = users.get_current_user()
@@ -190,6 +264,12 @@ application = webapp2.WSGIApplication([
                                                         name='notechanges'),
                                           webapp2.Route(r'/songs/<songid>/instruments', handler=InstrumentChangeHandler,
                                                         name='instrument-changes'),
+                                          webapp2.Route(r'/songs/<songid>/tempo', handler=TempoChangeHandler,
+                                                        name='tempo-changes'),
+                                          webapp2.Route(r'/songs/<songid>/subdivisions', handler=SubdivisionChangeHandler,
+                                                        name='subdivision-changes'),
+                                          webapp2.Route(r'/songs/<songid>/state', handler=StateDumpHandler,
+                                                        name='state-dump'),
                                           webapp2.Route(r'/songs/<songid>/editor', handler=EditorPageHandler,
                                                         name='editor'),
                                       ], debug=True)
