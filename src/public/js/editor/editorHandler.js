@@ -136,19 +136,17 @@
 					var noteId = generateId();//need new id even if just dragging
 					var actionId = generateId('add');
 					var data = {
-						topic : 'add',
-						data : {
-							actionId : actionId,
-							note : {
-								pitch : notePitch,
-								track : noteTrack,
-								length : noteLength,
-								pos : notePosition,
-								id : noteId
-							}
-							
+						actionId : actionId,
+						note : {
+							pitch : notePitch,
+							track : noteTrack,
+							length : noteLength,
+							pos : notePosition,
+							id : noteId
 						}
+							
 					};
+					
 					ajaxHelper.addNote(pageData.songId,data);
 					pageData.quarantinedChanges.push(data);
 					addNoteUI($('.preview'));//make it draggable etc

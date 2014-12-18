@@ -36,6 +36,7 @@ function AjaxHandler() {
 	
 	this.addNote = function(id,msg) {
 		msg.action = 'noteAdd';
+		console.log(msg);
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes',
@@ -44,6 +45,7 @@ function AjaxHandler() {
 		});
 	};
 	this.deleteNote = function(id,msg) {
+		console.log(msg);
 		$.ajax({
 			type : 'DELETE',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes?actionId=' + msg.actionId +
