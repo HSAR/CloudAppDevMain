@@ -71,7 +71,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'we',
           "note": {
-            "id": '0',
+            "id": 'a',
             "pos": 0,
             "track": 0,
             "pitch": 48,
@@ -84,7 +84,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'wish',
           "note": {
-            "id": '1',
+            "id": 'b',
             "pos": 4,
             "track": 0,
             "pitch": 53,
@@ -97,7 +97,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'you',
           "note": {
-            "id": '2',
+            "id": 'c',
             "pos": 6,
             "track": 0,
             "pitch": 53,
@@ -110,7 +110,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'a',
           "note": {
-            "id": '3',
+            "id": 'd',
             "pos": 7,
             "track": 0,
             "pitch": 55,
@@ -123,7 +123,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'mer',
           "note": {
-            "id": '4',
+            "id": 'e',
             "pos": 8,
             "track": 0,
             "pitch": 53,
@@ -136,7 +136,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'ry',
           "note": {
-            "id": '5',
+            "id": 'f',
             "pos": 9,
             "track": 0,
             "pitch": 52,
@@ -149,7 +149,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'christ',
           "note": {
-            "id": '6',
+            "id": 'g',
             "pos": 10,
             "track": 0,
             "pitch": 50,
@@ -162,7 +162,7 @@ class InitialDataLoader(webapp2.RequestHandler):
           "action": "noteAdd",
           "actionId": 'mas',
           "note": {
-            "id": '7',
+            "id": 'h',
             "pos": 12,
             "track": 0,
             "pitch": 50,
