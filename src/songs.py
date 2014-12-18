@@ -99,7 +99,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
                                 'actionId' in parsed_request_json):
                     return error.respond(400, 'Missing property in request JSON')
                 elif not ('id' in parsed_request_json['note'] and 'pos' in parsed_request_json['note'] and 'track' in
-                    parsed_request_json['note'] and 'note' in parsed_request_json['note'] and 'length' in
+                    parsed_request_json['note'] and 'pitch' in parsed_request_json['note'] and 'length' in
                     parsed_request_json['note']):
                     return error.respond(400, 'Missing property in request JSON note object')
                 else:
