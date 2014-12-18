@@ -56,7 +56,8 @@
 		//need to iterate through each track and add tabs (we will need at least one tab regardless)
 		//if tracks is empty add default tab otherwise add tabs as per usual
 		$('.canvas').children().remove(); //get rid of loading message
-
+		tuneJSON.head.bars = 8;//TODO TEMPORARY DEV FIX
+		tuneJSON.head.barLength = 4;//TODO TEMPORARY DEV FIX
 		loadTabs();
 		$('.canvas .tab-pane').each(function() {loadBars($(this))});//load bars for each tab
 		loadNotes();
@@ -107,21 +108,17 @@
 						var oldId = ui.draggable.attr('id');
 						var oldNote = deleteNote(oldId);//will also delete the note from json
 						$('#' + oldId).remove();
-						var oldNoteTrack = { track : $('.tab-pane.active').index() };//could be vulnerable to swift tab switch
-						var completeDeleteData = $.extend(oldNote,oldNoteTrack);
 						
 						var actionId = generateId('delete');//generate action id
 
 						var deleteData = {
-							topic : 'delete',
-							data : {
-								note : completeDeleteData,
-								actionId : actionId
-							}
+							noteId : oldNote.id,
+							actionId : actionId,
+							trackId : $('.tab-pane.active').index()
 						};
 
 						
-						ajaxHelper.notifyServer(pageData.songId,deleteData);
+						ajaxHelper.deleteNote(pageData.songId,deleteData);
 						pageData.quarantinedChanges.push(deleteData);
 					}
 					
@@ -131,9 +128,9 @@
 					var width = $('.preview').width() / $('.preview').parent().width();
 					var bar = $('.preview').parent().parent().index();//gets index of bar
 					
-					var subdivisions = (tuneJSON.head.barLength * tuneJSON.head.subdivisions)
-					var notePosition = (bar * subdivisions) + Math.round(left * subdivisions);
-					var noteLength = Math.round(width * subdivisions);
+					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions)
+					var notePosition = (bar * subDivisions) + Math.round(left * subDivisions);
+					var noteLength = Math.round(width * subDivisions);
 					var noteTrack = $('.tab-pane.active').index();
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
 					var noteId = generateId();//need new id even if just dragging
@@ -146,13 +143,13 @@
 								pitch : notePitch,
 								track : noteTrack,
 								length : noteLength,
-								position : notePosition,
+								pos : notePosition,
 								id : noteId
 							}
 							
 						}
 					};
-					ajaxHelper.notifyServer(pageData.songId,data);
+					ajaxHelper.addNote(pageData.songId,data);
 					pageData.quarantinedChanges.push(data);
 					addNoteUI($('.preview'));//make it draggable etc
 					$('.preview').attr('id',noteId);
@@ -203,17 +200,17 @@
 	*/
 	function drawPreview(event,noteLength,$target) {
 		//ok so we can use event.pageX - ui.offset and ignore ones where we get minus values as these are false events
-		var subdivisions = getSubdivisions();
+		var subDivisions = getsubDivisions();
 		var distanceFromLeft = event.pageX - $target.parent().offset().left;
 		var width = $target.parent().width();
 		if(distanceFromLeft >=0) { //if we are dragging over the correct box
-			var position = Math.floor((distanceFromLeft / width) * subdivisions);
+			var position = Math.floor((distanceFromLeft / width) * subDivisions);
 
-			if(position + noteLength > subdivisions) {
-				position = subdivisions - noteLength;//if overflows limit it to end of bar
+			if(position + noteLength > subDivisions) {
+				position = subDivisions - noteLength;//if overflows limit it to end of bar
 			}
-			var leftPos = ((position / subdivisions) * 100) + "%";
-			var length = ((noteLength / subdivisions) * 100) + "%";
+			var leftPos = ((position / subDivisions) * 100) + "%";
+			var length = ((noteLength / subDivisions) * 100) + "%";
 
 			$target.css({
 				"position" : 'absolute',
@@ -232,16 +229,19 @@
 		htmlToAppend += '<ul class="nav nav-tabs">';
 		if(tuneJSON.tracks.length > 0) {
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(i === 0) {
-					htmlToAppend +='<li class="active"><a href="#track' + pageData.tabCount +
-					 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
-					 '</span></a></li>';
-				} else {
-					htmlToAppend += '<li role="presentation"><a href="#track' + pageData.tabCount + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
-					midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
-					'</span><button class="remove-tab-button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
+				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+					if(i === 0) {
+						htmlToAppend +='<li class="active"><a href="#track' + pageData.tabCount +
+						 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+						 '</span></a></li>';
+					} else {
+						htmlToAppend += '<li role="presentation"><a href="#track' + pageData.tabCount + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
+						midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+						'</span><button class="remove-tab-button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
+					}
+					pageData.tabCount++;
 				}
-				pageData.tabCount++;
+				
 				
 			}
 		} else {//add default tab
@@ -252,12 +252,15 @@
 		if(tuneJSON.tracks.length > 0) {
 			pageData.tabCount = currentTabCount;
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(i === 0) {
-					htmlToAppend += '<div  class="tab-pane active" id="track' + pageData.tabCount +'"></div>';
-				} else {
-					htmlToAppend+= '<div  class="tab-pane" id="track' + pageData.tabCount +'"></div>';
+				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+					if(i === 0) {
+						htmlToAppend += '<div  class="tab-pane active" id="track' + pageData.tabCount +'"></div>';
+					} else {
+						htmlToAppend+= '<div  class="tab-pane" id="track' + pageData.tabCount +'"></div>';
+					}
+					pageData.tabCount++;
 				}
-				pageData.tabCount++;
+				
 				
 			}
 		} else {
@@ -278,23 +281,26 @@
 
 	function loadNotes() {
 		for(var i = 0; i < tuneJSON.tracks.length; i++) {
-			for(var j = 0; j<tuneJSON.tracks[i].notes.length; j++){
-				$tab = $('#track' + i);
-				drawNote(tuneJSON.tracks[i].notes[j],$tab);
-			}
+			if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+				for(var j = 0; j<tuneJSON.tracks[i].notes.length; j++){
+					$tab = $('#track' + i);
+					drawNote(tuneJSON.tracks[i].notes[j],$tab);
+				}
+			} 
+			
 		}
 	}
 
 	function drawNote(note,$tab) {
 		//first we need to work out what bar note is in and where
 
-		var subdivisions = tuneJSON.head.subdivisions * tuneJSON.head.barLength;
-		var bar = Math.floor(note.position / subdivisions);
+		var subDivisions = tuneJSON.head.subDivisions * tuneJSON.head.barLength;
+		var bar = Math.floor(note.pos / subDivisions);
 		var pitch =  midiHelper.convertPitchToIndex(note.pitch);
-		var left = ((note.position % subdivisions) / subdivisions) * 100 + '%';//could potentially divide by 0 but js protects us
-		var length = (note.length / subdivisions) * 100 + '%';
+		var left = ((note.pos % subDivisions) / subDivisions) * 100 + '%';//could potentially divide by 0 but js protects us
+		var length = (note.length / subDivisions) * 100 + '%';
 		console.log("bar " + bar);
-		console.log("subdivisions " + subdivisions);
+		console.log("subDivisions " + subDivisions);
 		$tab.children('.bar').eq(bar).children('.pitch').eq(pitch).append('<div class="newNote" id="note' + note.id +'"></div>');
 
 		$('.newNote').css({
@@ -323,7 +329,7 @@
 			drag : function(event,ui) {
 				//ok so we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
-					var noteValue = Math.round($note.width() / $note.parent().width() * getSubdivisions());
+					var noteValue = Math.round($note.width() / $note.parent().width() * getsubDivisions());
 					if(noteValue) {
 						drawPreview(event,noteValue,$('.preview'));
 					}
@@ -339,30 +345,30 @@
 			handles : 'w,e',
 			containment : 'parent',
 			start : function(event,ui) {
-				var subdivisions = getSubdivisions();
-				pageData.previousLeft = Math.round(subdivisions * (ui.originalPosition.left / ui.element.parent().width()));
-				pageData.previousLength = Math.round(subdivisions * (ui.originalElement.width() / ui.element.parent().width()));
+				var subDivisions = getsubDivisions();
+				pageData.previousLeft = Math.round(subDivisions * (ui.originalPosition.left / ui.element.parent().width()));
+				pageData.previousLength = Math.round(subDivisions * (ui.originalElement.width() / ui.element.parent().width()));
 				pageData.previousLeftRaw = ui.element.position().left;
 				pageData.originalLeft = pageData.previousLeft;
 				pageData.originalLength = pageData.previousLength;
 			},
 			resize : function(event,ui) {
-				var subdivisions = getSubdivisions();//saves overhead of repeated function calls
-				var left = Math.round(subdivisions * (ui.element.position().left / ui.element.parent().width()));
-				var leftPercent = (left / subdivisions) * 100 + '%';
+				var subDivisions = getsubDivisions();//saves overhead of repeated function calls
+				var left = Math.round(subDivisions * (ui.element.position().left / ui.element.parent().width()));
+				var leftPercent = (left / subDivisions) * 100 + '%';
 				var length;
 				if(left === pageData.previousLeft) {
 					if(ui.element.position().left !== pageData.previousLeftRaw) {
 						length = pageData.previousLength;
 					} else {
-						length = Math.round(subdivisions * (ui.element.width() / ui.element.parent().width()));
+						length = Math.round(subDivisions * (ui.element.width() / ui.element.parent().width()));
 					}
 				} else {
 					var leftDifference = left - pageData.previousLeft;
 					console.log(leftDifference);
 					length = pageData.previousLength - leftDifference;
 				}
-				var lengthPercent = (length / subdivisions) * 100 + '%';
+				var lengthPercent = (length / subDivisions) * 100 + '%';
 				ui.element.css({
 					'left' : leftPercent,
 					'width' : lengthPercent
@@ -380,8 +386,8 @@
 					}
 				}); 
 				if(conflict) {
-					var originalLeft = (pageData.originalLeft / getSubdivisions()) * 100 + '%';
-					var originalLength = (pageData.originalLength / getSubdivisions()) * 100 + '%';
+					var originalLeft = (pageData.originalLeft / getsubDivisions()) * 100 + '%';
+					var originalLength = (pageData.originalLength / getsubDivisions()) * 100 + '%';
 					ui.element.css({
 						'left' : originalLeft,
 						'width' : originalLength
@@ -391,32 +397,31 @@
 				var id = $note.attr('id');	
 				console.log(id);
 				var oldNote = deleteNote(id);
-				console.log(oldNote);	
-				var trackInfo = {track : $('.tab-pane.active').index()};
-				var deleteData = $.extend(oldNote,trackInfo)
-				var deleteInfo = {topic : 'delete', data : deleteData};
-				ajaxHelper.notifyServer(pageData.songId,deleteInfo);
-				pageData.quarantinedChanges.push(deleteInfo);
+				var trackId = $('.tab-pane.active').index();
+				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : generateId('delete') };
+
+				ajaxHelper.deleteNote(pageData.songId,deleteData);
+				pageData.quarantinedChanges.push(deleteData);
 				var newId = generateId();
 				$note.attr('id',newId);
 				//need to put new size into a data and ajax it and update id of div
-				var subdivisions = getSubdivisions();//saves overhead of repeated function calls
+				var subDivisions = getsubDivisions();//saves overhead of repeated function calls
 				var left = pageData.previousLeft;
 				var bar = $note.parent().parent().index();
-				var newPosition = bar * subdivisions + left;
+				var newPosition = bar * subDivisions + left;
 				var newLength = pageData.previousLength;
 				var newNoteData = {
 					id : newId,
-					position : newPosition,
-					pitch : deleteData.pitch,
-					length : newLength
+					pos : newPosition,
+					pitch : oldNote.pitch,
+					length : newLength,
 				};
-				tuneJSON.tracks[trackInfo.track].notes.push(newNoteData);
-				var newNoteInfo = $.extend(newNoteData,trackInfo);
+				tuneJSON.tracks[trackId].notes.push(newNoteData);
+				newNoteData.track = trackId;//set the track
 
-				var actionId = generateId();
-				var newNoteToSend = { topic: 'add',data : newNoteInfo};
-				ajaxHelper.notifyServer(pageData.songId,newNoteToSend);
+				var actionId = generateId('add');
+				var newNoteToSend = { actionId : actionId, note : newNoteData};
+				ajaxHelper.addNote(pageData.songId,newNoteToSend);
 				pageData.quarantinedChanges.push(newNoteToSend);
 			}
 			
@@ -426,9 +431,9 @@
 	function getNoteValue($target) {
 		var note;
 		if($target.hasClass('note-crotchet')) {
-			note = tuneJSON.head.subdivisions * noteValues.crotchet;
+			note = tuneJSON.head.subDivisions * noteValues.crotchet;
 		} else if($target.hasClass('note-quaver')) {
-			note = tuneJSON.head.subdivisions * noteValues.quaver;
+			note = tuneJSON.head.subDivisions * noteValues.quaver;
 		}
 		return note;
 	}
@@ -496,7 +501,7 @@
 		$('select#instrument-class').change();//call it once to set fill it in initially
 
 		$('button.add-instrument').click(function() {
-			if(tuneJSON.tracks.length >= pageData.maxTabs) {
+			if($('.tab-content').children().length >= pageData.maxTabs) {
 				return;//we have reached maximum number of tabs
 			}
 			$('.ui-dialog-titlebar').html("Add Instrument");
@@ -518,12 +523,15 @@
 		var note;
 	
 		for(var i = 0; i < tuneJSON.tracks.length; i++) {
-			for(var j = 0; j < tuneJSON.tracks[i].notes.length; j++) {
-				if(tuneJSON.tracks[i].notes[j].id + '' === id) {//converts any numbers to strings for comparison
-					note = tuneJSON.tracks[i].notes[j];
-					tuneJSON.tracks[i].notes.splice(j,1);
+			if(typeof tuneJSON.tracks[i].notes !== 'undefined') {
+				for(var j = 0; j < tuneJSON.tracks[i].notes.length; j++) {
+					if(tuneJSON.tracks[i].notes[j].id + '' === id) {//converts any numbers to strings for comparison
+						note = tuneJSON.tracks[i].notes[j];
+						tuneJSON.tracks[i].notes.splice(j,1);
+					}
 				}
 			}
+			
 		}
 		return note;
 	}
@@ -590,8 +598,8 @@
 		});
 	}
 
-	function getSubdivisions() {
-		return tuneJSON.head.subdivisions * tuneJSON.head.barLength;
+	function getsubDivisions() {
+		return tuneJSON.head.subDivisions * tuneJSON.head.barLength;
 	}
 
 	function initEditor() {

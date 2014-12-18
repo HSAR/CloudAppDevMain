@@ -33,36 +33,22 @@ function AjaxHandler() {
 			}
 		});
 	};
-	this.notifyServer = function(id,data) {
-		var url;
-		var type = null;
-		switch(data.topic) {
-			case 'add':
-				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes';
-				type = 'PUT';
-				break;
-			case 'delete':
-				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes'
-				type = 'DELETE'
-				break;
-			default :
-				console.log("Ajax error");
-				console.log(data);
-				return;
-				//put error case here
-				break;		
-		}
-		console.log(data);
-		console.log(url);
+	
+	this.addNote = function(id,msg) {
+		msg.action = 'noteAdd';
 		$.ajax({
-				type : type,
-				url : url,
-				data : data,
-				dataType : 'JSON',
-				success : function() {
-					//TODO	
-				}
-			});
+			type : 'PUT',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes',
+			data : msg,
+			dataType : 'JSON'
+		});
+	};
+	this.deleteNote = function(id,msg) {
+		$.ajax({
+			type : 'DELETE',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes?actionId=' + msg.actionId +
+			'&track=' + msg.trackId + '&noteId=' + msg.noteId
+		});
 	};
 	this.compileTune = function(id,cb) {
 		//asks the server to compile the tune into a midi file and send it back
