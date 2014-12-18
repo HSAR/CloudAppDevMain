@@ -192,7 +192,7 @@ class UpdateHandler(webapp2.RequestHandler):
                         print "Invalid"
 
                     new_action["checksum"] = calculateChecksum(
-                            json.loads(jingle)) # checksum post jingle change
+                            jingle) # checksum post jingle change
 
                 datastore.changeJingle(jid, jingle)
                 
