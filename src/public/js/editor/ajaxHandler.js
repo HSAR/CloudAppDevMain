@@ -1,8 +1,8 @@
 function AjaxHandler() {
-	this.getToken = function(cb) {
+	this.getToken = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/auth/token',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/token',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -20,7 +20,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/songs/' + id,
+			url : 'http://jinglr-music.appspot.com/songs/' + id,
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -35,6 +35,7 @@ function AjaxHandler() {
 	};
 	this.notifyServer = function(id,data) {
 		var url;
+		var type = null;
 		switch(data.topic) {
 			case 'add':
 				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes';
@@ -42,7 +43,7 @@ function AjaxHandler() {
 				break;
 			case 'delete':
 				url = 'http://jinglr-music.appspot.com/songs/' + id + '/notes'
-				type = 'GET'
+				type = 'DELETE'
 				break;
 			default :
 				console.log("Ajax error");
@@ -54,7 +55,7 @@ function AjaxHandler() {
 		console.log(data);
 		console.log(url);
 		$.ajax({
-				type : 'POST',
+				type : type,
 				url : url,
 				data : data,
 				dataType : 'JSON',
@@ -67,7 +68,7 @@ function AjaxHandler() {
 		//asks the server to compile the tune into a midi file and send it back
 		$.ajax({
 			type : 'GET',
-			url : 'http://localhost:9080/songs/' + id + '/midi',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/midi',
 			success : function(data) {
 				if(true) {
 					//TODO add some file validation here
@@ -79,10 +80,10 @@ function AjaxHandler() {
 		});
 	};
 
-	this.changeInstrument = function(data) {
+	this.changeInstrument = function(id,data) {
 		$.ajax({
-			type : 'POST',
-			url : 'http://example-change.com',
+			type : 'PATCH',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
 			data  : data,
 			success : function() {
 				//TODO
@@ -90,10 +91,10 @@ function AjaxHandler() {
 		});
 	}
 
-	this.addInstrument = function(data) {
+	this.addInstrument = function(id,data) {
 		$.ajax({
-			type : 'POST',
-			url : 'http://example-cadd-instrument.com',
+			type : 'PUT',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
 			data  : data,
 			success : function() {
 				//TODO
@@ -101,15 +102,15 @@ function AjaxHandler() {
 		});
 	}
 
-	this.deleteInstrument = function(data) {
+	this.deleteInstrument = function(id,data) {
 		$.ajax({
-			type : 'POST',
-			url : 'http://example-delete-instrument.com',
+			type : 'DELETE',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
 			data  : data,
 			success : function() {
 				//TODO
 			}
-		})
+		});
 	}
 
 }

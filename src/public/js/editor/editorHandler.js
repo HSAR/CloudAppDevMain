@@ -395,7 +395,7 @@
 				var trackInfo = {track : $('.tab-pane.active').index()};
 				var deleteData = $.extend(oldNote,trackInfo)
 				var deleteInfo = {topic : 'delete', data : deleteData};
-				ajaxHelper.notifyServer(deleteInfo);
+				ajaxHelper.notifyServer(pageData.songId,deleteInfo);
 				pageData.quarantinedChanges.push(deleteInfo);
 				var newId = generateId();
 				$note.attr('id',newId);
@@ -545,7 +545,7 @@
 		setUpDroppable();
 
 		tuneJSON.tracks.push({instrument : id, notes : []});
-		ajaxHelper.addInstrument({instrument : id});//TODO might need to send where also
+		ajaxHelper.addInstrument(pageData.songId,{instrument : id});//TODO might need to send where also
 		//TODO quarantine the change
 		$('.newtag').click(function() {
 			deleteInstrument($(this).parent().parent().index());
@@ -561,7 +561,7 @@
 		$('span.instrument-name').html(midiHelper.getInstrumentName(id));
 		var track = $('.tab-pane.active').index();
 		tuneJSON.tracks[track].instrument = id;
-		ajaxHelper.changeInstrument({track : track,instrument : id});
+		ajaxHelper.changeInstrument(pageData.songId,{track : track,instrument : id});
 
 		//TODO quarantine the change
 	}
@@ -575,7 +575,7 @@
 
 		 var oldTrack = tuneJSON.tracks.splice(tabIndex,1);
 		 $('button.add-instrument').removeAttr("disabled");//removes the disable on the button if it exists
-		 ajaxHelper.deleteInstrument({track : tabIndex, instrument : oldTrack.instrument});
+		 ajaxHelper.deleteInstrument(pageData.songId,{track : tabIndex, instrument : oldTrack.instrument});
 		 
 	}
 
@@ -585,7 +585,7 @@
 	}
 
 	function getToken() {
-		ajaxHelper.getToken(function(token) {
+		ajaxHelper.getToken(pageData.songId,function(token) {
 			channelHelper.initSocket(token);
 		});
 	}
@@ -603,6 +603,11 @@
 	//what do we want to test? loading notes from JSON
 
 	$(function() {
+		//set song id before doing anything else
+		if($('div#songid').length > 0) {
+			pageData.songId = $('div#songid').html();
+		}
+
 		initEditor();
 
 
