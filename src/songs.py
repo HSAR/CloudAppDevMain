@@ -164,6 +164,30 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
             except ValueError:
                 return error.respond(400, 'Invalid JSON in request body')
 
+    def patch(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not ('action' in parsed_request_json and
+                                'actionId' in parsed_request_json and
+                                'instrumentTrack' in parsed_request_json and
+                                'instrumentNumber' in parsed_request_json):
+                    return error.respond(400, 'Missing property in request JSON')
+                else:
+                    datastore.submitAction(songid, parsed_request_json)
+                    success_object = {
+                        'status': 'true',
+                    }
+                    self.response.write(json.dumps(success_object))
+                    self.response.set_status(200)
+                    return
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
 
 class TempoChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
@@ -271,6 +295,9 @@ class BeginEditing(webapp2.RequestHandler):
                 self.response.out.write(json.dumps(request_result))
 
 
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/<songid>', handler=SongGetHandler,
                                                         name='song-get-by-id'),
