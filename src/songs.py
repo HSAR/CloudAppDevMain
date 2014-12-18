@@ -27,36 +27,28 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class SongGetHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
-            self.abort(400)
+            return error.respond(400, "Invalid song ID in request URL")
         jingle_json = datastore.getJingleJSON(songid)
         if jingle_json:
             self.response.out.write(json.dumps(jingle_json))
         else:
-            return error.respond("404", "Jingle ID has no associated data")
+            return error.respond(404, "Jingle ID has no associated data")
 
 
 class SongGetMidiHandler(webapp2.RequestHandler):
     def get(self, songid):
-        # if not songid:
-        self.abort(400)
-        # datastore not working
-        # jingle = datastore.getJingleById(songid)
-        # hardcode songs for testing
-        #jingle = None
-        #if songid == "0":
-        #    jingle = song0
-        #elif songid == "1":
-        #    jingle = song1
-        #if jingle:
-        #    try:
-        #        #self.response.out.write(midi.getMIDIBase64(json.dumps(jingle.jingle)))
-        #        self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
-        #    except midi.MIDIError as exc:
-        #        raise exc
-        #        self.response.out.write(midi.MIDIError.message)
-        #        self.abort(500)
-        #else:
-        #    self.abort(404)
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            jingle = datastore.getJingleById(songid)
+            if jingle:
+                try:
+                    #self.response.out.write(midi.getMIDIBase64(json.dumps(jingle.jingle)))
+                    self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
+                except midi.MIDIError as exc:
+                    return error.respond(500, midi.MIDIError.message)
+            else:
+                return error.respond(404, "Song not found.")
 
 
 class NoteChangeHandler(webapp2.RequestHandler):
