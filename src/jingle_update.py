@@ -10,18 +10,18 @@ def add_note(jingle, action):
     action_note_id     = action['note']['id']
     action_note_pos    = action['note']['pos']
     action_note_track  = action['note']['track']
-    action_note_note   = action['note']['note']
+    action_note_pitch   = action['note']['pitch']
     action_note_length = action['note']['length']
     
     if type(action_note_id) is unicode:
         if type(action_note_pos) is int:
             if type(action_note_track) is int:
-                if type(action_note_note) is int:
+                if type(action_note_pitch) is int:
                     if type(action_note_length) is int:
                         
                         if action_note_pos >= 0:
                             if action_note_track >=0 and action_note_track <= 14:
-                                if action_note_note >=0 and action_note_note <= 127:
+                                if action_note_pitch >=0 and action_note_pitch <= 127:
                                     if action_note_length > 0:
                                     
                                         track = jingle['tracks'][action_note_track]
@@ -29,7 +29,7 @@ def add_note(jingle, action):
                                             notes = track['notes']
                                             note_start = action_note_pos
                                             note_end = action_note_pos + action_note_length
-                                            note_pitch = action_note_note
+                                            note_pitch = action_note_pitch
                                             
                                             note_unique = True
                                             
@@ -44,12 +44,12 @@ def add_note(jingle, action):
                                                 new_note['id']     = action_note_id
                                                 new_note['pos']    = action_note_pos
                                                 new_note['length'] = action_note_length
-                                                new_note['note']   = action_note_note
+                                                new_note['pitch']   = action_note_pitch
                                         
                                                 for note in notes:
                                                     current_start = note['pos']
                                                     current_end = current_start + note['length']
-                                                    current_pitch = note['note']
+                                                    current_pitch = note['pitch']
                                                     
                                                     if not (current_end <= note_start or current_start >= note_end or current_pitch != note_pitch):
                                                         notes.remove(note)
@@ -61,7 +61,7 @@ def add_note(jingle, action):
                                     else:
                                         logging.warning('A non positive length was provided: ' + str(action_note_length))
                                 else:
-                                    logging.warning('A note number was not in the valid range: ' + str(action_note_note))
+                                    logging.warning('A note number was not in the valid range: ' + str(action_note_pitch))
                             else:
                                 logging.warning('A track number was not in the valid range: ' + str(action_track))
                         else:
@@ -70,7 +70,7 @@ def add_note(jingle, action):
                     else:
                         logging.warning('A non int length was given: ' + str(action_note_length))
                 else:
-                    logging.warning('A non int note was given: ' + str(action_note_note))
+                    logging.warning('A non int note was given: ' + str(action_note_pitch))
             else:
                 logging.warning('A non int track number was given: ' + str(action_note_track))
         else:

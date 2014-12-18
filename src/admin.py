@@ -74,7 +74,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '0',
             "pos": 0,
             "track": 0,
-            "note": 48,
+            "pitch": 48,
             "length":4
           }
         }
@@ -87,7 +87,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '1',
             "pos": 4,
             "track": 0,
-            "note": 53,
+            "pitch": 53,
             "length":2
           }
         }
@@ -100,7 +100,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '2',
             "pos": 6,
             "track": 0,
-            "note": 53,
+            "pitch": 53,
             "length":1
           }
         }
@@ -113,7 +113,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '3',
             "pos": 7,
             "track": 0,
-            "note": 55,
+            "pitch": 55,
             "length":1
           }
         }
@@ -126,7 +126,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '4',
             "pos": 8,
             "track": 0,
-            "note": 53,
+            "pitch": 53,
             "length":1
           }
         }
@@ -139,7 +139,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '5',
             "pos": 9,
             "track": 0,
-            "note": 52,
+            "pitch": 52,
             "length":1
           }
         }
@@ -152,7 +152,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '6',
             "pos": 10,
             "track": 0,
-            "note": 50,
+            "pitch": 50,
             "length":2
           }
         }
@@ -165,7 +165,7 @@ class InitialDataLoader(webapp2.RequestHandler):
             "id": '7',
             "pos": 12,
             "track": 0,
-            "note": 50,
+            "pitch": 50,
             "length":2
           }
         }
