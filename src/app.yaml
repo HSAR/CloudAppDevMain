@@ -25,9 +25,6 @@ handlers:
 - url: /songs/search.*
   script: songs_search.application
 
-- url: /auth.*
-  script: auth.application
-
 - url: /_ah.*
   script: admin.application
 

@@ -23,6 +23,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+
 class SongGetHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
@@ -36,8 +37,8 @@ class SongGetHandler(webapp2.RequestHandler):
 
 class SongGetMidiHandler(webapp2.RequestHandler):
     def get(self, songid):
-        #if not songid:
-            self.abort(400)
+        # if not songid:
+        self.abort(400)
         # datastore not working
         # jingle = datastore.getJingleById(songid)
         # hardcode songs for testing
@@ -241,7 +242,11 @@ class StateDumpHandler(webapp2.RequestHandler):
 class EditorPageHandler(webapp2.RequestHandler):
     def get(self, songid):
         user = users.get_current_user()
-        if user:
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not user:
+            error.respond(401, "User is not signed in")
+        else:
             signout_bar = (
                 'Signed in as %s. (<a href="%s">sign out</a>)' % (user.nickname(), users.create_logout_url('/')))
             template_values = {
@@ -251,8 +256,19 @@ class EditorPageHandler(webapp2.RequestHandler):
             template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
             datastore.beginEditing(songid)
             self.response.write(template.render(template_values))
+
+
+class BeginEditing(webapp2.RequestHandler):
+    def get(self, songid):
+        self.response.headers['Content-Type'] = 'application/json'
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
         else:
-            error.respond(401, "User is not signed in")
+            request_result = datastore.beginEditing(songid)
+            if not 'token' in request_result:
+                return error.respond(500, "Token request failed")
+            else:
+                self.response.out.write(json.dumps(request_result))
 
 
 application = webapp2.WSGIApplication([
@@ -266,10 +282,13 @@ application = webapp2.WSGIApplication([
                                                         name='instrument-changes'),
                                           webapp2.Route(r'/songs/<songid>/tempo', handler=TempoChangeHandler,
                                                         name='tempo-changes'),
-                                          webapp2.Route(r'/songs/<songid>/subdivisions', handler=SubdivisionChangeHandler,
+                                          webapp2.Route(r'/songs/<songid>/subdivisions',
+                                                        handler=SubdivisionChangeHandler,
                                                         name='subdivision-changes'),
                                           webapp2.Route(r'/songs/<songid>/state', handler=StateDumpHandler,
                                                         name='state-dump'),
+                                          webapp2.Route(r'/songs/<songid>/token', handler=BeginEditing,
+                                                        name='editor'),
                                           webapp2.Route(r'/songs/<songid>/editor', handler=EditorPageHandler,
                                                         name='editor'),
                                       ], debug=True)
