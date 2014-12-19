@@ -40,11 +40,11 @@ class SongGetMidiHandler(webapp2.RequestHandler):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
         else:
-            jingle = datastore.getJingleById(songid)
+            jingle = datastore.getJingleJSON(songid)
             if jingle:
                 try:
-                    #self.response.out.write(midi.getMIDIBase64(json.dumps(jingle.jingle)))
-                    self.response.out.write(midi.getMIDIBase64(json.dumps(jingle)))
+                    self.response.out.write(midi.getMIDIBase64(json.dumps(
+                        jingle)))
                 except midi.MIDIError as exc:
                     return error.respond(500, midi.MIDIError.message)
             else:
