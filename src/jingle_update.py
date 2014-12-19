@@ -226,8 +226,8 @@ def edit_instrument(jingle, action):
 # Calculates a checksum of an object, used for verifying integrity.
 def generate_checksum(obj):
     return zlib.adler32(
-            json.dumps(obj, indent=None, separators=(',', ':'),
-                sort_keys=True),
+            json.dumps(obj, ensure_ascii=False, indent=None,
+                separators=(',', ':'), sort_keys=True),
             1) & 0xffffffff # coerce to unsigned integer, as recommended by the
                             # documentation, because this part of the standard
                             # library made some poor life choices
