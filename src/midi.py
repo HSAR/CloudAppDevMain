@@ -157,9 +157,9 @@ def getMIDI(midiJSON):
             for noteData in sorted(notes, key=lambda k: k['pos']):
                 if not 'length' in noteData:
                     raise MIDIError("Invalid Jingle JSON format. Missing 'length' from notes")
-                if not 'note' in noteData:
-                    raise MIDIError("Invalid Jingle JSON format. Missing 'note' from notes")
-                if noteData['note'] < 0 or noteData['note'] > 127:
+                if not 'pitch' in noteData:
+                    raise MIDIError("Invalid Jingle JSON format. Missing 'pitch' from notes")
+                if noteData['pitch'] < 0 or noteData['pitch'] > 127:
                     raise MIDIError("Invalid note number. Must be in range of 0 to 127")
                 if noteData['pos'] < 0:
                     raise MIDIError("Invalid pos. Must not be negative")
@@ -169,14 +169,14 @@ def getMIDI(midiJSON):
                 noteOnEvent = {
                     "pos": noteData['pos'],
                     "chan":     currentChannel,
-                    "note":    noteData['note'],
+                    "pitch":    noteData['pitch'],
                     "noteOn":   True
                 }
                 
                 noteOffEvent = {
                     "pos": noteData['pos'] + noteData['length'],
                     "chan":     currentChannel,
-                    "note":    noteData['note'],
+                    "pitch":    noteData['pitch'],
                     "noteOn":   False
                 }
                 
@@ -206,7 +206,7 @@ def getMIDI(midiJSON):
             offset = 0x90
         else:
             offset = 0x80
-        note = bytearray([offset + noteEvent['chan'], noteEvent['note'], 127]) #use a hard coded volume. 127 is max
+        note = bytearray([offset + noteEvent['chan'], noteEvent['pitch'], 127]) #use a hard coded volume. 127 is max
         delta.extend(note)
         trackEvents.extend(delta)
         

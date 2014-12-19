@@ -25,7 +25,7 @@ def test_one_note_midi():
             {
                 "instrument":0,
                 "notes": [
-                    {"id":1, "pos":0, "length":96, "note":69}
+                    {"id":1, "pos":0, "length":96, "pitch":69}
                 ]
             }
         ]
@@ -56,91 +56,91 @@ def test_multi_channel():
             {
                 "instrument":0,
                 "notes": [
-                    {"pos":0, "length":96, "note":69}
+                    {"pos":0, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":4,
                 "notes": [
-                    {"pos":96, "length":96, "note":69}
+                    {"pos":96, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":20,
                 "notes": [
-                    {"pos":192, "length":96, "note":69}
+                    {"pos":192, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":28,
                 "notes": [
-                    {"pos":288, "length":96, "note":69}
+                    {"pos":288, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":65,
                 "notes": [
-                    {"pos":384, "length":96, "note":69}
+                    {"pos":384, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":70,
                 "notes": [
-                    {"pos":480, "length":96, "note":69}
+                    {"pos":480, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":72,
                 "notes": [
-                    {"pos":576, "length":96, "note":69}
+                    {"pos":576, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":77,
                 "notes": [
-                    {"pos":672, "length":96, "note":69}
+                    {"pos":672, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":80,
                 "notes": [
-                    {"pos":768, "length":96, "note":69}
+                    {"pos":768, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":57,
                 "notes": [
-                    {"pos":864, "length":96, "note":69}
+                    {"pos":864, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":81,
                 "notes": [
-                    {"pos":960, "length":96, "note":69}
+                    {"pos":960, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":18,
                 "notes": [
-                    {"pos":1056, "length":96, "note":69}
+                    {"pos":1056, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":51,
                 "notes": [
-                    {"pos":1152, "length":96, "note":69}
+                    {"pos":1152, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":58,
                 "notes": [
-                    {"pos":1248, "length":96, "note":69}
+                    {"pos":1248, "length":96, "pitch":69}
                 ]
             },
             {
                 "instrument":25,
                 "notes": [
-                    {"pos":1344, "length":96, "note":69}
+                    {"pos":1344, "length":96, "pitch":69}
                 ]
             }
         ]
@@ -214,13 +214,13 @@ def test_many_notes():
             {
                 "instrument":0,
                 "notes": [
-                    {"pos":0, "length":96, "note":57},
-                    {"pos":0, "length":96, "note":59},
-                    {"pos":0, "length":96, "note":60},
-                    {"pos":0, "length":96, "note":62},
-                    {"pos":0, "length":96, "note":64},
-                    {"pos":0, "length":96, "note":65},
-                    {"pos":0, "length":96, "note":67}
+                    {"pos":0, "length":96, "pitch":57},
+                    {"pos":0, "length":96, "pitch":59},
+                    {"pos":0, "length":96, "pitch":60},
+                    {"pos":0, "length":96, "pitch":62},
+                    {"pos":0, "length":96, "pitch":64},
+                    {"pos":0, "length":96, "pitch":65},
+                    {"pos":0, "length":96, "pitch":67}
                 ]
             }
         ]
@@ -264,14 +264,14 @@ def test_delta_values():
             {
                 "instrument":0,
                 "notes": [
-                    {"pos":0, "length":1, "note":57},
-                    {"pos":1, "length":48, "note":57},
-                    {"pos":49, "length":96, "note":57},
-                    {"pos":145, "length":127, "note":57},
-                    {"pos":272, "length":128, "note":57},
-                    {"pos":400, "length":137, "note":57},
-                    {"pos":537, "length":1056118, "note":57},
-                    {"pos":1056655, "length":34656598, "note":57}
+                    {"pos":0, "length":1, "pitch":57},
+                    {"pos":1, "length":48, "pitch":57},
+                    {"pos":49, "length":96, "pitch":57},
+                    {"pos":145, "length":127, "pitch":57},
+                    {"pos":272, "length":128, "pitch":57},
+                    {"pos":400, "length":137, "pitch":57},
+                    {"pos":537, "length":1056118, "pitch":57},
+                    {"pos":1056655, "length":34656598, "pitch":57}
                 ]
             }
         ]
@@ -318,10 +318,10 @@ def test_out_of_order():
             {
                 "instrument":0,
                 "notes": [
-                    {"pos":288, "length":96, "note":69},
-                    {"pos":0, "length":96, "note":69},
-                    {"pos":192, "length":96, "note":69},
-                    {"pos":96, "length":96, "note":69}
+                    {"pos":288, "length":96, "pitch":69},
+                    {"pos":0, "length":96, "pitch":69},
+                    {"pos":192, "length":96, "pitch":69},
+                    {"pos":96, "length":96, "pitch":69}
                 ]
             }
         ]
@@ -360,12 +360,12 @@ def test_out_of_order_2():
             {
                 "instrument":0,
                 "notes": [
-                    {"pos":384, "length":96, "note":69},
-                    {"pos":0, "length":384, "note":70},
-                    {"pos":96, "length":96, "note":69},
-                    {"pos":288, "length":96, "note":69},
-                    {"pos":0, "length":96, "note":69},
-                    {"pos":192, "length":96, "note":69}
+                    {"pos":384, "length":96, "pitch":69},
+                    {"pos":0, "length":384, "pitch":70},
+                    {"pos":96, "length":96, "pitch":69},
+                    {"pos":288, "length":96, "pitch":69},
+                    {"pos":0, "length":96, "pitch":69},
+                    {"pos":192, "length":96, "pitch":69}
                 ]
             }
         ]
@@ -474,7 +474,7 @@ def test_bad_json_formats():
         
     JSON = """
     {"head": {"subDivisions":1, "tempo":4},
-     "tracks": [{"notes":[{"pos":0, "length":0, "note":0}]}]}
+     "tracks": [{"notes":[{"pos":0, "length":0, "pitch":0}]}]}
     """
     try:
         getMIDI(JSON)
@@ -567,14 +567,14 @@ def test_bad_json_formats():
         getMIDI(JSON)
         assert False, "no note"
     except MIDIError as exep:
-        assert exep.message == "Invalid Jingle JSON format. Missing 'note' from notes", "no note"
+        assert exep.message == "Invalid Jingle JSON format. Missing 'pitch' from notes", "no note"
         
     JSON = """
     {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":96, "note":-1}
+                    {"pos":0, "length":96, "pitch":-1}
                  ]}
             ]}
     """
@@ -589,7 +589,7 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":96, "note":128}
+                    {"pos":0, "length":96, "pitch":128}
                  ]}
             ]}
     """
@@ -604,7 +604,7 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":-1, "length":96, "note":0}
+                    {"pos":-1, "length":96, "pitch":0}
                  ]}
             ]}
     """
@@ -619,7 +619,7 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":-1, "note":0}
+                    {"pos":0, "length":-1, "pitch":0}
                  ]}
             ]}
     """
@@ -634,82 +634,82 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":1, "note":127}
+                    {"pos":0, "length":1, "pitch":127}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 }
             ]}
@@ -725,77 +725,77 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":127}
+                    {"pos":0, "length":0, "pitch":127}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":268435456, "note":0}
+                    {"pos":0, "length":268435456, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 },
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":0, "note":0}
+                    {"pos":0, "length":0, "pitch":0}
                  ]
                 }
             ]}
@@ -811,7 +811,7 @@ def test_bad_json_formats():
      "tracks": [
                 {"instrument":0,
                  "notes": [
-                    {"pos":0, "length":268435455, "note":0}
+                    {"pos":0, "length":268435455, "pitch":0}
                  ]}
             ]}
     """
