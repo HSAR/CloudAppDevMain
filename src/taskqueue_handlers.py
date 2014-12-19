@@ -3,7 +3,6 @@ import webapp2
 import json
 import threading
 import logging
-import zlib # for checksum
 
 from google.appengine.ext import ndb
 from google.appengine.ext import db
@@ -20,15 +19,6 @@ edited_jingles_key = 'Edited Jingles'
 taskHandlerRunning = False
 noEditedJinglesCount = 0
 start_lock = threading.Lock()
-
-# Calculates a checksum of an object, used for verifying integrity.
-def calculateChecksum(obj):
-    return zlib.adler32(
-            json.dumps(obj, indent=None, separators=(',', ':'),
-                sort_keys=True),
-            1) & 0xffffffff # coerce to unsigned integer, as recommended by the
-                            # documentation, because this part of the standard
-                            # library made some poor life choices
 
 def makeSureTaskHandlerIsRunning():
     
@@ -188,11 +178,7 @@ class UpdateHandler(webapp2.RequestHandler):
                         new_action_list.append(new_action)
                     
                     else:
-                        new_action = {} # Haxx
                         print "Invalid"
-
-                    new_action["checksum"] = calculateChecksum(
-                            jingle) # checksum post jingle change
 
                 datastore.changeJingle(jid, jingle)
                 

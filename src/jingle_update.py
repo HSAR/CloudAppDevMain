@@ -1,4 +1,5 @@
 import logging
+import zlib
 
 #defines the functions for updating a jingle.
 #each function takes a jingle and an action
@@ -222,5 +223,11 @@ def edit_instrument(jingle, action):
     return [jingle, action]
 
 
-def generate_checksum(jingle):
-    return None
+# Calculates a checksum of an object, used for verifying integrity.
+def generate_checksum(obj):
+    return zlib.adler32(
+            json.dumps(obj, indent=None, separators=(',', ':'),
+                sort_keys=True),
+            1) & 0xffffffff # coerce to unsigned integer, as recommended by the
+                            # documentation, because this part of the standard
+                            # library made some poor life choices
