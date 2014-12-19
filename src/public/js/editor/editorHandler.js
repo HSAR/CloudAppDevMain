@@ -119,7 +119,7 @@
 
 						
 						ajaxHelper.deleteNote(pageData.songId,deleteData);
-						pageData.quarantinedChanges.push(actionId : actionId, note : oldNote);
+						pageData.quarantinedChanges.push({actionId : actionId, note : oldNote});
 					}
 					
 					//we need to turn preview's position into a json to send to server
@@ -269,7 +269,7 @@
 		$('.canvas').append(htmlToAppend);
 
 		$('.remove-note-button').click(function() {
-			deleteInstrument($(this).parent().parent().index());
+			deleteInstrument($(this).parent().parent().attr('id').substring(5));//get index of track
 		});
 	}
 
@@ -594,7 +594,7 @@
 		if(!tabIndex) {
 			return;
 		}
-		if($('.tab-pane.active').attr('id').substring(5) === tabId) {//if deleting the active tab
+		if($('.tab-pane.active').attr('id').substring(5) === tabId + '') {//if deleting the active tab
 			$('.nav-tabs li a').eq(tabIndex - 1).tab("show");//show the tab to the left
 		} 
 		$('.nav-tabs').children().eq(tabIndex).remove();

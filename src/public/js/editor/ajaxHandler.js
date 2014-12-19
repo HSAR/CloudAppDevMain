@@ -40,7 +40,7 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes',
-			data : msg,
+			data : JSON.stringify(msg),
 			dataType : 'JSON'
 		});
 	};
