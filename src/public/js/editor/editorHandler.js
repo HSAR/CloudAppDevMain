@@ -119,7 +119,7 @@
 
 						
 						ajaxHelper.deleteNote(pageData.songId,deleteData);
-						pageData.quarantinedChanges.push(deleteData);
+						pageData.quarantinedChanges.push(actionId : actionId, note : oldNote);
 					}
 					
 					//we need to turn preview's position into a json to send to server
@@ -131,7 +131,7 @@
 					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions)
 					var notePosition = (bar * subDivisions) + Math.round(left * subDivisions);
 					var noteLength = Math.round(width * subDivisions);
-					var noteTrack = $('.tab-pane.active').index();
+					var noteTrack = $('.tab-pane.active').attr('id').substring(5);//get trackid from dom element id
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
 					var noteId = generateId();//need new id even if just dragging
 					var actionId = generateId('add');
@@ -152,7 +152,8 @@
 					addNoteUI($('.preview'));//make it draggable etc
 					$('.preview').attr('id',noteId);
 					$('.preview').addClass('music-note').removeClass('preview').removeClass('no-display');
-					tuneJSON.tracks[noteTrack].notes.push(data.data);
+					delete data.note.track; //not needed for tune json
+					tuneJSON.tracks[noteTrack].notes.push(data.note);
 
 				}
 				
@@ -229,11 +230,11 @@
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
 					if(i === 0) {
-						htmlToAppend +='<li class="active"><a href="#track' + pageData.tabCount +
+						htmlToAppend +='<li class="active"><a href="#track' + i +
 						 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
 						 '</span></a></li>';
 					} else {
-						htmlToAppend += '<li role="presentation"><a href="#track' + pageData.tabCount + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
+						htmlToAppend += '<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
 						midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
 						'</span><button class="remove-tab-button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
 					}
@@ -252,9 +253,9 @@
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
 					if(i === 0) {
-						htmlToAppend += '<div  class="tab-pane active" id="track' + pageData.tabCount +'"></div>';
+						htmlToAppend += '<div  class="tab-pane active" id="track' + i +'"></div>';
 					} else {
-						htmlToAppend+= '<div  class="tab-pane" id="track' + pageData.tabCount +'"></div>';
+						htmlToAppend+= '<div  class="tab-pane" id="track' + i +'"></div>';
 					}
 					pageData.tabCount++;
 				}
@@ -395,11 +396,12 @@
 				var id = $note.attr('id');	
 				console.log(id);
 				var oldNote = deleteNote(id);
-				var trackId = $('.tab-pane.active').index();
-				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : generateId('delete') };
+				var trackId = $('.tab-pane.active').attr('id').substring(5);//get tab index in json
+				var action = generateId('delete');
+				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : action };
 
 				ajaxHelper.deleteNote(pageData.songId,deleteData);
-				pageData.quarantinedChanges.push(deleteData);
+				pageData.quarantinedChanges.push({actionId : action, note : oldNote });
 				var newId = generateId();
 				$note.attr('id',newId);
 				//need to put new size into a data and ajax it and update id of div
@@ -537,51 +539,75 @@
 	function addInstrument(id) {
 		var tabsLength = pageData.tabCount;
 
-		var htmlToAppend ='<li><a href="#track' + tabsLength +
+		//find an empty track for our new instrument to reside in
+		var trackId;
+		for(var i = 0; i < tuneJSON.tracks.length && !trackId; i++) {//stop once trackId is set
+			if(typeof tuneJSON.tracks[i].instrument === 'undefined') {
+				trackId = i;
+			}
+		}
+
+		var htmlToAppend ='<li><a href="#track' + trackId +
 					 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(id) + 
 					 '</span><button class="remove-tab-button newtag"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
 		$('.nav-tabs').append(htmlToAppend);
-		htmlToAppend = '<div class="tab-pane" id="track' + tabsLength +'"></div>';
+		htmlToAppend = '<div class="tab-pane" id="track' + trackId +'"></div>';
 		$('.tab-content').append(htmlToAppend);
 		loadBars($('.tab-content').children().last());
 		pageData.tabCount++;
 
 		$('.nav-tabs a:last').tab('show');
 
+		//enable event listeners on the new tab content
 		setUpDroppable();
 
-		tuneJSON.tracks.push({instrument : id, notes : []});
-		ajaxHelper.addInstrument(pageData.songId,{instrument : id});//TODO might need to send where also
-		//TODO quarantine the change
+		tuneJSON.tracks[trackId].instrument = id;
+		var actionId = generateId("instrumentAdd");
+		var instrument = {inst : id, track : trackId};
+		var data = {actionId : actionId, instrument : instrument};
+		ajaxHelper.addInstrument(pageData.songId,data);//TODO might need to send where also
+		pageData.quarantinedChanges.push(data);
 		$('.newtag').click(function() {
-			deleteInstrument($(this).parent().parent().index());
+			deleteInstrument(trackId);
 		});
 		$('.newtag').removeClass('newtag');//class is just used for flagging the new button created
 
-		if(tuneJSON.tracks.length >= pageData.maxTabs) {
+		if($('.tab-content').children().length >= pageData.maxTabs) {
 			$('button.add-instrument').attr("disabled","disabled");
 		}
 	}
 
 	function changeInstrument(id) {
-		$('span.instrument-name').html(midiHelper.getInstrumentName(id));
-		var track = $('.tab-pane.active').index();
+		$('li.active a span.instrument-name').html(midiHelper.getInstrumentName(id));
+		var track = $('.tab-pane.active').attr('id').substring(5);
 		tuneJSON.tracks[track].instrument = id;
-		ajaxHelper.changeInstrument(pageData.songId,{track : track,instrument : id});
+		actionId = generateId('instrumentEdit');
+		var data = {actionId : actionId, instrumentTrack : track, instrumentNumber : id};
+		ajaxHelper.changeInstrument(pageData.songId,data);
+		pageData.quarantinedChanges.push(data);
 
-		//TODO quarantine the change
+		
 	}
 
-	function deleteInstrument(tabIndex) {
-		if($('.tab-pane.active').index() === tabIndex) {
+	function deleteInstrument(tabId) {
+		var tabIndex = $('#track' + tabId).index();
+		if(!tabIndex) {
+			return;
+		}
+		if($('.tab-pane.active').attr('id').substring(5) === tabId) {//if deleting the active tab
 			$('.nav-tabs li a').eq(tabIndex - 1).tab("show");//show the tab to the left
 		} 
 		$('.nav-tabs').children().eq(tabIndex).remove();
 		$('.tab-content').children().eq(tabIndex).remove();
 
-		 var oldTrack = tuneJSON.tracks.splice(tabIndex,1);
+		 tuneJSON.tracks[tabId].notes = [];
+		 delete tuneJSON.tracks[tabId].instrument;//wipe the track clean
+
+		 var actionId = generateId('deleteInstrument');
+		 var data = {actionId : actionId, instrumentTrack : tabId};
 		 $('button.add-instrument').removeAttr("disabled");//removes the disable on the button if it exists
-		 ajaxHelper.deleteInstrument(pageData.songId,{track : tabIndex, instrument : oldTrack.instrument});
+		 ajaxHelper.deleteInstrument(pageData.songId,data);
+		 pageData.quarantinedChanges.push(data);
 		 
 	}
 

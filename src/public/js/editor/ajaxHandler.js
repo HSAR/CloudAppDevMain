@@ -68,36 +68,36 @@ function AjaxHandler() {
 		});
 	};
 
-	this.changeInstrument = function(id,data) {
+	this.changeInstrument = function(id,msg) {
+		msg.action = 'instrumentEdit';
 		$.ajax({
 			type : 'PATCH',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
-			data  : data,
+			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
 			}
 		});
 	}
 
-	this.addInstrument = function(id,data) {
+	this.addInstrument = function(id,msg) {
+		msg.action = 'instrumentAdd';
+
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
-			data  : data,
+			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
 			}
 		});
 	}
 
-	this.deleteInstrument = function(id,data) {
+	this.deleteInstrument = function(id,msg) {
 		$.ajax({
 			type : 'DELETE',
-			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments',
-			data  : data,
-			success : function() {
-				//TODO
-			}
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments?action=instrumentRm&actionId=' +
+			msg.actionId + '&instrumentTrack=' + msg.instrumentTrack
 		});
 	}
 

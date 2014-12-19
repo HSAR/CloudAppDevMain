@@ -14,9 +14,11 @@ function ChannelHandler() {
 		
 	}
 	this.onMessage = function(msg) {
+		console.log("message received via channels");
+		console.log(msg);
 		//split this up based on what type of message we receive
 		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
-			if(pageData.quarantinedChanges[i] === msg) {
+			if(msg.actionId && pageData.quarantinedChanges[i].actionId === msg.actionId) {
 				quarantinedChanges.splice(i,1);
 				return;//remove for change list and return as already done locally
 			}
