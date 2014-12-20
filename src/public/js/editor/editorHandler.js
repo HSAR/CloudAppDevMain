@@ -131,7 +131,7 @@
 					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions)
 					var notePosition = (bar * subDivisions) + Math.round(left * subDivisions);
 					var noteLength = Math.round(width * subDivisions);
-					var noteTrack = $('.tab-pane.active').attr('id').substring(5);//get trackid from dom element id
+					var noteTrack = parseInt($('.tab-pane.active').attr('id').substring(5), 10);//get trackid from dom element id
 					var notePitch = midiHelper.convertIndexToPitch($('.preview').parent().index());
 					var noteId = generateId();//need new id even if just dragging
 					var actionId = generateId('add');
@@ -269,7 +269,7 @@
 		$('.canvas').append(htmlToAppend);
 
 		$('.remove-note-button').click(function() {
-			deleteInstrument($(this).parent().parent().attr('id').substring(5));//get index of track
+			deleteInstrument(parseInt($(this).parent().parent().attr('id').substring(5), 10));//get index of track
 		});
 	}
 
@@ -396,7 +396,7 @@
 				var id = $note.attr('id');	
 				console.log(id);
 				var oldNote = deleteNote(id);
-				var trackId = $('.tab-pane.active').attr('id').substring(5);//get tab index in json
+				var trackId = parseInt($('.tab-pane.active').attr('id').substring(5), 10);//get tab index in json
 				var action = generateId('delete');
 				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : action };
 
@@ -579,7 +579,7 @@
 
 	function changeInstrument(id) {
 		$('li.active a span.instrument-name').html(midiHelper.getInstrumentName(id));
-		var track = $('.tab-pane.active').attr('id').substring(5);
+		var track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
 		tuneJSON.tracks[track].instrument = id;
 		actionId = generateId('instrumentEdit');
 		var data = {actionId : actionId, instrumentTrack : track, instrumentNumber : id};
