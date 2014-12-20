@@ -2,11 +2,7 @@
  * it. It requires the two libraries, adler32.js and canonical-json.js */
 
 function checksum(object) {
-  /* Sort the tracks and notes */
-  object.tracks.sort(function (a, b) {
-    return a.instrument < b.instrument ? -1 :
-    a.instrument > b.instrument ? 1 : 0;
-  });
+  /* Sort the notes */
   for(var i=0; i<object.tracks.length; i++) {
     object.tracks[i].notes.sort(function (a, b) {
       return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
