@@ -2,6 +2,7 @@ import logging
 import json
 import zlib
 import operator
+import copy
 
 #defines the functions for updating a jingle.
 #each function takes a jingle and an action
@@ -80,7 +81,6 @@ def add_note(jingle, action):
             logging.warning('A non int position was given: ' + str(action_note_pos))
     else:
         logging.warning('A non string (' + str(type(action_note_id)) + ') note id was given: ' + str(action_note_id))
-    
     
     action['checksum'] = generate_checksum(jingle)
     
@@ -227,9 +227,11 @@ def edit_instrument(jingle, action):
 
 # Calculates a checksum of an object, used for verifying integrity.
 def generate_checksum(obj):
-    obj['tracks'].sort(key=operator.itemgetter('instrument'))
+    obj = copy.deepcopy(obj) # Don't mess with anything, otherwise orders might
+                             # change in the DB
     for t in obj['tracks']:
-        t['notes'].sort(key=operator.itemgetter('id'))
+        if 'notes' in t:
+            t['notes'].sort(key=operator.itemgetter('id'))
     return zlib.adler32(
             json.dumps(obj, ensure_ascii=False, indent=None,
                 separators=(',', ':'), sort_keys=True),
