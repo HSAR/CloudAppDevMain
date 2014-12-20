@@ -4,9 +4,11 @@
 function checksum(object) {
   /* Sort the notes */
   for(var i=0; i<object.tracks.length; i++) {
-    object.tracks[i].notes.sort(function (a, b) {
-      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-    });
+    if('notes' in object.tracks[i]) {
+      object.tracks[i].notes.sort(function (a, b) {
+        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+      });
+    }
   }
   /* canonicalJson returns JSON in a known order with no spaces. The escaping
    * and URI functions are the most compatible hack to convert the string to
