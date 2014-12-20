@@ -1,6 +1,7 @@
 import logging
 import json
 import zlib
+import operator
 
 #defines the functions for updating a jingle.
 #each function takes a jingle and an action
@@ -226,6 +227,9 @@ def edit_instrument(jingle, action):
 
 # Calculates a checksum of an object, used for verifying integrity.
 def generate_checksum(obj):
+    obj['tracks'].sort(key=operator.itemgetter('instrument'))
+    for t in obj['tracks']:
+        t['notes'].sort(key=operator.itemgetter('id'))
     return zlib.adler32(
             json.dumps(obj, ensure_ascii=False, indent=None,
                 separators=(',', ':'), sort_keys=True),
