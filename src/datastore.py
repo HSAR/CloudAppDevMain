@@ -167,7 +167,7 @@ def getEditedJingles():
     edited_jingles_dict = {}
     
     for jm in edited_jingles:
-        edited_jingles_dict[jm.jingle_id] = jm.client_ids
+        edited_jingles_dict[jm.jingle_id] = jm.tokens
         
     return edited_jingles_dict
 
@@ -480,7 +480,8 @@ def createJingle(uid, title, genre=None, tags=None):
             result = jingle.put()
             
             map_name = gen_id + 'Map'
-            jm = JinglrMap(id=map_name, jingle_id=gen_id, client_ids = [])
+            jm = JinglrMap(id=map_name, jingle_id=gen_id, client_ids = [],
+                           tokens = [])
             jm.put()
             break
         except (db.Timeout, db.InternalError):
@@ -580,6 +581,7 @@ def beginEditing(jid):
             return False
         
         jm.client_ids.append(client_id)
+        jm.tokens.append(channelToken)
         jm.put()
         return True
     
@@ -600,10 +602,10 @@ def beginEditing(jid):
             if edited_jingles == None:
                 new_edited_jingles = getEditedJingles()
                 if jid in new_edited_jingles:
-                    if client_id not in new_edited_jingles[jid]:
-                        new_edited_jingles[jid].append(client_id)
+                    if channelToken not in new_edited_jingles[jid]:
+                        new_edited_jingles[jid].append(channelToken)
                 else:
-                    new_edited_jingles[jid] = [client_id]
+                    new_edited_jingles[jid] = [channelToken]
                     
                 new_edited_jingles = json.dumps(new_edited_jingles)
                 
@@ -612,9 +614,9 @@ def beginEditing(jid):
             else:
                 edited_jingles = json.loads(edited_jingles)
                 if jid in edited_jingles:
-                    edited_jingles[jid].append(client_id)
+                    edited_jingles[jid].append(channelToken)
                 else:
-                    edited_jingles[jid] = [client_id]
+                    edited_jingles[jid] = [channelToken]
                 
                 edited_jingles = json.dumps(edited_jingles)
                 if client.cas(edited_jingles_key, edited_jingles, 300):
@@ -633,8 +635,12 @@ def stopEditing(client_id):
     @ndb.transactional
     def removeEditor(jm_key):
         jm = jm_key.get()
-        jm.client_ids.remove(client_id)
-        jm.put()
+        if client_id in jm.client_ids:
+            index = jm.client_ids.index(client_id)
+            jm.client_ids.remove(client_id)
+            token = jm.tokens[index]
+            jm.tokens.remove(token)
+            jm.put()
     
     
     jinglr_query = JinglrMap.query(JinglrMap.client_ids == client_id)
