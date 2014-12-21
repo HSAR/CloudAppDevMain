@@ -172,8 +172,8 @@
 
 	function playMidi(data) {
 		if(MIDI) {
-			MIDI.player.loadFile(data,function() {
-				MIDI.player.start();
+			MIDI.Player.loadFile('data:audio/midi;base64,' + data,function() {//stick file format on front of data
+				MIDI.Player.start();
 			});
 		}
 	}
