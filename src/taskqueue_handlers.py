@@ -106,7 +106,7 @@ class AutoHandler(webapp2.RequestHandler):
                         logging.info("it has some actions")
                         action_slice[key] = {}
                         action_slice[key]["actions"] = actions_loaded[key]
-                        action_slice[key]["client_ids"] = edited_jingles[key]
+                        action_slice[key]["tokens"] = edited_jingles[key]
                 
                 if len(action_slice) > 0:
                     logging.info("adding a task to a task queue")
@@ -182,8 +182,8 @@ class UpdateHandler(webapp2.RequestHandler):
 
                 datastore.changeJingle(jid, jingle)
                 
-                for client_id in data_dict["client_ids"]:
-                    channel.send_message(client_id, json.dumps(new_action_list))
+                for token in data_dict["tokens"]:
+                    channel.send_message(token, json.dumps(new_action_list))
                 
             while True:
                 try:
