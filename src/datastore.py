@@ -47,6 +47,36 @@ def generate_id(size=32, chars=string.ascii_lowercase
     return ''.join(random.SystemRandom().choice(chars) for _ in range(size))
 
 
+#adds a new token to the memcache
+def addTokenToCache(jid, channelToken):
+    
+    client = memcache.Client()
+    while True:
+        edited_jingles = client.gets(edited_jingles_key)
+        if edited_jingles == None:
+            new_edited_jingles = getEditedJingles()
+            if jid in new_edited_jingles:
+                if channelToken not in new_edited_jingles[jid]:
+                    new_edited_jingles[jid].append(channelToken)
+            else:
+                new_edited_jingles[jid] = [channelToken]
+                
+            new_edited_jingles = json.dumps(new_edited_jingles)
+            
+            if client.add(edited_jingles_key, new_edited_jingles, 300):
+                break
+        else:
+            edited_jingles = json.loads(edited_jingles)
+            if jid in edited_jingles:
+                edited_jingles[jid].append(channelToken)
+            else:
+                edited_jingles[jid] = [channelToken]
+            
+            edited_jingles = json.dumps(edited_jingles)
+            if client.cas(edited_jingles_key, edited_jingles, 300):
+                break
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~ READ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #takes a user id and returns the JingleUser Entity if one is found, or None
@@ -596,37 +626,59 @@ def beginEditing(jid):
     #now update memcache with the new value
     #{edited_jingles_key : {jid1 : [client_id_list], jid2 : [client_id_list]}}
     if success:
-        client = memcache.Client()
-        while True:
-            edited_jingles = client.gets(edited_jingles_key)
-            if edited_jingles == None:
-                new_edited_jingles = getEditedJingles()
-                if jid in new_edited_jingles:
-                    if channelToken not in new_edited_jingles[jid]:
-                        new_edited_jingles[jid].append(channelToken)
-                else:
-                    new_edited_jingles[jid] = [channelToken]
-                    
-                new_edited_jingles = json.dumps(new_edited_jingles)
-                
-                if client.add(edited_jingles_key, new_edited_jingles, 300):
-                    break
-            else:
-                edited_jingles = json.loads(edited_jingles)
-                if jid in edited_jingles:
-                    edited_jingles[jid].append(channelToken)
-                else:
-                    edited_jingles[jid] = [channelToken]
-                
-                edited_jingles = json.dumps(edited_jingles)
-                if client.cas(edited_jingles_key, edited_jingles, 300):
-                    break
+        addTokenToCache(jid, channelToken)
                     
         taskqueue_handlers.makeSureTaskHandlerIsRunning()
         
         return {"token" : channelToken}
     else:
         return {"errorMessage" : "Invalid Jingle ID"}
+
+
+#called when a client needs a new token because their current one expired
+#takes the jid of the jingle they are editing and their old token
+#in a success case it will return:
+#   {"token" : channelToken}
+#in a fail it will return:
+#   {"errorMessage" : errorMessage}
+def requestNewToken(jid, old_token):
+    
+    new_client_ID = None
+    new_token = None
+    jm_key = ndb.Key('JinglrMap', jid+'Map')
+    if jm_key.get():
+        new_client_ID = generate_id()
+        try:
+            new_token = channel.create_channel(new_client_ID)
+        except apiproxy_errors.OverQuotaError:
+            return {"errorMessage" : "Channels quota met: no more channels"}
+    else:
+        return {"errorMessage" : "Invalid jid"}
+    
+    @ndb.transactional
+    def newToken(jm_key, ncid, nt):
+        jm = jm_key.get()
+        if old_token in jm.tokens:
+            index = jm.tokens.index(old_token)
+            client_id = jm.client_ids[index]
+            jm.client_ids.remove(client_id)
+            jm.tokens.remove(old_token)
+        
+        jm.client_ids.append(ncid)
+        jm.tokens.append(nt)
+        
+        jm.put()
+    
+    while True:
+        try:
+            newToken(jm_key, new_client_ID, new_token)
+            break
+        except (db.Timeout, db.TransactionFailedError, db.InternalError):
+            time.sleep(1)
+    
+    addTokenToCache(jid, new_token)
+        
+    return {"token" : new_token}
 
 
 #removes an editor from a JinglrMap.
