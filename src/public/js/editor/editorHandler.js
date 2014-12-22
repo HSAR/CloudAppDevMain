@@ -66,7 +66,7 @@
 		setUpDroppable();
 
 		loadPalette();
-		setPlayButton();
+		setPlaybackButtons();
 	}
 
 	function setUpDroppable() {
@@ -126,7 +126,7 @@
 					var left = $('.preview').position().left / $('.preview').parent().width();
 					console.log("left " + left);
 					var width = $('.preview').width() / $('.preview').parent().width();
-					var bar = $('.preview').parent().parent().index();//gets index of bar
+					var bar = $('.preview').parent().parent().index() - 1;//gets index of bar, allowing for key
 					
 					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions)
 					var notePosition = (bar * subDivisions) + Math.round(left * subDivisions);
@@ -153,6 +153,7 @@
 					$('.preview').attr('id',noteId);
 					$('.preview').addClass('music-note').removeClass('preview').removeClass('no-display');
 					delete data.note.track; //not needed for tune json
+
 					tuneJSON.tracks[noteTrack].notes.push(data.note);
 
 				}
@@ -162,8 +163,35 @@
 		});
 	}
 
-	function setPlayButton() {
+	function setPlaybackButtons() {
 		$('.play-button').click(function(event,ui) {
+			if(pageData.compiledMidi && (!MIDI.Player.playing)) {//if we have something to play and not already playing
+				if(MIDI.Player.currentTime > 0) {//if not at the start
+					MIDI.Player.resume();
+				} else {
+					MIDI.Player.start();
+				}
+				
+			} else if(!pageData.compiledMidi) {
+				alert('Please compile your Jingle before trying to play!');
+			} 
+		});
+		$('.pause-button').click(function(event,ui) {
+			if(MIDI.Player.playing) {
+				MIDI.Player.pause();
+			}
+		});
+		$('.stop-button').click(function(event,ui) {
+			MIDI.Player.stop();
+			$('.progress-bar').html('Ready to play').css({
+				'width' : '100%'
+			});
+		});
+		$('.compile-button').click(function(event,ui) {
+			pageData.compiledMidi = false;
+			$('.progress-bar').html('Compiling tune').css({
+				'width' : '100%'
+			});
 			ajaxHelper.compileTune(pageData.songId,function(data) {
 				loadMidi(data);
 			});
@@ -173,10 +201,39 @@
 	function loadMidi(data) {
 		if(MIDI) {
 			MIDI.Player.loadFile('data:audio/midi;base64,' + data,function() {//stick file format on front of data
+				var instruments = [];
+				for(var i = 0; i < tuneJSON.tracks.length; i++) {
+					if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+						instruments.push(tuneJSON.tracks[i].instrument);
+					}
+				}
+
 				MIDI.loadPlugin({
 					soundfontUrl : '../../public/soundfonts/',
+					instruments : instruments,
 					callback : function() {
-						MIDI.Player.start();
+						for(var i = 0; i < tuneJSON.tracks.length; i++) {
+							if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+								if(i < 9) {
+									MIDI.programChange(i,tuneJSON.tracks[i].instrument);
+								} else {
+									MIDI.programChange(i + 1,tuneJSON.tracks[i].instrument);
+								}
+							}
+						}
+						
+						pageData.compiledMidi = true;
+						$('.progress-bar').html('Ready to play').css({
+							'width' : '100%'
+						});
+
+						MIDI.Player.addListener(function(data) {
+							var playProgress = ((data.now / data.end) * 100) + '%';
+							var progressRounded = Math.round((data.now / data.end) * 100) + '%';
+							$('.progress-bar').html(progressRounded).css({
+								'width' : playProgress
+							});	
+						});
 					}
 				});
 			});
@@ -241,7 +298,7 @@
 					} else {
 						htmlToAppend += '<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
 						midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
-						'</span><button class="remove-tab-button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
+						'</span><button class="remove-tab-button" id="remove-tab' + i + '"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
 					}
 					pageData.tabCount++;
 				}
@@ -273,8 +330,8 @@
 		htmlToAppend += '</div>';
 		$('.canvas').append(htmlToAppend);
 
-		$('.remove-note-button').click(function() {
-			deleteInstrument(parseInt($(this).parent().parent().attr('id').substring(5), 10));//get index of track
+		$('.remove-tab-button').click(function() {
+			deleteInstrument(parseInt($(this).attr('id').substring(10), 10));//get index of track
 		});
 	}
 
@@ -567,6 +624,7 @@
 		setUpDroppable();
 
 		tuneJSON.tracks[trackId].instrument = id;
+		tuneJSON.tracks[trackId].notes = [];
 		var actionId = generateId("instrumentAdd");
 		var instrument = {inst : id, track : trackId};
 		var data = {actionId : actionId, instrument : instrument};
@@ -580,6 +638,7 @@
 		if($('.tab-content').children().length >= pageData.maxTabs) {
 			$('button.add-instrument').attr("disabled","disabled");
 		}
+
 	}
 
 	function changeInstrument(id) {

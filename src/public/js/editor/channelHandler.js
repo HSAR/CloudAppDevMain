@@ -16,7 +16,7 @@ function ChannelHandler() {
 	this.onMessage = function(message) {
 		console.log("message received via channels");
 		
-		msg = JSON.parse(message);
+		msg = JSON.parse(message.data);
 		console.log(msg);
 		//split this up based on what type of message we receive
 		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {

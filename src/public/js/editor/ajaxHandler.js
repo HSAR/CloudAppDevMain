@@ -94,6 +94,7 @@ function AjaxHandler() {
 	}
 
 	this.deleteInstrument = function(id,msg) {
+		console.log(msg);
 		$.ajax({
 			type : 'DELETE',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments?action=instrumentRm&actionId=' +

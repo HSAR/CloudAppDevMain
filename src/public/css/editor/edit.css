@@ -124,7 +124,7 @@
 	padding-left : 0px;
 }
 
-.top-bar .play-button {
+.top-bar .playback-panel {
 	float : right;
 	display : inline;
 }
@@ -148,4 +148,12 @@
 
 .tab-content { 
 	overflow: hidden;
+}
+
+.progress {
+	padding : 3px;
+}
+
+.progress-bar {
+	width : 100%;
 }
