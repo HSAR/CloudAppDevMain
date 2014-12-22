@@ -165,15 +165,20 @@
 	function setPlayButton() {
 		$('.play-button').click(function(event,ui) {
 			ajaxHelper.compileTune(pageData.songId,function(data) {
-				playMidi(data);
+				loadMidi(data);
 			});
 		});
 	}
 
-	function playMidi(data) {
+	function loadMidi(data) {
 		if(MIDI) {
 			MIDI.Player.loadFile('data:audio/midi;base64,' + data,function() {//stick file format on front of data
-				MIDI.Player.start();
+				MIDI.loadPlugin({
+					soundfontUrl : '../../public/soundfonts/',
+					callback : function() {
+						MIDI.Player.start();
+					}
+				});
 			});
 		}
 	}
