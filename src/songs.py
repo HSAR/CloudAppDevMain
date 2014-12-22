@@ -62,6 +62,11 @@ class NoteChangeHandler(webapp2.RequestHandler):
             track = self.request.get("track")
             note_id = self.request.get("noteId")
             if action_id and track and note_id:
+                try:
+                    track = int(track)
+                    note_id = int(note_id)
+                except ValueError:
+                    return error.respond(400, "Invalid request parameter(s)")
                 datastore_request_object = {
                     'action': 'noteRm',
                     'actionId': action_id,
@@ -116,6 +121,10 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
             action_id = self.request.get("actionId")
             instrument_track = self.request.get("instrumentTrack")
             if action_id and instrument_track:
+                try:
+                    instrument_track = int(instrument_track)
+                except ValueError:
+                    return error.respond(400, "Invalid request parameter(s)")
                 datastore_request_object = {
                     'action': 'instrumentRm',
                     'actionId': action_id,
