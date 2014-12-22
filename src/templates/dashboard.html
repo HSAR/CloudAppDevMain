@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "/templates/base.html" %}
 {% block head %}
 	{{ super() }}
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
@@ -22,53 +22,47 @@
       <hr>
       
   	</div><!-- /span-3 -->
-    <div class="col-sm-9">
-      	
+    <div class="col-sm-9">  	
       <!-- column 2 -->	
-       <h3><i class="glyphicon glyphicon-dashboard"></i>TestUser's Dashboard</h3>  
+       <div id="dashTitle"><h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">TestUser's Dashboard</h3></span></div>
             
        <hr>
       
 	   <div class="row">
             <!-- center left-->	
          	<div class="col-md-7">
-			  <div class="panel panel-default">
-                  <div class="panel-heading"><h4>My Contributed Songs</h4></div>
+
+              	<div class="panel panel-default">
+                  	<div class="panel-heading"><h4>My Songs</h4></div>
                   <div class="panel-body">
-                  <table class="table table-striped">
+                  <table class="table table-striped" id="ownedTable">
 			        <thead>
-			          <tr><th>Song Name</th><th>Tags</th><th>Genre</th><th>Rating</th></tr>
+			          <tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
 			        </thead>
 			        <tbody>
-    			      <tr><td>Ode to a Relational Database</td><td>Cry, GAE</td><td>Baroque</td><td>3%</td></tr>
     			    </tbody>
      			  </table>
                   </div><!--/panel-body-->
-              </div><!--/panel-->  
-              
-              <hr>
-              
-              <div class="panel panel-default">
-                  <div class="panel-heading"><h4>My Created Songs</h4></div>
-                  <div class="panel-body">
-                  <table class="table table-striped">
-			        <thead>
-			          <tr><th>Song Name</th><th>Tags</th><th>Genre</th><th>Rating</th></tr>
-			        </thead>
-			        <tbody>
-    			      <tr><td>Ukip Calypso</td><td>Trumpets, Racist</td><td>Rock</td><td>69%</td></tr>
-    			      <tr><td>Sam Chen Takes Control</td><td>Inspiring, Leadership</td><td>Metal</td><td>100%</td></tr>
-    			    </tbody>
-     			  </table>
-                  </div><!--/panel-body-->
-              </div><!--/panel-->                     
-              
-          	</div><!--/col-->
-     
-       </div><!--/row-->
+              	</div><!--/panel-->  
+
+            	<hr>
+
+              	<div class="panel panel-default">
+                  	<div class="panel-heading"><h4>My Contributions</h4></div>
+                  	<div class="panel-body">
+                  		<table class="table table-striped" id="collabTable">
+			        		<thead>
+			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+			        		</thead>
+			        		<tbody>
+    			    		</tbody>
+     			  		</table>
+                  	</div><!--/panel-body-->
+              	</div><!--/panel-->        
+          	</div><!--/col-->   
+       	</div><!--/row-->
   	</div><!--/col-span-9-->
-    
-  </div><!--/row-->
+</div><!--/row-->	
   <!-- /upper section -->
 
 {% endblock %}

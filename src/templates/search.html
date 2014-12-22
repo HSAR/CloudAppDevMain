@@ -1,19 +1,49 @@
-{% extends "base.html" %}
+{% extends "/templates/base.html" %}
 {% block head %}
 	{{ super() }}
+  <script type="text/javascript" src="/public/js/search/ajaxHandler.js"></script>
+  <script type="text/javascript" src="/public/js/search/searchHandler.js"></script>
 	<link rel="stylesheet" type="text/css" href="/public/css/search.css" />
 {% endblock %}
 {% block content %}
-<div
-<table class="table table-striped">
-  <tr>
-  	<th>SongName</th>
-  	<th>Tags</th>
-  	<th>Genre</th>
-  	<th>Author</th>
-  	<th>Rating</th>
-  	<th>DateCreated</th>
-  </tr>
-</table>
-
+<!-- Main -->
+<div class="container">
+  
+  <!-- upper section -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Search Results</h4>
+      </div>
+      <div class="panel-body">
+        <table class="table table-striped" id="results">
+          <thead>
+            <tr>
+              <th>Song Name</th>
+              <th>Owner</th>
+              <th>Tags</th>
+              <th>Genre</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div><!--/panel-body-->
+    </div><!--/panel-->
+    <nav>
+      <ul class="pagination">
+        <li><a href="#"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
+      </ul>
+    </nav>
+  </div><!--/row-->
+  <!-- /upper section -->
+  
+</div><!--/container-->
+<!-- /Main -->
 {% endblock %}
