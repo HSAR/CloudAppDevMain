@@ -49,6 +49,18 @@
 			}
 		}); //could be a dangerous game as moved out of pallete
 		//console.log($('.pallete'))
+
+		$('.note-bin').droppable({
+			accept : '.music-note',
+			drop : function(event,ui) {
+				if(ui.draggable.hasClass('music-note')) {
+					//deal with moving note here. Easiest thing is going to be to remove it and
+					//send a delete ajax
+					var oldId = ui.draggable.attr('id');
+					deleteDraggedNote(oldId);
+				}
+			}
+		});
 	}
 
 	function loadCanvas() {
@@ -106,20 +118,7 @@
 						//deal with moving note here. Easiest thing is going to be to remove it and
 						//send a delete ajax
 						var oldId = ui.draggable.attr('id');
-						var oldNote = deleteNote(oldId);//will also delete the note from json
-						$('#' + oldId).remove();
-						
-						var actionId = generateId('delete');//generate action id
-
-						var deleteData = {
-							noteId : oldNote.id,
-							actionId : actionId,
-							trackId : $('.tab-pane.active').index()
-						};
-
-						
-						ajaxHelper.deleteNote(pageData.songId,deleteData);
-						pageData.quarantinedChanges.push({actionId : actionId, note : oldNote});
+						deleteDraggedNote(oldId);
 					}
 					
 					//we need to turn preview's position into a json to send to server
@@ -161,6 +160,23 @@
 
 			}
 		});
+	}
+
+	function deleteDraggedNote(oldId) {
+		var oldNote = deleteNote(oldId);//will also delete the note from json
+		$('#' + oldId).remove();
+						
+		var actionId = generateId('delete');//generate action id
+
+		var deleteData = {
+			noteId : oldNote.id,
+			actionId : actionId,
+			trackId : $('.tab-pane.active').index()
+		};
+
+						
+		ajaxHelper.deleteNote(pageData.songId,deleteData);
+		pageData.quarantinedChanges.push({actionId : actionId, note : oldNote});
 	}
 
 	function setPlaybackButtons() {
@@ -386,15 +402,22 @@
 			start : function(event,ui) {
 				$note.addClass('no-display');
 				ui.helper.addClass('no-display');
+				ui.helper.css({
+					'height' : $note.height(),
+					'width' : $note.width()
+				});
 			},
 			drag : function(event,ui) {
 				//ok so we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
+					ui.helper.addClass('no-display');
 					var noteValue = Math.round($note.width() / $note.parent().width() * getsubDivisions());
 					if(noteValue) {
 						drawPreview(event,noteValue,$('.preview'));
 					}
 					
+				} else {
+					ui.helper.removeClass('no-display');
 				}
 			},
 			stop : function(event, ui) {
