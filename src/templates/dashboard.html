@@ -4,6 +4,7 @@
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
 	<script type="text/javascript" src="/public/js/dash/dashHandler.js"></script>
 	<link rel="stylesheet" type="text/css" href="/public/css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/dashboard/dashboard.css" />
 {% endblock %}
 {% block content %}
 <!-- upper section -->
@@ -33,16 +34,21 @@
          	<div class="col-md-7">
 
               	<div class="panel panel-default">
-                  	<div class="panel-heading"><h4>My Songs</h4></div>
-                  <div class="panel-body">
-                  <table class="table table-striped" id="ownedTable">
-			        <thead>
-			          <tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-			        </thead>
-			        <tbody>
-    			    </tbody>
-     			  </table>
-                  </div><!--/panel-body-->
+                  	<div class="panel-heading">
+	                  		<span id="mysongstitle"><h4>My Songs</h4></span>
+	                  		<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
+                  		</span>
+
+              		</div>
+                  	<div class="panel-body">
+                  		<table class="table table-striped" id="ownedTable">
+			        		<thead>
+			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+			        		</thead>
+			        		<tbody>
+    			    		</tbody>
+     			  		</table>
+                  	</div><!--/panel-body-->
               	</div><!--/panel-->  
 
             	<hr>
@@ -58,11 +64,62 @@
     			    		</tbody>
      			  		</table>
                   	</div><!--/panel-body-->
-              	</div><!--/panel-->        
+              	</div><!--/panel-->
+
+              	<hr>
+
+              	<div class="panel panel-default">
+                  	<div class="panel-heading"><h4>My Invitations</h4></div>
+                  	<div class="panel-body">
+                  		<table class="table table-striped" id="inviteTable">
+			        		<thead>
+			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+			        		</thead>
+			        		<tbody>
+    			    		</tbody>
+     			  		</table>
+                  	</div><!--/panel-body-->
+              	</div><!--/panel-->          
           	</div><!--/col-->   
        	</div><!--/row-->
   	</div><!--/col-span-9-->
 </div><!--/row-->	
+
+<!-- Modal -->
+<div class="modal fade" id="createJingleModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createModalLabel">Create Jingle</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form" role="form" action="create a jingle" method="put" id="createjingleform">
+	        <div class="form-group">
+		        <label>Name</label>
+		        <input class="form-control" type="text" id="name" placeholder="My Jingle"/>
+	        </div>
+	        <div class="form-group">
+		        <label>Time Signature</label>
+		        <input class="form-control" type="text" id="timesignature" placeholder="4/4"/>
+	        </div>
+	        <div class="form-group">
+	        	<label>Genre</label>				
+	        	<input class="form-control" type="text" id="genre" placeholder="Grunge"/>
+	        </div>
+	        <div class="form-group">
+	        	<label>Tags</label><br>
+	        	<input class="form-control" type="text" id="tags" placeholder="Awesomeness"/>
+	    	</div>
+	    </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- /upper section -->
 
 {% endblock %}

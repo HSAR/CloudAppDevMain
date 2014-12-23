@@ -3,9 +3,11 @@ var userID = null;
 function AjaxHandler() {
 	this.setUserID = function(id) {
 		userID = id;
-		$("#dashTitle h3 #userHeader").text(userID + "'s Dashboard");
+		$("#dashTitle h3 #userHeader").text(" " + userID + "'s Dashboard");
 		$("#userWelcome").text("Welcome, " + userID)
 	}
+
+	//yet more code repetition - this really could be one function...
 	this.getUserByID = function(cb) {
 		$.ajax({
 			type : 'GET',
@@ -57,18 +59,19 @@ function AjaxHandler() {
 		});
 	};
 
-	this.getInvites = function(cb) {
+	this.getUserInvites = function(cb) {
 		$.ajax({
 			type : 'GET',
 			url : 'http://localhost:8080/users/' + userID + '/invites',
 			dataType  : 'JSON',
 			success : function(data) {
 				if (data) {
-					//#winning
+					cb(data);
 				} else {
 					//#failwhale
 				}
-			}
+			},
+			failure : cb(null)
 		});
 	}
 
