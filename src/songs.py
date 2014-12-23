@@ -64,7 +64,6 @@ class NoteChangeHandler(webapp2.RequestHandler):
             if action_id and track and note_id:
                 try:
                     track = int(track)
-                    note_id = int(note_id)
                 except ValueError:
                     return error.respond(400, "Invalid request parameter(s)")
                 datastore_request_object = {
