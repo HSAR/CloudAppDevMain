@@ -19,7 +19,9 @@ class Startup(webapp2.RequestHandler):
 class ChannelDisconnect(webapp2.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
+        logging.info('client id is: ' + client_id)
         datastore.stopEditing(client_id)
+        self.response.set_status(200)
 
 class InitialDataLoader(webapp2.RequestHandler):
     def get(self):
@@ -176,6 +178,6 @@ class InitialDataLoader(webapp2.RequestHandler):
         
 application = webapp2.WSGIApplication([
                                         webapp2.Route(r'/_ah/warmup', handler=Startup, name='startup'),
-                                        webapp2.Route(r'/_ah/channel/disconnected', handler=ChannelDisconnect, name='chan-disconnect'),
+                                        webapp2.Route(r'/_ah/channel/disconnected/', handler=ChannelDisconnect, name='chan-disconnect'),
                                         webapp2.Route(r'/admin/initialdata', handler=InitialDataLoader, name='initial_data'),
                                         ], debug=True)

@@ -279,7 +279,6 @@ class EditorPageHandler(webapp2.RequestHandler):
                 'song_id': songid
             }
             template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
-            datastore.beginEditing(songid)
             self.response.write(template.render(template_values))
 
 
