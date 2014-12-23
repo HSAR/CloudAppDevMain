@@ -11,7 +11,7 @@ function AjaxHandler() {
 	this.getUserByID = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://http://jinglr-music.appspot.com/users/' + userID + "/",
+			url : 'http://jinglr-music.appspot.com/users/' + userID + "/",
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -28,7 +28,7 @@ function AjaxHandler() {
 	this.getUserSongs = function(cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://http://jinglr-music.appspot.com/users/' + userID + '/songs',
+			url : 'http://jinglr-music.appspot.com/users/' + userID + '/songs',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -45,7 +45,7 @@ function AjaxHandler() {
 		//gets songs user has collaborated on
 		$.ajax({
 			type : 'GET',
-			url : 'http://http://jinglr-music.appspot.com/users/' + userID + '/collabs',
+			url : 'http://jinglr-music.appspot.com/users/' + userID + '/collabs',
 			dataType: 'JSON',
 			success : function(data) {
 				if(data) {

@@ -18,14 +18,14 @@ var ownedSongs = function(response) {
             {title: "lol", 
             owner: "me", 
             tags: "rofl", 
-            genre: "punk"
+            genre: "punk",
             id: "1234lemma"}];
     } 
     //uncomment else when done for real
     //else {
         for (var i = 0; i < data.length; i++) {
             //the parameter for unique ids might change
-            $('#ownedTable').append('<tr><td> <a href="http://http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
+            $('#ownedTable').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
         }
     //}
 }
@@ -36,7 +36,7 @@ var collabSongs = function(response) {
         $('#collabTable').append('<tr><td>No songs found. Start contributing!</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < data.length; i++) {
-            $('#collabTable').append('<tr><td> <a href="http://http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
+            $('#collabTable').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
         }
     }
 }
@@ -47,7 +47,7 @@ var invitedSongs = function(response) {
         $('#inviteTable').append('<tr><td>No invitiations.</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < data.length; i++) {
-            $('#inviteTable').append('<tr><td> <a href="http://http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
+            $('#inviteTable').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
         }
     }
 }
