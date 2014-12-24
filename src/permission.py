@@ -20,6 +20,4 @@ def allowed(song_id):
     
     user_id = users.get_current_user().user_id()
     jingle = datastore.getJingleById(song_id)
-    if jingle and (jingle.author == user_id or user_id in jingle.collab_users):
-        return True
-    return False
+    return jingle and (jingle.author == user_id or user_id in jingle.collab_users)

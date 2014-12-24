@@ -286,6 +286,8 @@ class BeginEditing(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
         else:
             request_result = datastore.beginEditing(songid)
             if not 'token' in request_result:
