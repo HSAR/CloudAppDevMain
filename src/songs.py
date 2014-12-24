@@ -246,21 +246,12 @@ class StateDumpHandler(webapp2.RequestHandler):
         elif not permission.allowed(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
-            action_id = self.request.get("actionId")
-            if not action_id:
-                return error.respond(400, 'Missing request parameter')
-            else:
-                datastore_request_object = {
-                    'action': 'stateDump',
-                    'actionId': action_id,
-                }
-                datastore.submitAction(songid, datastore_request_object)
-                success_object = {
-                    'status': 'true',
-                }
-                self.response.write(json.dumps(success_object))
+            result = datastore.getJingleById(songid)
+            if result:
+                self.response.write(json.dumps(result))
                 self.response.set_status(200)
-                return
+            else:
+                return error.respond(404, "No song found with this ID")
 
 
 class EditorPageHandler(webapp2.RequestHandler):
