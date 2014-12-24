@@ -1,44 +1,9 @@
 function ChannelHandler() {
 	this.socket = null;
+	var handler = this;//to get hold of handler inside socket scope
 	/*
 	 *	Handler function called when channel initially opened
 	 */
-	this.onOpened = function() {
-		//we can now make call to server to get notes json
-		if(!ajaxHelper) {
-			var ajaxHelper = new AjaxHandler();
-		}
-		ajaxHelper.getTuneJSON(pageData.songId,function(data) {
-			loadNotesFromJSON(data);
-		});
-		
-	}
-	this.onMessage = function(message) {
-		console.log("message received via channels");
-		
-		msg = JSON.parse(message.data);
-		for(var i = 0; i < msg.length; i++) {
-			this.processMessage(msg[i]);
-		}
-		console.log(msg);
-		
-	}
-	this.onError = function() {
-
-	}
-	this.onClose = function() {
-
-	}
-	this.initSocket = function(token) {
-		channel = new goog.appengine.Channel(token);
-		console.log(channel);
-	    this.socket = channel.open();
-		this.socket.onopen = this.onOpened;
-		this.socket.onmessage = this.onMessage;
-		this.socket.onerror = this.onError;
-		this.socket.onclose = this.onClose;
-	}
-
 	this.processMessage = function(msg) {
 		//split this up based on what type of message we receive
 		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
@@ -66,4 +31,42 @@ function ChannelHandler() {
 			$('#tempo-select').val(msg.tempo);
 		}
 	}
+
+	this.onOpened = function() {
+		//we can now make call to server to get notes json
+		if(!ajaxHelper) {
+			var ajaxHelper = new AjaxHandler();
+		}
+		ajaxHelper.getTuneJSON(pageData.songId,function(data) {
+			loadNotesFromJSON(data);
+		});
+		
+	}
+	this.onMessage = function(message) {
+		console.log("message received via channels");
+		
+		msg = JSON.parse(message.data);
+		for(var i = 0; i < msg.length; i++) {
+			handler.processMessage(msg[i]);
+		}
+		console.log(msg);
+		
+	}
+	this.onError = function() {
+
+	}
+	this.onClose = function() {
+
+	}
+	this.initSocket = function(token) {
+		channel = new goog.appengine.Channel(token);
+		console.log(channel);
+	    this.socket = channel.open();
+		this.socket.onopen = this.onOpened;
+		this.socket.onmessage = this.onMessage;
+		this.socket.onerror = this.onError;
+		this.socket.onclose = this.onClose;
+	}
+
+	
 }

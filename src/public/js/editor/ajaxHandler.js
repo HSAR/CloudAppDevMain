@@ -107,7 +107,7 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/tempo',
-			data : msg
+			data : JSON.stringify(msg)
 		});
 	}
 

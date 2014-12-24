@@ -64,8 +64,10 @@
 
 		$('#tempo-select').change(function() {
 			var tempo = $(this).val();
+			tuneJSON.head.tempo = tempo;
 			var actionId = generateId('tempo');
-			ajaxHelper.changeTempo(pageData.songId,{tempo : tempo, actionId : actionId});
+			ajaxHelper.changeTempo(pageData.songId,{tempo : parseInt(tempo,10), actionId : actionId});
+			pageData.quarantinedChanges.push({actionId : actionId, tempo : parseInt(tempo,10)});
 		});
 
 		$('.add-bar-button').click(function(){
@@ -91,15 +93,16 @@
 			}
 			
 		}
+		tuneJSON.head.barLength = 4;//TODO TEMPORARY DEV FIX
 		var bars = Math.ceil(longestPosition / (tuneJSON.head.subDivisions * tuneJSON.head.barLength));
 		if(bars < 8) {
 			bars = 8;
 		}
 
 		tuneJSON.head.bars = bars;
-		tuneJSON.head.barLength = 4;//TODO TEMPORARY DEV FIX
+		
 
-		$('#tempo-select').val(tuneJSON.head.tempo);
+		$('#tempo-select').val(tuneJSON.head.tempo + '');
 
 		loadTabs();
 		$('.canvas .tab-pane').each(function() {loadBars($(this))});//load bars for each tab
