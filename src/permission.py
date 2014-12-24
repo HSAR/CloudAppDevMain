@@ -16,3 +16,12 @@ def allowed(song_id):
         return jingle and (jingle.author == user_id or user_id in jingle.collab_users)
     else:
         return False
+
+def can_edit_user(uid):
+    user = users.get_current_user()
+    if user:
+        user_id = user.user_id()
+        return uid == user_id
+    else:
+        return False
+

@@ -23,6 +23,8 @@ import jinja2
 import json
 import logging
 
+import error
+
 from google.appengine import runtime
 from google.appengine.api import users
 from google.appengine.api import channel
@@ -87,6 +89,20 @@ class JsonParameterTestHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(obj))
 
 
+class UserHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            user_id = user.user_id()
+            success_object = {
+                'uid': user_id,
+            }
+            self.response.write(json.dumps(success_object))
+            self.response.set_status(200)
+        else:
+            return error.respond(401, "You are not signed in")
+
+
 class FiveHundredTestHandler(webapp2.RequestHandler):
     def get(self, key):
         raise runtime.DeadlineExceededError
@@ -112,6 +128,7 @@ def Error500Handler(request, response, exception):
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
+                                          webapp2.Route(r'/uid', handler=UserHandler, name='uid'),
                                           webapp2.Route(r'/search', handler=SearchPageHandler, name='home'),
                                           webapp2.Route(r'/dashboard', handler=DashPageHandler, name='home'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
