@@ -77,6 +77,54 @@ def addTokenToCache(jid, channelToken):
                 break
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#converts a JinglrUser entity to a dictionary. The keys are the same names as
+#the property names of the JinglrUser entity
+def getUserDict(user):
+    
+    keys = ['user_id', 'username', 'bio', 'tags', 'collab_invites']
+    dict = {}
+    for property in keys:
+        dict[property] = getattr(user, property)
+    return dict
+
+
+#converts a Jingle entity to a dictionary. The keys are the same names as
+#the property names of the Jingle entity with the additional 'username' and
+#'collab_usernames' fields
+def getJingleDict(jingle):
+    
+    keys = ['jingle_id', 'title', 'author', 'username', 
+            'genre', 'length', 'tags', 'jingle', 'collab_users',
+            'collab_usernames']
+    dict = {}
+    for property in keys:
+        dict[property] = getattr(jingle, property)
+        
+    date = jingle.date_created
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    delta = date - epoch
+    dict['date_created'] = delta.total_seconds()
+    return dict
+
+
+def getUserList(users):
+    
+    list = []
+    for user in users:
+        list.append(getUserDict(user))
+    return list
+
+
+def getJingleList(jingles):
+    
+    list = []
+    for jingle in jingles:
+        list.append(getJingleDict(jingle))
+    return list
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~ READ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #takes a user id and returns the JingleUser Entity if one is found, or None
@@ -396,19 +444,19 @@ def addCollabInvite(username, jid):
     @ndb.transactional
     def addCollabInviteInternal():
         jingle = getJingleById(jid)
-            if jingle:
-                user = getUserByUsername(username)
-                if user:
-                    user.collab_invites.append(jid)
-                    user_key = user.put()
-                    
-                    return {"userKey" : user_key}
-                else:
-                    return {"errorMessage" : "No user has that username"}
+        if jingle:
+            user = getUserByUsername(username)
+            if user:
+                user.collab_invites.append(jid)
+                user_key = user.put()
+                
+                return {"userKey" : user_key}
             else:
-                return {"errorMessage" : "Invalid Jingle"}
-               
-    result = None        
+                return {"errorMessage" : "No user has that username"}
+        else:
+            return {"errorMessage" : "Invalid Jingle"}
+    
+    result = None
     while True:
         try:
             result = addCollabInviteInternal()
