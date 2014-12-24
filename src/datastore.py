@@ -393,25 +393,28 @@ def updateTags(uid, tags):
 #userKey is the JinglrUser entity key for the updated user entity
 def addCollabInvite(username, jid):
     
-    jingle = getJingleById(jid)
-    if jingle:
-        user = getUserByUsername(username)
-        if user:
-            uid = user.id
-            user_key = None
-            while True:
-                try:
-                    user = getUserById(uid)
-                    
+    @ndb.transactional
+    def addCollabInviteInternal():
+        jingle = getJingleById(jid)
+            if jingle:
+                user = getUserByUsername(username)
+                if user:
                     user.collab_invites.append(jid)
-                    userKey = user.put()
-                except (db.Timeout, db.InternalError):
-                    time.sleep(1)
-            return {"userKey" : user_key}
-        else:
-            return {"errorMessage" : "No user has that username"}
-    else:
-        return {"errorMessage" : "Invalid Jingle"}
+                    user_key = user.put()
+                    
+                    return {"userKey" : user_key}
+                else:
+                    return {"errorMessage" : "No user has that username"}
+            else:
+                return {"errorMessage" : "Invalid Jingle"}
+               
+    result = None        
+    while True:
+        try:
+            result = addCollabInviteInternal()
+        except (db.Timeout, db.InternalError, db.TransactionFailedError):
+            time.sleep(1)
+    return result
 
 
 #accept - a boolean. If true the invite is accepted, otherwise rejected
@@ -424,32 +427,34 @@ def addCollabInvite(username, jid):
 #userKey is the JinglrUser entity key for the updated user entity
 def answerCollabInvite(uid, jid, accept):
     
-    user = getUserByID(uid)
-    if user:
-        if jid in user.collab_invites:
-            if accept:
-                jingle_key = ndb.Key('Jingle', jid)
-                while True:
-                    try:
-                        jingle = jingle_key.get()
-                        jingle.collab_users.append(uid)
-                        jingle.put()
-                    except (db.Timeout, db.InternalError):
-                        time.sleep(1)
-            
-            user_key = None
-            while True:
-                try:
-                    user = getUserByID(uid)
-                    user.collab_invites.remove(jid)
-                    user_key = user.put()
-                except (db.Timeout, db.InternalError):
+    @ndb.transactional(xg=True)
+    def answerCollabInviteInternal():
+        user = getUserByID(uid)
+        if user:
+            if jid in user.collab_invites:
+                if accept:
+                    jingle_key = ndb.Key('Jingle', jid)
+                    jingle = jingle_key.get()
+                    jingle.collab_users.append(uid)
+                    jingle.put()
+                    
+                user = getUserByID(uid)
+                user.collab_invites.remove(jid)
+                user_key = user.put()
+                
+                return {"userKey" : user_key}
+            else:
+                return {"errorMessage" : "You have not been invited to " +
+                            "collaborate on this jingle"}
+        return {"errorMessage" : "Invalid user"}
+
+    result = None
+    while True:
+        try:
+            result = answerCollabInviteInternal()
+        except (db.Timeout, db.InternalError, db.TransactionFailedError):
                     time.sleep(1)
-            
-            return {"userKey" : user_key}
-        return {"errorMessage" : "You have not been invited to collaborate" +
-                                 " on this jingle"}
-    return {"errorMessage" : "Invalid user"}
+    return result
 
 
 #this is used to stop a particular user collaborating on a particular song.
@@ -462,25 +467,30 @@ def answerCollabInvite(uid, jid, accept):
 #jingleKey is the Jingle entity key for the updated Jingle entity
 def removeCollab(uid, jid):
     
-    jingle_key = ndb.Key('Jingle', jid)
+    @ndb.transactional
+    def removeCollabInternal():
+        jingle_key = ndb.Key('Jingle', jid)
+        jingle = jingle_key.get()
+        if jingle:
+            if uid in jingle.collab_users:
+                jingle.collab_users.remove(uid)
+                jingle_key = jingle.put()
+                return {"jingleKey" : jingle_key}
+            else:
+                return {"errorMessage" : "User is not collaborating" +
+                                             " on the jingle"}
+        else:
+            return {"errorMessage" : "Invalid Jingle ID"}
+            
+    result = None
     while True:
         try:
-            jingle = jingle_key.get()
-            if jingle:
-                if uid in jingle.collab_users:
-                    jingle.collab_users.remove(uid)
-                    jingle_key = jingle.put()
-                    return {"jingleKey" : jingle_key}
-                else:
-                    return {"errorMessage" : "User is not collaborating" +
-                                             " on the jingle"}
-            else:
-                return {"errorMessage" : "Invalid Jingle ID"}
-        
-        except (db.Timeout, db.InternalError):
+            result = removeCollabInternal()
+        except (db.Timeout, db.InternalError, db.TransactionFailedError):
             time.sleep(1)
+    return result
 
-
+    
 #takes stuff to create a jingle entity
 #returns new jingle entity key once successful
 def createJingle(uid, title, genre=None, tags=None):
