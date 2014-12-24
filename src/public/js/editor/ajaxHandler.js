@@ -20,7 +20,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/songs/' + id,
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/json',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -99,6 +99,15 @@ function AjaxHandler() {
 			type : 'DELETE',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments?action=instrumentRm&actionId=' +
 			msg.actionId + '&instrumentTrack=' + msg.instrumentTrack
+		});
+	}
+
+	this.changeTempo = function(id,msg) {
+		msg.action = "tempo";
+		$.ajax({
+			type : 'PUT',
+			url : 'http://jinglr-music.appspot.com/songs/' + id + '/tempo',
+			data : msg
 		});
 	}
 

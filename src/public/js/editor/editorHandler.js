@@ -61,6 +61,17 @@
 				}
 			}
 		});
+
+		$('#tempo-select').change(function() {
+			var tempo = $(this).val();
+			var actionId = generateId('tempo');
+			ajaxHelper.changeTempo(pageData.songId,{tempo : tempo, actionId : actionId});
+		});
+
+		$('.add-bar-button').click(function(){
+			$('.tab-pane.active').append(barHTML);
+			setUpDroppable();
+		});
 	}
 
 	function loadCanvas() {
@@ -68,8 +79,28 @@
 		//need to iterate through each track and add tabs (we will need at least one tab regardless)
 		//if tracks is empty add default tab otherwise add tabs as per usual
 		$('.canvas').children().remove(); //get rid of loading message
-		tuneJSON.head.bars = 8;//TODO TEMPORARY DEV FIX
+		//calculate how many bars are in piece by working out which note has longest position
+		var longestPosition = 0;
+		for(var i = 0; i < tuneJSON.tracks.length; i++) {
+			if(typeof tuneJSON.tracks[i].notes !== 'undefined') {
+				for(var j = 0; j < tuneJSON.tracks[i].notes.length;j++) {
+					if(tuneJSON.tracks[i].notes[j].pos > longestPosition) {
+						longestPosition = tuneJSON.tracks[i].notes[j].pos;
+					}
+				}
+			}
+			
+		}
+		var bars = Math.ceil(longestPosition / (tuneJSON.head.subDivisions * tuneJSON.head.barLength));
+		if(bars < 8) {
+			bars = 8;
+		}
+
+		tuneJSON.head.bars = bars;
 		tuneJSON.head.barLength = 4;//TODO TEMPORARY DEV FIX
+
+		$('#tempo-select').val(tuneJSON.head.tempo);
+
 		loadTabs();
 		$('.canvas .tab-pane').each(function() {loadBars($(this))});//load bars for each tab
 		loadNotes();
@@ -492,7 +523,7 @@
 				//need to put new size into a data and ajax it and update id of div
 				var subDivisions = getsubDivisions();//saves overhead of repeated function calls
 				var left = pageData.previousLeft;
-				var bar = $note.parent().parent().index();
+				var bar = $note.parent().parent().index() - 1;//allow for key
 				var newPosition = bar * subDivisions + left;
 				var newLength = pageData.previousLength;
 				var newNoteData = {
@@ -621,7 +652,7 @@
 		return note;
 	}
 
-	function addInstrument(id) {
+	function addInstrument(id,track) {//optional argument of track for when loading from channels
 		var tabsLength = pageData.tabCount;
 
 		//find an empty track for our new instrument to reside in
@@ -630,6 +661,9 @@
 			if(typeof tuneJSON.tracks[i].instrument === 'undefined') {
 				trackId = i;
 			}
+		}
+		if(track) {//if track supplied, use instead of free track
+			trackId = track;
 		}
 
 		var htmlToAppend ='<li><a href="#track' + trackId +
@@ -646,13 +680,6 @@
 		//enable event listeners on the new tab content
 		setUpDroppable();
 
-		tuneJSON.tracks[trackId].instrument = id;
-		tuneJSON.tracks[trackId].notes = [];
-		var actionId = generateId("instrumentAdd");
-		var instrument = {inst : id, track : trackId};
-		var data = {actionId : actionId, instrument : instrument};
-		ajaxHelper.addInstrument(pageData.songId,data);//TODO might need to send where also
-		pageData.quarantinedChanges.push(data);
 		$('.newtag').click(function() {
 			deleteInstrument(trackId);
 		});
@@ -662,12 +689,34 @@
 			$('button.add-instrument').attr("disabled","disabled");
 		}
 
+		tuneJSON.tracks[trackId].instrument = id;
+		tuneJSON.tracks[trackId].notes = [];
+
+		if(track) {
+			return;//no need to ajax the change as we are reacting to a channel message not making it ourselves
+		}
+		var actionId = generateId("instrumentAdd");
+		var instrument = {inst : id, track : trackId};
+		var data = {actionId : actionId, instrument : instrument};
+		ajaxHelper.addInstrument(pageData.songId,data);//TODO might need to send where also
+		pageData.quarantinedChanges.push(data);
+		
+
 	}
 
-	function changeInstrument(id) {
+	function changeInstrument(id,trackId) {//optional trackId for if dealing with channel message
 		$('li.active a span.instrument-name').html(midiHelper.getInstrumentName(id));
-		var track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
+		if(!trackId) {//if no track provided use current track
+			var track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
+		} else {
+			var track = trackId;
+		}
+		
 		tuneJSON.tracks[track].instrument = id;
+
+		if(trackId) {
+			return;//no need to send ajax as we are reacting to a channel change
+		}
 		actionId = generateId('instrumentEdit');
 		var data = {actionId : actionId, instrumentTrack : track, instrumentNumber : id};
 		ajaxHelper.changeInstrument(pageData.songId,data);
@@ -676,7 +725,7 @@
 		
 	}
 
-	function deleteInstrument(tabId) {
+	function deleteInstrument(tabId,fromChannels) {
 		var tabIndex = $('#track' + tabId).index();
 		if(!tabIndex) {
 			return;
@@ -689,10 +738,13 @@
 
 		 tuneJSON.tracks[tabId].notes = [];
 		 delete tuneJSON.tracks[tabId].instrument;//wipe the track clean
-
+		 $('button.add-instrument').removeAttr("disabled");//removes the disable on the button if it exists
+		 if(fromChannels) {
+		 	return;
+		 }
 		 var actionId = generateId('deleteInstrument');
 		 var data = {actionId : actionId, instrumentTrack : tabId};
-		 $('button.add-instrument').removeAttr("disabled");//removes the disable on the button if it exists
+		
 		 ajaxHelper.deleteInstrument(pageData.songId,data);
 		 pageData.quarantinedChanges.push(data);
 		 

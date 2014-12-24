@@ -17,28 +17,11 @@ function ChannelHandler() {
 		console.log("message received via channels");
 		
 		msg = JSON.parse(message.data);
+		for(var i = 0; i < msg.length; i++) {
+			this.processMessage(msg[i]);
+		}
 		console.log(msg);
-		//split this up based on what type of message we receive
-		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
-			if(msg.actionId && pageData.quarantinedChanges[i].actionId === msg.actionId) {
-				quarantinedChanges.splice(i,1);
-				return;//remove for change list and return as already done locally
-			}
-		}
-		if(msg.topic === 'token') {
-
-		} else if(msg.topic === 'add') {
-			var tab = $('.tab-pane.active').index();
-			tuneJSON.tracks[tab].notes.push(msg.data);
-			drawNote(msg.data,$('.tab-pane.active'));
-			//probably want to check quarantined changes at this point
-			//TODO check for conflicts with local version
-		} else if(msg.topic === 'delete') {
-			console.log('reached delete case');
-			var deletedNote = deleteNote(msg.data.id);
-			$('#' + msg.data.id).remove();
-			//then check quarantined changes
-		}
+		
 	}
 	this.onError = function() {
 
@@ -54,5 +37,33 @@ function ChannelHandler() {
 		this.socket.onmessage = this.onMessage;
 		this.socket.onerror = this.onError;
 		this.socket.onclose = this.onClose;
+	}
+
+	this.processMessage = function(msg) {
+		//split this up based on what type of message we receive
+		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
+			if(msg.actionId && pageData.quarantinedChanges[i].actionId === msg.actionId) {
+				quarantinedChanges.splice(i,1);
+				return;//remove for change list and return as already done locally
+			}
+		}
+		if(msg.action === 'noteAdd') {
+			var track = msg.note.track;
+			delete msg.note.track;//we dont want to add the track field into the tune json
+			tuneJSON.tracks[track].notes.push(msg.note);//add to tune json
+			
+			drawNote(msg.note,$('#track' + track));
+		} else if(msg.action === 'noteRm') {
+			var deletedNote = deleteNote(msg.id);
+			$('#' + msg.data.id).remove();
+		} else if(msg.action === 'instrumentAdd') {
+			addInstrument(msg.instrument.inst,msg.instrument.track);
+		} else if(msg.action === 'instrumentRm') {
+			deleteInstrument(msg.instrumentTrack,true);
+		} else if(msg.action === 'instrumentEdit') {	
+			changeInstrument(msg.instrumentNumber,msg.instrumentTrack);
+		} else if(msg.action === 'tempo') {
+			$('#tempo-select').val(msg.tempo);
+		}
 	}
 }
