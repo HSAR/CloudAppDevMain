@@ -66,6 +66,19 @@ class SongGetMidiHandler(webapp2.RequestHandler):
                 return error.respond(404, "Song not found.")
 
 
+class SongCollaboratorsHandler(webapp2.RequestHandler):
+    def get(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            result = datastore.getCollaborators(songid)
+            if result:
+                self.response.write(json.dumps(result))
+                self.response.set_status(200)
+            else:
+                return error.respond(404, "No song found with this ID")
+
+
 class NoteChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
@@ -309,6 +322,8 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/<songid>/token', handler=BeginEditing,
                                                         name='editor'),
                                           webapp2.Route(r'/songs/<songid>/editor', handler=EditorPageHandler,
+                                                        name='editor'),
+                                          webapp2.Route(r'/songs/<songid>/collabs', handler=SongCollaboratorsHandler,
                                                         name='editor'),
                                       ], debug=True)
 					
