@@ -24,7 +24,22 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-class SongGetHandler(webapp2.RequestHandler):
+class SongDataHandler(webapp2.RequestHandler):
+    def get(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            result = datastore.getJingleById(songid)
+            if result:
+                self.response.write(json.dumps(result))
+                self.response.set_status(200)
+            else:
+                return error.respond(404, "No song found with this ID")
+
+
+class SongGetJSONHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -239,21 +254,6 @@ class SubdivisionChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class StateDumpHandler(webapp2.RequestHandler):
-    def get(self, songid):
-        if not songid:
-            return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
-            return error.respond(401, "You are not authorised to edit this song")
-        else:
-            result = datastore.getJingleById(songid)
-            if result:
-                self.response.write(json.dumps(result))
-                self.response.set_status(200)
-            else:
-                return error.respond(404, "No song found with this ID")
-
-
 class EditorPageHandler(webapp2.RequestHandler):
     def get(self, songid):
         user = users.get_current_user()
@@ -291,7 +291,9 @@ allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/songs/<songid>', handler=SongGetHandler,
+                                          webapp2.Route(r'/songs/<songid>/', handler=SongDataHandler,
+                                                        name='state-dump'),
+                                          webapp2.Route(r'/songs/<songid>/json', handler=SongGetJSONHandler,
                                                         name='song-get-by-id'),
                                           webapp2.Route(r'/songs/<songid>/midi', handler=SongGetMidiHandler,
                                                         name='song-get-midi-by-id'),
@@ -304,8 +306,6 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/songs/<songid>/subdivisions',
                                                         handler=SubdivisionChangeHandler,
                                                         name='subdivision-changes'),
-                                          webapp2.Route(r'/songs/<songid>/state', handler=StateDumpHandler,
-                                                        name='state-dump'),
                                           webapp2.Route(r'/songs/<songid>/token', handler=BeginEditing,
                                                         name='editor'),
                                           webapp2.Route(r'/songs/<songid>/editor', handler=EditorPageHandler,
