@@ -25,3 +25,34 @@ def can_edit_user(uid):
     else:
         return False
 
+def jingle_owener(song_id):
+    user = users.get_current_user()
+    if user:
+        user_id = user.user_id()
+        jingle = datastore.getJingleById(song_id)
+        if jingle:
+            return jingle.author == user_id
+        else:
+            return False
+    else:
+        return False
+        
+def can_remove_collab(song_id, user_id):
+    user = users.get_current_user()
+    if user:
+        current_user = user.user_id()
+        jingle = datastore.getJingleById(song_id)
+        if jingle:
+            return jingle.author == current_user or current_user == user_id
+        else:
+            return False
+    else:
+        return False
+        
+def is_registered():
+    user = users.get_current_user()
+    if user:
+        current_user = user.user_id()
+        return datastore.getUserById(current_user) is not None
+    else:
+        return False
