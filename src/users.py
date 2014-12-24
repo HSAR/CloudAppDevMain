@@ -33,7 +33,7 @@ class UserRootHandler(webapp2.RequestHandler):
             if not result:
                 self.response.set_status(404)
             else:
-                self.response.write(json.dumps(db.to_dict(result)))
+                self.response.write(json.dumps(datastore.getUserDict(result)))
                 self.response.set_status(200)
 
     def put(self):
@@ -66,7 +66,7 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
             if not result:
                 self.response.set_status(404)
             else:
-                self.response.write(json.dumps(db.to_dict(result)))
+                self.response.write(json.dumps(datastore.getUserDict(result)))
                 self.response.set_status(200)
             return
 
@@ -109,10 +109,10 @@ class UserSongsHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid user ID in request URL")
         else:
             result = datastore.getUsersSongs(uid)
-            if not result:
+            if result is None:
                 self.response.set_status(404)
             else:
-                self.response.write(json.dumps(result))
+                self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
             return
 
@@ -123,10 +123,10 @@ class UserCollabsHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid user ID in request URL")
         else:
             result = datastore.getUserCollabs(uid)
-            if not result:
+            if result is None:
                 self.response.set_status(404)
             else:
-                self.response.write(json.dumps(result))
+                self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
             return
 
@@ -137,10 +137,10 @@ class UserInvitesHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid user ID in request URL")
         else:
             result = datastore.getCollabInvites(uid)
-            if not result:
+            if result is None:
                 self.response.set_status(404)
             else:
-                self.response.write(json.dumps(result))
+                self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
             return
 

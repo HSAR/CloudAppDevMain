@@ -93,11 +93,14 @@ def getUserDict(user):
 #converts a Jingle entity to a dictionary. The keys are the same names as
 #the property names of the Jingle entity with the additional 'username' and
 #'collab_usernames' fields
-def getJingleDict(jingle):
+def getJingleDict(jingle, json = True):
     
     keys = ['jingle_id', 'title', 'author', 'username', 
-            'genre', 'length', 'tags', 'jingle', 'collab_users',
+            'genre', 'length', 'tags', 'collab_users',
             'collab_usernames']
+    if json:
+        keys.append('jingle')
+    
     dict = {}
     for property in keys:
         dict[property] = getattr(jingle, property)
@@ -117,11 +120,11 @@ def getUserList(users):
     return list
 
 
-def getJingleList(jingles):
+def getJingleList(jingles, json = False):
     
     list = []
     for jingle in jingles:
-        list.append(getJingleDict(jingle))
+        list.append(getJingleDict(jingle, json))
     return list
 
 

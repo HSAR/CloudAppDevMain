@@ -33,7 +33,7 @@ class SongDataHandler(webapp2.RequestHandler):
         else:
             result = datastore.getJingleById(songid)
             if result:
-                self.response.write(json.dumps(result))
+                self.response.write(json.dumps(datastore.getJingleDict(result)))
                 self.response.set_status(200)
             else:
                 return error.respond(404, "No song found with this ID")
@@ -72,8 +72,8 @@ class SongCollaboratorsHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid song ID in request URL")
         else:
             result = datastore.getCollaborators(songid)
-            if result:
-                self.response.write(json.dumps(result))
+            if result is not None:
+                self.response.write(json.dumps(datastore.getUserList(result)))
                 self.response.set_status(200)
             else:
                 return error.respond(404, "No song found with this ID")
