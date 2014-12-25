@@ -137,12 +137,48 @@ class UserInvitesHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid user ID in request URL")
         else:
             result = datastore.getCollabInvites(uid)
-            if result is None:
+            if not result:
                 self.response.set_status(404)
             else:
                 self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
             return
+
+
+class SingleInviteHandler(webapp2.RequestHandler):
+    def put(self, uid, jid):
+        if not uid:
+            return error.respond(400, "Invalid user ID in request URL")
+        else:
+            username = datastore.getUsernameByUID(uid)
+            result = datastore.addCollabInvite(username, jid)
+            if 'errorMessage' in result:
+                return error.respond(500, result['errorMessage'])
+            else:
+                self.response.write(json.dumps(result))
+                self.response.set_status(200)
+
+    def delete(self, uid, jid):
+        if not uid:
+            return error.respond(400, "Invalid user ID in request URL")
+        elif not permission.can_edit_user(uid):
+            return error.respond(401, "You are not authorised to edit this user")
+        else:
+            response = self.request.get("response")
+            if not response:
+                return error.respond(400, 'Missing property in request URI')
+            elif (response == 'true'):
+                accept = True
+            elif (response == 'false'):
+                accept = False
+            else:
+                return error.respond(400, 'Invalid property in request URI')
+            result = datastore.answerCollabInvite(uid, jid, accept)
+            if 'errorMessage' in result:
+                return error.respond(500, result['errorMessage'])
+            else:
+                self.response.write(json.dumps(result))
+                self.response.set_status(200)
 
 
 allowed_methods = webapp2.WSGIApplication.allowed_methods
@@ -157,6 +193,8 @@ application = webapp2.WSGIApplication([
                                                         name='user-get-songs'),
                                           webapp2.Route(r'/users/<uid>/collabs', handler=UserCollabsHandler,
                                                         name='user-get-collabs'),
+                                          webapp2.Route(r'/users/<uid>/invites/<jid>', handler=SingleInviteHandler,
+                                                        name='user-single-invite'),
                                           webapp2.Route(r'/users/<uid>/invites', handler=UserInvitesHandler,
                                                         name='user-get-invites'),
                                       ], debug=True)
