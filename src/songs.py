@@ -64,6 +64,37 @@ class SongDataHandler(webapp2.RequestHandler):
             else:
                 return error.respond(404, "No song found with this ID")
 
+    def patch(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid user ID in request URL")
+        elif not permission.allowed(songid):
+            return error.respond(401, "You are not authorised to edit this song")
+        else:
+            try:
+                parsed_request_json = json.loads(self.request.body)
+                if not ('title' in parsed_request_json or
+                                'genre' in parsed_request_json or
+                                'tags' in parsed_request_json):
+                    return error.respond(400, 'Missing property in request JSON')
+                else:
+                    success = True
+                    if 'title' in parsed_request_json:
+                        result = datastore.changeTitle(songid, parsed_request_json['title'])
+                        success &= result
+                    if 'genre' in parsed_request_json:
+                        result = datastore.updateBio(songid, parsed_request_json['genre'])
+                        success &= result
+                    if 'tags' in parsed_request_json:
+                        result = datastore.updateTags(songid, parsed_request_json['tags'])
+                        success &= result
+                    if not success:
+                        return error.respond(500, "One or more failures encountered while executing field updates")
+                    else:
+                        self.response.write(json.dumps(result))
+                        self.response.set_status(200)
+            except ValueError:
+                return error.respond(400, 'Invalid JSON in request body')
+
 
 class SongGetJSONHandler(webapp2.RequestHandler):
     def get(self, songid):
