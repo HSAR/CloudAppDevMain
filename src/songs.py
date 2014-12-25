@@ -24,6 +24,32 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
+class SongRootHandler(webapp2.RequestHandler):
+    # this will eventually contain searching, I think
+    def put(self):
+        try:
+            parsed_request_json = json.loads(self.request.body)
+            if not ('title' in parsed_request_json):
+                return error.respond(400, 'Missing property in request JSON')
+            else:
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "You are not signed in")
+                else:
+                    user_id = user.user_id()
+                    genre = None
+                    tags = None
+                    if 'genre' in parsed_request_json:
+                        genre = parsed_request_json['genre']
+                    if 'tags' in parsed_request_json:
+                        genre = parsed_request_json['tags']
+                    result = datastore.createJingle(user_id, parsed_request_json['title'], genre, tags)
+                    self.response.write(json.dumps(result))
+                    self.response.set_status(200)
+        except ValueError:
+            return error.respond(400, 'Invalid JSON in request body')
+
+
 class SongDataHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
@@ -304,6 +330,8 @@ allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
+                                          webapp2.Route(r'/songs/', handler=SongRootHandler,
+                                                        name='songs-root'),
                                           webapp2.Route(r'/songs/<songid>/', handler=SongDataHandler,
                                                         name='state-dump'),
                                           webapp2.Route(r'/songs/<songid>/json', handler=SongGetJSONHandler,
