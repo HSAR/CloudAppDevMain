@@ -131,6 +131,21 @@ class UserCollabsHandler(webapp2.RequestHandler):
             return
 
 
+class SingleCollabHandler(webapp2.RequestHandler):
+    def delete(self, uid, jid):
+        if not uid:
+            return error.respond(400, "Invalid user ID in request URL")
+        elif not (permission.can_edit_user(uid) or permission.jingle_owener(jid)):
+            return error.respond(401, "You are not authorised to execute this action")
+        else:
+            result = datastore.removeCollab(uid, jid)
+            if 'errorMessage' in result:
+                return error.respond(500, result['errorMessage'])
+            else:
+                self.response.write(json.dumps(result))
+                self.response.set_status(200)
+
+
 class UserInvitesHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
@@ -191,6 +206,8 @@ application = webapp2.WSGIApplication([
                                                         name='user-get-by-id'),
                                           webapp2.Route(r'/users/<uid>/songs', handler=UserSongsHandler,
                                                         name='user-get-songs'),
+                                          webapp2.Route(r'/users/<uid>/collabs/<jid>', handler=SingleCollabHandler,
+                                                        name='user-single-collab'),
                                           webapp2.Route(r'/users/<uid>/collabs', handler=UserCollabsHandler,
                                                         name='user-get-collabs'),
                                           webapp2.Route(r'/users/<uid>/invites/<jid>', handler=SingleInviteHandler,
