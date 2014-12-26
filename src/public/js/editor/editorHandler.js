@@ -67,7 +67,7 @@
 			tuneJSON.head.tempo = tempo;
 			var actionId = generateId('tempo');
 			ajaxHelper.changeTempo(pageData.songId,{tempo : parseInt(tempo,10), actionId : actionId});
-			pageData.quarantinedChanges.push({actionId : actionId, tempo : parseInt(tempo,10)});
+			pageData.quarantinedChanges.push({actionId : actionId, tempo : parseInt(tempo,10), time : Date.now()});
 		});
 
 		$('.add-bar-button').click(function(){
@@ -111,8 +111,7 @@
 
 		setUpDroppable();
 
-		loadPalette();
-		setPlaybackButtons();
+		
 	}
 
 	function setUpDroppable() {
@@ -181,11 +180,13 @@
 					};
 					
 					ajaxHelper.addNote(pageData.songId,data);
+					data.time = Date.now(); //add timestamp for quarantining 
 					pageData.quarantinedChanges.push(data);
 					addNoteUI($('.preview'));//make it draggable etc
 					$('.preview').attr('id',noteId);
 					$('.preview').addClass('music-note').removeClass('preview').removeClass('no-display');
 					delete data.note.track; //not needed for tune json
+					delete data.time;
 
 					tuneJSON.tracks[noteTrack].notes.push(data.note);
 
@@ -210,7 +211,7 @@
 
 						
 		ajaxHelper.deleteNote(pageData.songId,deleteData);
-		pageData.quarantinedChanges.push({actionId : actionId, note : oldNote});
+		pageData.quarantinedChanges.push({actionId : actionId, note : oldNote, time : Date.now()});
 	}
 
 	function setPlaybackButtons() {
@@ -407,6 +408,12 @@
 
 		var subDivisions = tuneJSON.head.subDivisions * tuneJSON.head.barLength;
 		var bar = Math.floor(note.pos / subDivisions);
+		if(bar > tuneJSON.head.bars) {//draw extra bars to allow for note
+			var barsNeeded = bar - tuneJSON.head.bars;
+			$('.tab-pane.active').append(barHTML.repeat(barsNeeded));
+			setUpDroppable();
+			tuneJSON.head.bars = bar;
+		}
 		var pitch =  midiHelper.convertPitchToIndex(note.pitch);
 		var left = ((note.pos % subDivisions) / subDivisions) * 100 + '%';//could potentially divide by 0 but js protects us
 		var length = (note.length / subDivisions) * 100 + '%';
@@ -520,7 +527,7 @@
 				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : action };
 
 				ajaxHelper.deleteNote(pageData.songId,deleteData);
-				pageData.quarantinedChanges.push({actionId : action, note : oldNote });
+				pageData.quarantinedChanges.push({actionId : action, note : oldNote , time : Date.now()});
 				var newId = generateId();
 				$note.attr('id',newId);
 				//need to put new size into a data and ajax it and update id of div
@@ -541,6 +548,7 @@
 				var actionId = generateId('add');
 				var newNoteToSend = { actionId : actionId, note : newNoteData};
 				ajaxHelper.addNote(pageData.songId,newNoteToSend);
+				newNoteToSend.time = Date.now();//add timestamp for quarentining
 				pageData.quarantinedChanges.push(newNoteToSend);
 			}
 			
@@ -702,6 +710,7 @@
 		var instrument = {inst : id, track : trackId};
 		var data = {actionId : actionId, instrument : instrument};
 		ajaxHelper.addInstrument(pageData.songId,data);//TODO might need to send where also
+		data.time = Date.now();//add timestamp for quarantining
 		pageData.quarantinedChanges.push(data);
 		
 
@@ -723,6 +732,7 @@
 		actionId = generateId('instrumentEdit');
 		var data = {actionId : actionId, instrumentTrack : track, instrumentNumber : id};
 		ajaxHelper.changeInstrument(pageData.songId,data);
+		data.time = Date.now();//add timestamp for quarantining
 		pageData.quarantinedChanges.push(data);
 
 		
@@ -749,6 +759,7 @@
 		 var data = {actionId : actionId, instrumentTrack : tabId};
 		
 		 ajaxHelper.deleteInstrument(pageData.songId,data);
+		 data.time = Date.now();//add timestamp for quarantining
 		 pageData.quarantinedChanges.push(data);
 		 
 	}
@@ -756,6 +767,21 @@
 	function loadNotesFromJSON(data) {
 		tuneJSON = data;
 		loadCanvas();
+		
+	}
+
+	function loadRemainingUI() {
+		loadPalette();
+		setPlaybackButtons();
+	}
+
+	/*
+	Function to deal with getting a new tunejson from the server when something has gone wrong
+	*/
+	function reloadTune() {
+		ajaxHelper.getTuneJSON(pageData.songId,function(data) {
+			loadNotesFromJSON(data);
+		});
 	}
 
 	function getToken() {
@@ -783,8 +809,5 @@
 		}
 
 		initEditor();
-
-
-
 
 	});
