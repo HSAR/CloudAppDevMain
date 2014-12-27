@@ -1,16 +1,17 @@
-.navbar-static-top {
-  margin-bottom:20px;
+body {
+  background-color: #eee;
+}
+
+.navbar-title {
+  font-size:32px;
+}
+
+.navbar-title:hover {
+  text-decoration:none;
 }
 
 i {
   font-size:18px;
-}
-  
-footer {
-  margin-top:20px;
-  padding-top:20px;
-  padding-bottom:20px;
-  background-color:#efefef;
 }
 
 .nav>li .count {
@@ -28,4 +29,15 @@ footer {
   -ms-border-radius: 10px;
   -o-border-radius: 10px;
   border-radius: 10px;
+}
+
+.navbar-static-top {
+  margin-bottom:20px;
+}
+
+footer {
+  margin-top:20px;
+  padding-top:20px;
+  padding-bottom:20px;
+  background-color:#efefef;
 }

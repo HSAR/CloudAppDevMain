@@ -43,7 +43,7 @@ var commonAjax = function(url, cb) {
 
 getCurrentUserId(setUserId);
 $( document ).ready(function() {
-	$("#userWelcome").text("Welcome, " + currentUserEntity.username);
+	$("#userWelcome").text(currentUserEntity.username);
 });
 
 

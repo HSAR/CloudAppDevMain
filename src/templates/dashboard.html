@@ -3,13 +3,12 @@
 	{{ super() }}
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
 	<script type="text/javascript" src="/public/js/dash/dashHandler.js"></script>
-	<link rel="stylesheet" type="text/css" href="/public/css/styles.css" />
 	<link rel="stylesheet" type="text/css" href="/public/css/dashboard/dashboard.css" />
 {% endblock %}
 {% block content %}
 <!-- upper section -->
   <div class="row">
-	<div class="col-sm-3">
+	<div class="col-md-3">
       <!-- left -->
       <h3><i class="glyphicon glyphicon-briefcase"></i>Favourite Tags</h3>
       <hr>
@@ -23,66 +22,57 @@
       <hr>
       
   	</div><!-- /span-3 -->
-    <div class="col-sm-9">  	
+    <div class="col-md-9">  	
       <!-- column 2 -->	
        <div id="dashTitle"><h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">TestUser's Dashboard</h3></span></div>
-            
-       <hr>
-      
-	   <div class="row">
-            <!-- center left-->	
-         	<div class="col-md-7">
 
-              	<div class="panel panel-default">
-                  	<div class="panel-heading">
-	                  		<span id="mysongstitle"><h4>My Songs</h4></span>
-	                  		<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
-                  		</span>
+       	<hr>
+      	<div class="panel panel-default">
+          	<div class="panel-heading">
+          		<span id="mysongstitle"><h4>My Songs</h4></span>
+          		<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
+      		</div>
+          	<div class="panel-body">
+          		<table class="table table-striped" id="ownedTable">
+	        		<thead>
+	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+	        		</thead>
+	        		<tbody>
+		    		</tbody>
+		  		</table>
+          	</div><!--/panel-body-->
+      	</div><!--/panel-->  
 
-              		</div>
-                  	<div class="panel-body">
-                  		<table class="table table-striped" id="ownedTable">
-			        		<thead>
-			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-			        		</thead>
-			        		<tbody>
-    			    		</tbody>
-     			  		</table>
-                  	</div><!--/panel-body-->
-              	</div><!--/panel-->  
+    	<hr>
 
-            	<hr>
+      	<div class="panel panel-default">
+          	<div class="panel-heading"><h4>My Contributions</h4></div>
+          	<div class="panel-body">
+          		<table class="table table-striped" id="collabTable">
+	        		<thead>
+	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+	        		</thead>
+	        		<tbody>
+		    		</tbody>
+		  		</table>
+          	</div><!--/panel-body-->
+      	</div><!--/panel-->
 
-              	<div class="panel panel-default">
-                  	<div class="panel-heading"><h4>My Contributions</h4></div>
-                  	<div class="panel-body">
-                  		<table class="table table-striped" id="collabTable">
-			        		<thead>
-			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-			        		</thead>
-			        		<tbody>
-    			    		</tbody>
-     			  		</table>
-                  	</div><!--/panel-body-->
-              	</div><!--/panel-->
+      	<hr>
 
-              	<hr>
-
-              	<div class="panel panel-default">
-                  	<div class="panel-heading"><h4>My Invitations</h4></div>
-                  	<div class="panel-body">
-                  		<table class="table table-striped" id="inviteTable">
-			        		<thead>
-			          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-			        		</thead>
-			        		<tbody>
-    			    		</tbody>
-     			  		</table>
-                  	</div><!--/panel-body-->
-              	</div><!--/panel-->          
-          	</div><!--/col-->   
-       	</div><!--/row-->
-  	</div><!--/col-span-9-->
+      	<div class="panel panel-default">
+          	<div class="panel-heading"><h4>My Invitations</h4></div>
+          	<div class="panel-body">
+          		<table class="table table-striped" id="inviteTable">
+	        		<thead>
+	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+	        		</thead>
+	        		<tbody>
+		    		</tbody>
+		  		</table>
+          	</div><!--/panel-body-->
+      	</div><!--/panel-->          
+  	</div><!--/col-->   
 </div><!--/row-->	
 
 <!-- Modal -->
