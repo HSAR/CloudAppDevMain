@@ -82,10 +82,10 @@ class SongDataHandler(webapp2.RequestHandler):
                         result = datastore.changeTitle(songid, parsed_request_json['title'])
                         success &= result
                     if 'genre' in parsed_request_json:
-                        result = datastore.updateBio(songid, parsed_request_json['genre'])
+                        result = datastore.changeGenre(songid, parsed_request_json['genre'])
                         success &= result
                     if 'tags' in parsed_request_json:
-                        result = datastore.updateTags(songid, parsed_request_json['tags'])
+                        result = datastore.changeTags(songid, parsed_request_json['tags'])
                         success &= result
                     if not success:
                         return error.respond(500, "One or more failures encountered while executing field updates")
