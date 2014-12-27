@@ -37,7 +37,7 @@ class InitialDataLoader(webapp2.RequestHandler):
         
         jingle = Jingle(id='0', jingle_id='0', title='Merry Chistmas', author='114163773958786510855', genre='Snow Clouds', tags=['Santa', 'Rudolf', 'Tinsel, fool'])
         jingle_json = {}
-        jingle_json['head'] = {'subDivisions':4, 'tempo':120}
+        jingle_json['head'] = {'subDivisions':4, 'tempo':120, 'barLength':4}
         jingle_json['tracks'] = []
         for i in range(0,15):
             jingle_json['tracks'].append({})
