@@ -1,7 +1,6 @@
 $( document ).ready(function() {
-	//some auth stuff to get username
+    $("#dashTitle h3 #userHeader").text(" " + currentUserEntity.username + "'s Dashboard");
 	var ajax = new AjaxHandler();
-	ajax.setUserID('userID');
 	ajax.getUserSongs(ownedSongs);
 	ajax.getUserCollabs(collabSongs);
     ajax.getUserInvites(invitedSongs);
@@ -12,22 +11,13 @@ var ownedSongs = function(response) {
     var data = jQuery.parseJSON(response);
     if (!data) {
         $('#ownedTable').append('<tr><td>No songs found. Why not create one?</td><td></td><td></td><td></td></tr>');
-
-        //checking the code below is working
-        data = [
-            {title: "lol", 
-            owner: "me", 
-            tags: "rofl", 
-            genre: "punk",
-            id: "1234lemma"}];
     } 
-    //uncomment else when done for real
-    //else {
+    else {
         for (var i = 0; i < data.length; i++) {
             //the parameter for unique ids might change
             $('#ownedTable').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
         }
-    //}
+    }
 }
 
 var collabSongs = function(response) {

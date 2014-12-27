@@ -8,7 +8,6 @@ function AjaxHandler() {
 				console.log(data);
 				if(data) {
 					console.log('results found for ' + query);
-					//at this point we need to populate the results table
 					cb(data);
 				} else {
 					//deal with error here
