@@ -54,7 +54,7 @@ class SongDataHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             result = datastore.getJingleById(songid)
@@ -140,7 +140,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             action_id = self.request.get("actionId")
@@ -170,7 +170,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
@@ -199,7 +199,7 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             action_id = self.request.get("actionId")
@@ -227,7 +227,7 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
@@ -252,7 +252,7 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
     def patch(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
@@ -278,7 +278,7 @@ class TempoChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
@@ -303,7 +303,7 @@ class SubdivisionChangeHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:
@@ -347,7 +347,7 @@ class BeginEditing(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             request_result = datastore.beginEditing(songid)

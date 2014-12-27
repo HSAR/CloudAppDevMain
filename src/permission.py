@@ -7,7 +7,7 @@ import datastore
 
 from google.appengine.api import users
 
-def allowed(song_id):
+def can_edit_song(song_id):
     
     user = users.get_current_user()
     if user:
