@@ -67,7 +67,7 @@ class SongDataHandler(webapp2.RequestHandler):
     def patch(self, songid):
         if not songid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not permission.allowed(songid):
+        elif not permission.jingle_owner(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
             try:

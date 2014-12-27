@@ -25,7 +25,7 @@ def can_edit_user(uid):
     else:
         return False
 
-def jingle_owener(song_id):
+def jingle_owner(song_id):
     user = users.get_current_user()
     if user:
         user_id = user.user_id()

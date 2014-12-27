@@ -135,7 +135,7 @@ class SingleCollabHandler(webapp2.RequestHandler):
     def delete(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not (permission.can_edit_user(uid) or permission.jingle_owener(jid)):
+        elif not permission.can_remove_collab(jid, uid):
             return error.respond(401, "You are not authorised to execute this action")
         else:
             result = datastore.removeCollab(uid, jid)
@@ -152,7 +152,7 @@ class UserInvitesHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid user ID in request URL")
         else:
             result = datastore.getCollabInvites(uid)
-            if not result:
+            if result is None:
                 self.response.set_status(404)
             else:
                 self.response.write(json.dumps(datastore.getJingleList(result)))
@@ -164,6 +164,8 @@ class SingleInviteHandler(webapp2.RequestHandler):
     def put(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
+        elif not permission.jingle_owner(jid):
+            return error.respond(401, "You are not authorised to invite a collaborator to this jingle")
         else:
             username = datastore.getUsernameByUID(uid)
             result = datastore.addCollabInvite(username, jid)
