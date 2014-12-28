@@ -62,6 +62,12 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Not signed in")
+                else:
+                    uid = user.user_id()
             result = datastore.getUserById(uid)
             if not result:
                 self.response.set_status(404)
@@ -73,34 +79,41 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
     def patch(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not permission.can_edit_user(uid):
-            return error.respond(401, "You are not authorised to edit this user")
         else:
-            try:
-                parsed_request_json = json.loads(self.request.body)
-                if not ('username' in parsed_request_json or
-                                'bio' in parsed_request_json or
-                                'tags' in parsed_request_json):
-                    return error.respond(400, 'Missing property in request JSON')
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "You are not authorised to edit this user")
                 else:
-                    success = True
-                    if 'username' in parsed_request_json:
-                        result = datastore.updateUsername(uid, parsed_request_json['username'])
-                        if 'errorMessage' in result:
-                            return error.respond(500, result['errorMessage'])
-                    if 'bio' in parsed_request_json:
-                        result = datastore.updateBio(uid, parsed_request_json['bio'])
-                        success &= result
-                    if 'tags' in parsed_request_json:
-                        result = datastore.updateTags(uid, parsed_request_json['tags'])
-                        success &= result
-                    if not success:
-                        return error.respond(500, "One or more failures encountered while executing field updates")
+                    uid = user.user_id()
+            if not permission.can_edit_user(uid):
+                return error.respond(401, "You are not authorised to edit this user")
+            else:
+                try:
+                    parsed_request_json = json.loads(self.request.body)
+                    if not ('username' in parsed_request_json or
+                                    'bio' in parsed_request_json or
+                                    'tags' in parsed_request_json):
+                        return error.respond(400, 'Missing property in request JSON')
                     else:
-                        self.response.write(json.dumps(result))
-                        self.response.set_status(200)
-            except ValueError:
-                return error.respond(400, 'Invalid JSON in request body')
+                        success = True
+                        if 'username' in parsed_request_json:
+                            result = datastore.updateUsername(uid, parsed_request_json['username'])
+                            if 'errorMessage' in result:
+                                return error.respond(500, result['errorMessage'])
+                        if 'bio' in parsed_request_json:
+                            result = datastore.updateBio(uid, parsed_request_json['bio'])
+                            success &= result
+                        if 'tags' in parsed_request_json:
+                            result = datastore.updateTags(uid, parsed_request_json['tags'])
+                            success &= result
+                        if not success:
+                            return error.respond(500, "One or more failures encountered while executing field updates")
+                        else:
+                            self.response.write(json.dumps(result))
+                            self.response.set_status(200)
+                except ValueError:
+                    return error.respond(400, 'Invalid JSON in request body')
 
 
 class UserSongsHandler(webapp2.RequestHandler):
@@ -108,6 +121,12 @@ class UserSongsHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Invalid user ID in request URL")
+                else:
+                    uid = user.user_id()
             result = datastore.getUsersSongs(uid)
             if result is None:
                 self.response.set_status(404)
@@ -122,6 +141,12 @@ class UserCollabsHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Invalid user ID in request URL")
+                else:
+                    uid = user.user_id()
             result = datastore.getUserCollabs(uid)
             if result is None:
                 self.response.set_status(404)
@@ -135,15 +160,22 @@ class SingleCollabHandler(webapp2.RequestHandler):
     def delete(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not permission.can_remove_collab(jid, uid):
-            return error.respond(401, "You are not authorised to execute this action")
         else:
-            result = datastore.removeCollab(uid, jid)
-            if 'errorMessage' in result:
-                return error.respond(500, result['errorMessage'])
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Invalid user ID in request URL")
+                else:
+                    uid = user.user_id()
+            if not permission.can_remove_collab(jid, uid):
+                return error.respond(401, "You are not authorised to execute this action")
             else:
-                self.response.write(json.dumps(result))
-                self.response.set_status(200)
+                result = datastore.removeCollab(uid, jid)
+                if 'errorMessage' in result:
+                    return error.respond(500, result['errorMessage'])
+                else:
+                    self.response.write(json.dumps(result))
+                    self.response.set_status(200)
 
 
 class UserInvitesHandler(webapp2.RequestHandler):
@@ -151,6 +183,12 @@ class UserInvitesHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Invalid user ID in request URL")
+                else:
+                    uid = user.user_id()
             result = datastore.getCollabInvites(uid)
             if result is None:
                 self.response.set_status(404)
@@ -178,24 +216,31 @@ class SingleInviteHandler(webapp2.RequestHandler):
     def delete(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not permission.can_edit_user(uid):
-            return error.respond(401, "You are not authorised to edit this user")
         else:
-            response = self.request.get("response")
-            if not response:
-                return error.respond(400, 'Missing property in request URI')
-            elif (response == 'true'):
-                accept = True
-            elif (response == 'false'):
-                accept = False
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Invalid user ID in request URL")
+                else:
+                    uid = user.user_id()
+            if not permission.can_edit_user(uid):
+                return error.respond(401, "You are not authorised to edit this user")
             else:
-                return error.respond(400, 'Invalid property in request URI')
-            result = datastore.answerCollabInvite(uid, jid, accept)
-            if 'errorMessage' in result:
-                return error.respond(500, result['errorMessage'])
-            else:
-                self.response.write(json.dumps(result))
-                self.response.set_status(200)
+                response = self.request.get("response")
+                if not response:
+                    return error.respond(400, 'Missing property in request URI')
+                elif (response == 'true'):
+                    accept = True
+                elif (response == 'false'):
+                    accept = False
+                else:
+                    return error.respond(400, 'Invalid property in request URI')
+                result = datastore.answerCollabInvite(uid, jid, accept)
+                if 'errorMessage' in result:
+                    return error.respond(500, result['errorMessage'])
+                else:
+                    self.response.write(json.dumps(result))
+                    self.response.set_status(200)
 
 
 allowed_methods = webapp2.WSGIApplication.allowed_methods
