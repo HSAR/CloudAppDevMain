@@ -27,30 +27,31 @@
 	<link rel="stylesheet" type="text/css" href="/public/css/base.css" />
 {% endblock %}
 {% block content %}
-	<div class="auth">{{auth_bar|safe}}</div>
 	<div id="songid" class="no-display">{{song_id}}</div>
 	<div class="container">
-		<h1>Jinglr editor page (WIP)</h1>
+		<h1 class="song-title">{{song_title}}</h1>
 		<br/>
 		<div class="editor bordered">
 			<div class="row top-row">
 				
 				<div class="bordered top-bar max-height">
 					<div class="col-md-6">
-						<button class="btn btn-primary add-bar-button">Add bar</button>
-						<label for="tempo-select">Tempo :</label>
-						<select  id="tempo-select">
-							<option value="60">60 bpm</option>
-							<option value="70">70 bpm</option>
-							<option value="80">80 bpm</option>
-							<option value="90">90 bpm</option>
-							<option value="100">100 bpm</option>
-							<option value="110">110 bpm</option>
-							<option value="120">120 bpm</option>
-							<option value="130">130 bpm</option>
-							<option value="140">140 bpm</option>
-						</select>
-						<button class="connection-button btn btn-warning">Connecting</button>
+						<div class="control-buttons">
+							<button class="btn btn-primary add-bar-button">Add bar</button>
+							<label for="tempo-select">Tempo :</label>
+							<select  id="tempo-select">
+								<option value="60">60 bpm</option>
+								<option value="70">70 bpm</option>
+								<option value="80">80 bpm</option>
+								<option value="90">90 bpm</option>
+								<option value="100">100 bpm</option>
+								<option value="110">110 bpm</option>
+								<option value="120">120 bpm</option>
+								<option value="130">130 bpm</option>
+								<option value="140">140 bpm</option>
+							</select>
+							<button class="connection-button btn btn-warning">Connecting</button>
+						</div>	
 					</div>
 					<div class="col-md-3">
 						<div class="progress">
@@ -71,7 +72,7 @@
 			</div>
 			<div class="row main-row">
 				<div class="col-md-2 no-right-padding max-height">
-					<div class="palette bordered">
+					<div class="bordered palette">
 						<div class="note note-crotchet"></div>
 						<div class="note note-quaver"></div>
 						<div class="note-bin"></div>
@@ -79,7 +80,7 @@
 						<button class="btn btn-primary change-instrument">Change Instrument</button>
 					</div>
 				</div>
-				<div class="col-md-10 no-left-padding max-height"><div class="canvas bordered" role="tabpanel"></div></div>
+				<div class="col-md-10 no-left-padding max-height"><div class="bordered canvas" role="tabpanel"></div></div>
 			</div>
 		</div>
 

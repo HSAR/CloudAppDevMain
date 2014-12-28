@@ -28,13 +28,14 @@ function AjaxHandler() {
 	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/songs/' + id + '/json',
+			url : 'http://jinglr-music.appspot.com/songs/' + id, 
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
 				if(data) {
+					$('.song-title').html(data.title);
 					//we can now open up a socket using the token
-					cb(data);
+					cb(data.jingle);
 				} else {
 					//deal with error here
 				}

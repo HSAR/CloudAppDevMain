@@ -5,11 +5,15 @@
 
 .palette {
 	height : 100%;
+	border-left : none;
+	border-bottom: none;
 }
 
 .canvas {
 	height: 100%;
-	
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
 }
 
 .canvas .tab-content {
@@ -113,8 +117,10 @@
 }
 
 .bordered {
-	border : 1px solid black;
+	border : 2px solid black;
 }
+
+
 
 .no-right-padding {
 	padding-right: 0px;
@@ -156,4 +162,9 @@
 
 .progress-bar {
 	width : 100%;
+}
+
+.control-buttons {
+	padding : 0.5em;
+	padding-left: 1em;
 }
