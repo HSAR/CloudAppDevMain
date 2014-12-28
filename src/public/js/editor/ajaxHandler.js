@@ -28,7 +28,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/songs/' + id, 
+			url : 'http://jinglr-music.appspot.com/songs/' + id  +'/', 
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);

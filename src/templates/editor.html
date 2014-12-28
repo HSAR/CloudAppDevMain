@@ -34,7 +34,7 @@
 		<div class="editor bordered">
 			<div class="row top-row">
 				
-				<div class="bordered top-bar max-height">
+				<div class="top-bar max-height">
 					<div class="col-md-6">
 						<div class="control-buttons">
 							<button class="btn btn-primary add-bar-button">Add bar</button>
@@ -73,11 +73,19 @@
 			<div class="row main-row">
 				<div class="col-md-2 no-right-padding max-height">
 					<div class="bordered palette">
-						<div class="note note-crotchet"></div>
-						<div class="note note-quaver"></div>
-						<div class="note-bin"></div>
-						<button class="btn btn-primary add-instrument">Add Instrument</button>
-						<button class="btn btn-primary change-instrument">Change Instrument</button>
+						<div class="note note-crotchet half-spaced">
+							<img src="/public/img/quarter_note.png" class="img img-responsive"></img>
+						</div>
+						<div class="note note-quaver half-spaced">
+							<img src="/public/img/eighth_note.png" class="img img-responsive"></img>
+						</div>
+						<div class="note-bin half-spaced">
+							<img src="/public/img/bin.png" class="img img-responsive"></img>
+						</div>
+						<br/>
+						<button class="btn btn-primary add-instrument half-spaced palette-button horizontal-centered">Add Instrument</button>
+						<button class="btn btn-primary change-instrument half-spaced horizontal-centered">Change Instrument
+						</button>
 					</div>
 				</div>
 				<div class="col-md-10 no-left-padding max-height"><div class="bordered canvas" role="tabpanel"></div></div>
@@ -109,4 +117,6 @@
 	<script type="text/javascript" src="../../public/js/editor/channelHandler.js"></script>
 	<script type="text/javascript" src="../../public/js/editor/editorHandler.js"></script>
 </body>
+<br/>
+<br/>
 {% endblock %}

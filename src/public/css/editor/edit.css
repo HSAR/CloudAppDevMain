@@ -17,7 +17,7 @@
 }
 
 .canvas .tab-content {
-	height: 90%;
+	height: 80%;
 }
 
 .canvas .tab-pane {
@@ -32,35 +32,35 @@
 
 .nav-tabs li a {
 	border: 1px solid black;
+	height : 100%;
 }
 
 .nav li {
 	width : 16%;
+	height : 80px;/* Set height large enough to accomodate all instrument names */
+	padding-bottom : 0px;
 }
 
 .note-crotchet {
-	background-image: url('../../img/quarter_note.png');
+	
 }
 
 
 .note { 
-	height : 75px;
-	width : 75px;
+	
 }
 
 .note-quaver {
-	background-image: url('../../img/eighth_note.png');
+	
 }
 
 .note-bin {
-	background-image : url('../../img/bin.png');
-	height: 128px;
-	width : 128px;
+	background-color: white;
 }
 
 .pitch {
 	width : 100%;
-	height : 6.2%;
+	height : 8%;
 	position : relative;
 	border : 1px solid black;
 }
@@ -71,7 +71,6 @@
 	display : inline-block;
 	position : relative;
 	vertical-align:  top;
-	border : 1px solid black;
 }
 
 .key {
@@ -82,16 +81,16 @@
 	overflow: visible;
 	z-index: 20;
 	vertical-align: top;
-	border : 1px solid black;
 }
 
 .key-pitch {
 	width : 100%;
-	height : 6.2%;
+	height : 8%;
 	position : relative;
 	background-color: red;
 	overflow: hidden;
 	border : 1px solid black;
+	color : white;
 }
 
 .preview {
@@ -120,6 +119,24 @@
 	border : 2px solid black;
 }
 
+.half-spaced {
+	margin-top : 0.5em;
+	margin-left: 0.5em;
+}
+
+.horizontal-centered {
+	margin-left: auto;
+	margin-right: auto;
+	display : block;
+	white-space: normal;
+}
+
+img {
+	border : 1px solid black;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 
 
 .no-right-padding {
@@ -131,8 +148,7 @@
 }
 
 .top-bar .playback-panel {
-	float : right;
-	display : inline;
+	padding-top : 0.5em;
 }
 
 .top-bar h2 {
@@ -157,7 +173,8 @@
 }
 
 .progress {
-	padding : 3px;
+	margin: 0.8em;
+	height : 110%;
 }
 
 .progress-bar {
@@ -167,4 +184,9 @@
 .control-buttons {
 	padding : 0.5em;
 	padding-left: 1em;
+}
+
+.remove-tab-button {
+	margin-left: 0.2em;
+	float: right;
 }
