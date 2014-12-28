@@ -1,4 +1,11 @@
 function AjaxHandler() {
+	this.handleError = function() {
+		if(!channelHelper) {
+			channelHelper = new ChannelHandler();
+		}
+		channelHelper.onError();//call channel error function to deal with loss of conneciton
+	}
+
 	this.getToken = function(id,cb) {
 		$.ajax({
 			type : 'GET',
@@ -13,7 +20,8 @@ function AjaxHandler() {
 				} else {
 					//deal with error here
 				}
-			}
+			},
+			error : this.handleError
 
 		});
 	};
@@ -30,7 +38,8 @@ function AjaxHandler() {
 				} else {
 					//deal with error here
 				}
-			}
+			},
+			error : this.handleError
 		});
 	};
 	
@@ -41,7 +50,8 @@ function AjaxHandler() {
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes',
 			data : JSON.stringify(msg),
-			dataType : 'JSON'
+			dataType : 'JSON',
+			error : this.handleError
 		});
 	};
 	this.deleteNote = function(id,msg) {
@@ -49,7 +59,8 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'DELETE',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/notes?actionId=' + msg.actionId +
-			'&track=' + msg.trackId + '&noteId=' + msg.noteId
+			'&track=' + msg.trackId + '&noteId=' + msg.noteId,
+			error : this.handleError
 		});
 	};
 	this.compileTune = function(id,cb) {
@@ -64,7 +75,8 @@ function AjaxHandler() {
 				} else {
 					//deal with error here
 				}
-			}
+			},
+			error : this.handleError
 		});
 	};
 
@@ -76,7 +88,8 @@ function AjaxHandler() {
 			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
-			}
+			},
+			error : this.handleError
 		});
 	}
 
@@ -89,7 +102,8 @@ function AjaxHandler() {
 			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
-			}
+			},
+			error : this.handleError
 		});
 	}
 
@@ -98,7 +112,8 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'DELETE',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/instruments?action=instrumentRm&actionId=' +
-			msg.actionId + '&instrumentTrack=' + msg.instrumentTrack
+			msg.actionId + '&instrumentTrack=' + msg.instrumentTrack,
+			error : this.handleError
 		});
 	}
 
@@ -107,7 +122,8 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/songs/' + id + '/tempo',
-			data : JSON.stringify(msg)
+			data : JSON.stringify(msg),
+			error : this.handleError
 		});
 	}
 

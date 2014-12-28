@@ -1,31 +1,32 @@
-<!DOCTYPE html>
-<head>
+{% extends "/templates/base.html" %}
+{% block title %}Jinglr - Edit Jingle{% endblock %}
+{% block head %}
+	{{ super() }}
 	<title>Protoype editor page</title>
 	<script type="text/javascript" src="/_ah/channel/jsapi"></script><!-- needs to be before code using channels -->
-	<script type="text/javascript" src="../../public/js/jquery.min.js"></script>
-	<script type="text/javascript" src="../../public/js/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="../../public/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../../public/js/adler32.js"></script>
-	<script type="text/javascript" src="../../public/js/canonical-json.js"></script>
 
-	<script src="../../public/js/editor/MIDI/AudioDetect.js" type="text/javascript"></script>
-	<script src="../../public/js/editor/MIDI/LoadPlugin.js" type="text/javascript"></script>
-	<script src="../../public/js/editor/MIDI/Plugin.js" type="text/javascript"></script>
-	<script src="../../public/js/editor/MIDI/Player.js" type="text/javascript"></script>
-	<script src="../../public/js/editor/MIDI/stream.js"></script>
-	<script src="../../public/js/editor/MIDI/midifile.js"></script>
-	<script src="../../public/js/editor/MIDI/replayer.js"></script>
-	<script src="../../public/js/editor/MIDI/Base64.js" type="text/javascript"></script>
-	<script src="../../public/js/editor/MIDI/base64binary.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/public/js/adler32.js"></script>
+	<script type="text/javascript" src="/public/js/canonical-json.js"></script>
 
-	<script src="../../public/js/editor/MIDI/DOMLoader.XMLHttp.js"></script>
+	<script src="/public/js/editor/MIDI/AudioDetect.js" type="text/javascript"></script>
+	<script src="/public/js/editor/MIDI/LoadPlugin.js" type="text/javascript"></script>
+	<script src="/public/js/editor/MIDI/Plugin.js" type="text/javascript"></script>
+	<script src="/public/js/editor/MIDI/Player.js" type="text/javascript"></script>
+	<script src="/public/js/editor/MIDI/stream.js"></script>
+	<script src="/public/js/editor/MIDI/midifile.js"></script>
+	<script src="/public/js/editor/MIDI/replayer.js"></script>
+	<script src="/public/js/editor/MIDI/Base64.js" type="text/javascript"></script>
+	<script src="/public/js/editor/MIDI/base64binary.js" type="text/javascript"></script>
 
-	<link href="../../public/css/editor/MIDIPlayer.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.css" />
-	<link rel="stylesheet" type="text/css" href="../../public/css/jquery-ui.min.css" />
-	<link rel="stylesheet" type="text/css" href="../../public/css/editor/edit.css" />
-</head>
-<body>
+	<script src="/public/js/editor/MIDI/DOMLoader.XMLHttp.js"></script>
+
+	<link href="/public/css/editor/MIDIPlayer.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/jquery-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/editor/edit.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/base.css" />
+{% endblock %}
+{% block content %}
 	<div class="auth">{{auth_bar|safe}}</div>
 	<div id="songid" class="no-display">{{song_id}}</div>
 	<div class="container">
@@ -49,6 +50,7 @@
 							<option value="130">130 bpm</option>
 							<option value="140">140 bpm</option>
 						</select>
+						<button class="connection-button btn btn-warning">Connecting</button>
 					</div>
 					<div class="col-md-3">
 						<div class="progress">
@@ -106,3 +108,4 @@
 	<script type="text/javascript" src="../../public/js/editor/channelHandler.js"></script>
 	<script type="text/javascript" src="../../public/js/editor/editorHandler.js"></script>
 </body>
+{% endblock %}

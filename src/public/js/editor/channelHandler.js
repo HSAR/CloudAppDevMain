@@ -1,5 +1,6 @@
 function ChannelHandler() {
 	this.socket = null;
+	this.initialLoad = true;//keep track of if this is the intial loading of the page
 	var handler = this;//to get hold of handler inside socket scope
 	/*
 	 *	Handler function called when channel initially opened
@@ -34,6 +35,11 @@ function ChannelHandler() {
 
 	this.onOpened = function() {
 		//we can now make call to server to get notes json
+		if(!handler.initialLoad) {//if page already loaded just call function to reload tune json
+			$('.connection-button').addClass('btn-success').removeClass('btn-warning').html('Connected').unbind();
+			reloadTune();
+			return;
+		}
 		if(!ajaxHelper) {
 			var ajaxHelper = new AjaxHandler();
 		}
@@ -41,7 +47,8 @@ function ChannelHandler() {
 			loadNotesFromJSON(data);
 			loadRemainingUI();//load pallette and playback buttons etc
 		});
-		
+		$('.connection-button').addClass('btn-success').removeClass('btn-warning').html('Connected');
+		handler.initialLoad = false;
 	}
 	this.onMessage = function(message) {
 		//first bin any quarantined changes who have been around for more than a set time
@@ -69,19 +76,26 @@ function ChannelHandler() {
 		
 	}
 	this.onError = function() {
-
+		try {
+			this.socket.close();//if socket not closed, do it now
+		} catch(err) {
+			//no need to do anything
+		}
+		console.log("channel error");
+		//set connection status button
+		$('button.connection-button').removeClass('btn-success').addClass('btn-danger').html('Disconnected').unbind().click(function() {
+			$('button.connection-button').removeClass('btn-danger').addClass('btn-warning').html('Connecting').unbind();
+			getToken();
+		});
 	}
 	this.onClose = function() {
-
+		
 	}
 	this.initSocket = function(token) {
-		channel = new goog.appengine.Channel(token);
-		console.log(channel);
-	    this.socket = channel.open();
-		this.socket.onopen = this.onOpened;
-		this.socket.onmessage = this.onMessage;
-		this.socket.onerror = this.onError;
-		this.socket.onclose = this.onClose;
+		this.channel = new goog.appengine.Channel(token);
+		console.log('initing socket');
+	    this.socket = this.channel.open({onopen : this.onOpened, onmessage : this.onMessage, onerror : this.onError, onclose : this.onClose});
+		
 	}
 
 	this.checksum = function(object) {
@@ -105,6 +119,8 @@ function ChannelHandler() {
 	  object.head.bars = bars;
 	  return returnVal;
 	}
+
+
 
 	
 }

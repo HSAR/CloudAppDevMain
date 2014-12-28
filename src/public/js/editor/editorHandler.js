@@ -7,9 +7,10 @@
 	{
 	    return new Array( num + 1 ).join( this );
 	}
+	var channelHelper = new ChannelHandler();
 	var ajaxHelper = new AjaxHandler();
 	var midiHelper = new MidiHandler();
-	var channelHelper = new ChannelHandler();
+	
 
 	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
 	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
