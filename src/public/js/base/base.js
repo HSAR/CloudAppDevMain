@@ -1,14 +1,6 @@
 //The user entity of the currently active user
 var currentUserEntity = null;
 
-var setUserId = function(response) {
-	var data = jQuery.parseJSON(response);
-	if (!data) {
-        data = {uid: "testuidplsignore"}; //test case
-    } 
-	getUserById(data.uid, setUser);
-}
-
 var setUser = function(response) {
 	var data = jQuery.parseJSON(response);
 	if (!data) {
@@ -17,12 +9,8 @@ var setUser = function(response) {
     currentUserEntity = data;
 }
 
-var getCurrentUserId = function(cb) {
-	commonAjax('http://jinglr-music.appspot.com/uid', cb);
-}
-
-var getUserById = function(uid, cb) {
-	commonAjax('http://jinglr-music.appspot.com/users/' + uid + "/", cb);
+var getCurrentUser = function(cb) {
+	commonAjax('http://jinglr-music.appspot.com/users/self/', cb);
 };
 
 var commonAjax = function(url, cb) {
@@ -41,10 +29,16 @@ var commonAjax = function(url, cb) {
 	});
 }
 
-getCurrentUserId(setUserId);
+getCurrentUser(setUser);
 $( document ).ready(function() {
 	$("#userWelcome").text(currentUserEntity.username);
 });
 
+$body = $("body");
+
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading");    },
+ 	ajaxStop: function() { $body.removeClass("loading"); }    
+});
 
 

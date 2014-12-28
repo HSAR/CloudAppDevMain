@@ -15,23 +15,7 @@ function AjaxHandler() {
 }
 
 var requesturls = { 
-	songs: 'http://jinglr-music.appspot.com/users/' + currentUserEntity.user_id + '/songs',
-	collabs: 'http://jinglr-music.appspot.com/users/' + currentUserEntity.user_id + '/collabs',
-	invites: 'http://jinglr-music.appspot.com/users/' + currentUserEntity.user_id + '/invites' 
-}
-
-var commonAjax = function(url, cb) {
-	$.ajax({
-		type : 'GET',
-		url : url,
-		dataType  : 'JSON',
-		success : function(data) {
-			if (data) {
-				cb(data);
-			} else {
-				//#failwhale
-			}
-		},
-		failure : cb(null)
-	});
+	songs: 'http://jinglr-music.appspot.com/users/self/songs',
+	collabs: 'http://jinglr-music.appspot.com/users/self/collabs',
+	invites: 'http://jinglr-music.appspot.com/users/self/invites' 
 }

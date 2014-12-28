@@ -1,4 +1,5 @@
 {% extends "/templates/base.html" %}
+{% block title %}"Jinglr - Dashboard"{% endblock %}
 {% block head %}
 	{{ super() }}
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
@@ -53,6 +54,7 @@
 	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
 	        		</thead>
 	        		<tbody>
+	        		<div class="loadingmodal"></div>
 		    		</tbody>
 		  		</table>
           	</div><!--/panel-body-->
