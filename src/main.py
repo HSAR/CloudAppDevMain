@@ -36,12 +36,12 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 
 class MainHandler(webapp2.RequestHandler):
-    countTest = 0
-
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello world!' + str(MainHandler.countTest))
-        MainHandler.countTest += 1
+        template_values = {
+            'name': "Generic User",
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/index.html')
+        self.response.write(template.render(template_values))
 
 
 class SearchPageHandler(webapp2.RequestHandler):
