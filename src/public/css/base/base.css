@@ -68,21 +68,3 @@ body.loading .loadingmodal {
     display: block;
 }
 
-.inline {
-  display: inline;
-}
-
-span.tab {
-  padding-left: 5em;
-}
-
-div.title-branding {
-  background-color: rgb(16,16,16);
-}
-
-div.title-branding h1 {
-  font-size: 60px;
-  color : white;
-  margin-top: 0em;
-  margin-left: 1em;
-}

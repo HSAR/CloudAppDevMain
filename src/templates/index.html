@@ -9,10 +9,11 @@
 		<!--[if lt IE 9]>
 			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
-		<link href="/public/css/base/base.css" rel="stylesheet">
+		<link href="/public/css/splash.css" rel="stylesheet">
 
 	</head>
 <body>
+<div class="content">
 <!-- Header -->
 <div class="title-branding">
 	<h1>Jinglr.</h1>
@@ -20,28 +21,71 @@
 
 <!-- Main -->
 
-<div class="container">
+<div class="container-fluid">
  
-  <div class="row">
-  	  <div class="sash">
-  	  	<h2>make</h2>
+  <div class="row sash">
+  		<img class="img img-responsive stave" src="../public/img/stave.png"></img>
+  	  <div class="strapline">
+  	  	<div class="strapline-inner">
+  	  	<h2>Make</h2>
   	  	<h2><span class="tab"></span>music</h2>
   	  	<h2><span class="tab"></span><span class="tab"></span>with</h2>
-  	  	<h2><span class="tab"></span><span class="tab"></span><span class="tab"></span>Friends</h2>
+  	  	<h2><span class="tab"></span><span class="tab"></span><span class="tab"></span>friends.</h2>
   	  </div>
-  </div>
-  <div class="row">
-  	<div class="well">
-	  	<p>Jinglr is a great way to cllaborate on music etc....</p>
-	  	<form action="/dashboard" method="get">
-	  		<button type="submit">Get started</button>
-	  	</form>
+  	</div>
+  
+	  <!-- <div class="col-md-6 decal">
+	  	<img src="../public/img/stave.png" class="img img-responsive"></img>
+	  </div> -->
 	</div>
-  </div>
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+	  	<br/>
+	  	<br/>
+	  	<div class="well">
+		  	<p>Jinglr is a great way to create music with the people that matter to you. Writing songs is as simple
+		  		as dropping notes onto a music score, and multiple people can edit a tune together in real time. Listen back to your creations as you edit, and share with the world via the Jinglr library. Click below to begin your Jinglr adventure.</p>
+		  	<form action="/dashboard" method="get">
+		  		<button type="submit" class="btn btn-lg btn-success dashboard-link">Get started</button>
+		  	</form>
+		</div>
+	</div>
+	<div class="col-md-2"></div>
+	</div>
+	
+	<br/>
+	<br/>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="well">
+				<h4>"Amazing software"</h4>
+				<h5>Mr T. Finch</h5>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="well">
+				<h4>"A hidden gem!"</h4>
+				<h5>Music Monthly</h5>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="well">
+				<h4>"Such a simple interface"</h4>
+				<h5>Mr N. Pearce</h5>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="well">
+				<h4>"Best app period!"</h4>
+				<h5>Music Reviewer</h5>
+			</div>
+		</div>
+	</div>
 </div><!--/container-->
 <!-- /Main -->
-<br/>
-<br/>
+</div>
+
 
 <footer class="text-center">Copyright JinglrCorp 2015</footer>
 

@@ -1,0 +1,73 @@
+.inline {
+  display: inline;
+}
+
+span.tab {
+  padding-left: 2em;
+}
+
+div.title-branding {
+  background-color: rgb(16,16,16);
+}
+
+div.title-branding h1 {
+  font-size: 60px;
+  color : white;
+  margin-top: 0em;
+  margin-left: 0.5em;
+}
+
+div.sash {
+  background-color: #668FFE;
+}
+
+div.content {
+  background-color: #668FFE;
+}
+
+div.strapline h2:nth-child(odd) {
+  color : black;
+  font-size: 40px;
+}
+
+div.strapline h2:nth-child(even) {
+  color : white;
+  font-size: 40px;
+}
+
+button.dashboard-link {
+  position: relative;
+  left: 40%;
+}
+
+.sash {
+  /*background-image: url('../../img/stave.png');
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position:left;*/
+  height : 100%;
+}
+
+.strapline-inner {
+  
+  display : inline;
+  
+  
+}
+
+.strapline {
+  display : inline;
+  float : right;
+  position : absolute;
+  right : 0px;
+  z-index: 20;
+  background-color: #668FFE;
+  margin-top: 2em;
+  margin-right: 2em;
+  padding: 0.5em;
+  border-radius: 5px;
+}
+
+.stave {
+  float : left;
+}
