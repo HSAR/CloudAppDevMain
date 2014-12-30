@@ -34,6 +34,14 @@ class InitialDataLoader(webapp2.RequestHandler):
                         collab_invites=[]
                        )
         ju.put()
+        ja = JinglrUser(parent=user_key,
+                        id='101004599599427966408',
+                        user_id='101004599599427966408',
+                        username='jinglradmin',
+                        tags=[],
+                        collab_invites=[]
+                       )
+        ja.put()
         
         jingle = Jingle(id='0', jingle_id='0', title='Merry Chistmas', author='114163773958786510855', genre='Snow Clouds', tags=['Santa', 'Rudolf', 'Tinsel, fool'])
         jingle_json = {}
