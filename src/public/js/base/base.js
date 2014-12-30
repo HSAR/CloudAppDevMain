@@ -10,8 +10,15 @@ var setUser = function(response) {
     currentUserEntity = data;
 }
 
+var connectionFailureMessage = function() {
+	$('#connection-failure-modal').modal('show');
+	$('#connection-failure-button').click(function() {
+		location.reload();
+	})  
+}
+
 var getCurrentUser = function(cb) {
-	commonAjax('http://jinglr-music.appspot.com/users/self/', cb);
+	commonAjax('http://jinglr-music.appspot.com/users/self', cb);
 };
 
 var commonAjax = function(url, cb) {
@@ -32,13 +39,18 @@ var commonAjax = function(url, cb) {
 
 getCurrentUser(setUser);
 $( document ).ready(function() {
-	$("#userWelcome").text(currentUserEntity.username);
+	if(!currentUserEntity) {
+		connectionFailureMessage();
+	} else {
+		$("#userWelcome").text(currentUserEntity.username);
+		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/profile/" + currentUserEntity.user_id); //this is my assumption on where the profiles will be located
+	}
 });
 
 $body = $("body");
 
 $(document).on({
-    ajaxStart: function() { $body.addClass("loading");    },
+    ajaxStart: function() { $body.addClass("loading"); },
  	ajaxStop: function() { $body.removeClass("loading"); }    
 });
 

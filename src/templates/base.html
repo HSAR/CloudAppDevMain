@@ -9,8 +9,6 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 		<link rel="icon" href="/public/favicon.ico">
-		
-			
 		<script type="text/javascript" src="/public/js/jquery.min.js"></script>
 		<script type="text/javascript" src="/public/js/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
@@ -42,7 +40,7 @@
 		          <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
 		            <i class="glyphicon glyphicon-user"></i> <span id="userWelcome">Guest</span><span class="caret"></span></a>
 		          <ul id="g-account-menu" class="dropdown-menu" role="menu">
-		            <li><a href="http://jinglr-music.appspot.com/profile/self">My Profile</a></li>
+		            <li><a href="http://jinglr-music.appspot.com/profile/self" id="profile-url">My Profile</a></li>
 		            <li><a href="http://jinglr-music.appspot.com/logout">Logout</a></li>
 		          </ul>
 		        </li>
@@ -54,5 +52,21 @@
 		<div class="container content"> {% block content %}{% endblock %}</div>
 		<div class="container footer"> {% block footer %}{% endblock %}</div>
 		<div class="loadingmodal"></div>
+		<div class="modal fade" id="connection-failure-modal">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      	<div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">Connection Failure</h4>
+			      	</div>
+			      	<div class="modal-body">
+			        	<p>An error occured connecting to the server. Please try again</p>
+			      	</div>
+			      	<div class="modal-footer">
+				        <button type="button" id="connection-failure-button" class="btn btn-default">Refresh</button>
+			      	</div>
+			    </div><!-- /.modal-content -->
+		  	</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 	</body>
 </html>
