@@ -12,9 +12,7 @@ import datastore
 import error
 import permission
 
-from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.api import channel
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -31,7 +29,7 @@ class UserRootHandler(webapp2.RequestHandler):
         else:
             result = datastore.getUserByUsername(username)
             if not result:
-                self.response.set_status(404)
+                return error.respond(404, "No user found for UID " + uid)
             else:
                 self.response.write(json.dumps(datastore.getUserDict(result)))
                 self.response.set_status(200)
@@ -62,15 +60,20 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Not signed in")
                 else:
                     uid = user.user_id()
+                    result = datastore.getUserById(uid)
+                    if not result:
+                        create_user_result = datastore.createUser(uid, user.nickname())
+                        if 'errorMessage' in create_user_result:
+                            return error.respond(500, result['errorMessage'])
             result = datastore.getUserById(uid)
             if not result:
-                self.response.set_status(404)
+                return error.respond(404, "No user found for UID " + uid)
             else:
                 self.response.write(json.dumps(datastore.getUserDict(result)))
                 self.response.set_status(200)
@@ -80,7 +83,7 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "You are not authorised to edit this user")
@@ -121,7 +124,7 @@ class UserSongsHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Invalid user ID in request URL")
@@ -129,7 +132,7 @@ class UserSongsHandler(webapp2.RequestHandler):
                     uid = user.user_id()
             result = datastore.getUsersSongs(uid)
             if result is None:
-                self.response.set_status(404)
+                return error.respond(404, "No user found for UID " + uid)
             else:
                 self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
@@ -141,7 +144,7 @@ class UserCollabsHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Invalid user ID in request URL")
@@ -149,7 +152,7 @@ class UserCollabsHandler(webapp2.RequestHandler):
                     uid = user.user_id()
             result = datastore.getUserCollabs(uid)
             if result is None:
-                self.response.set_status(404)
+                return error.respond(404, "No user found for UID " + uid)
             else:
                 self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
@@ -161,7 +164,7 @@ class SingleCollabHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Invalid user ID in request URL")
@@ -183,7 +186,7 @@ class UserInvitesHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Invalid user ID in request URL")
@@ -191,7 +194,7 @@ class UserInvitesHandler(webapp2.RequestHandler):
                     uid = user.user_id()
             result = datastore.getCollabInvites(uid)
             if result is None:
-                self.response.set_status(404)
+                return error.respond(404, "No user found for UID " + uid)
             else:
                 self.response.write(json.dumps(datastore.getJingleList(result)))
                 self.response.set_status(200)
@@ -217,7 +220,7 @@ class SingleInviteHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Invalid user ID in request URL")
@@ -229,9 +232,9 @@ class SingleInviteHandler(webapp2.RequestHandler):
                 response = self.request.get("response")
                 if not response:
                     return error.respond(400, 'Missing property in request URI')
-                elif (response == 'true'):
+                elif response == 'true':
                     accept = True
-                elif (response == 'false'):
+                elif response == 'false':
                     accept = False
                 else:
                     return error.respond(400, 'Invalid property in request URI')
