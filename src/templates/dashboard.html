@@ -1,5 +1,5 @@
 {% extends "/templates/base.html" %}
-{% block title %}"Jinglr - Dashboard"{% endblock %}
+{% block title %}Jinglr - Dashboard{% endblock %}
 {% block head %}
 	{{ super() }}
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
@@ -30,7 +30,7 @@
        	<hr>
       	<div class="panel panel-default">
           	<div class="panel-heading">
-          		<h4><span id="mysongstitle">My Songs</span></h4>
+          		<h4 id="mysongstitle">My Songs</h4>
           		<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
       		</div>
           	<div class="panel-body">
@@ -47,14 +47,15 @@
     	<hr>
 
       	<div class="panel panel-default">
-          	<div class="panel-heading"><h4>My Contributions</h4></div>
+          	<div class="panel-heading">
+          		<h4 id="mycontributionstitle">My Contributions</h4>
+      		</div>
           	<div class="panel-body">
           		<table class="table table-striped" id="collabTable">
 	        		<thead>
 	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
 	        		</thead>
 	        		<tbody>
-	        		<div class="loadingmodal"></div>
 		    		</tbody>
 		  		</table>
           	</div><!--/panel-body-->
@@ -63,7 +64,9 @@
       	<hr>
 
       	<div class="panel panel-default">
-          	<div class="panel-heading"><h4>My Invitations</h4></div>
+          	<div class="panel-heading">
+          		<h4 id="myinvitationsheading">My Invitations</h4>
+      		</div>
           	<div class="panel-body">
           		<table class="table table-striped" id="inviteTable">
 	        		<thead>
@@ -77,7 +80,7 @@
   	</div><!--/col-->   
 </div><!--/row-->	
 
-<!-- Modal -->
+<!-- Create Jingle Modal -->
 <div class="modal fade" id="createJingleModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">

@@ -5,6 +5,7 @@ var setUser = function(response) {
 	var data = jQuery.parseJSON(response);
 	if (!data) {
         data = {username: "testuserplsignore", user_id: "testuidplsignore" }; //test case
+        //window.location.replace('http://jinglr-music.appspot.com/'); //redirect when not signed in
     } 
     currentUserEntity = data;
 }
