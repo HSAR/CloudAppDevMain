@@ -10,111 +10,110 @@
 <!-- upper section -->
 <div class="row">
 	<div class="col-md-3">
-      <!-- left -->
-      <h3><i class="glyphicon glyphicon-briefcase"></i>Favourite Tags</h3>
-      <hr>
-      
-      <ul class="nav nav-stacked">
-        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Fast</a></li>
-        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Trumpet</a></li>
-        <li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Short</a></li>
-      </ul>
-      
-      <hr>
-      
-  	</div><!-- /span-3 -->
-    <div class="col-md-9">  	
-      <!-- column 2 -->	
-       <div id="dashTitle"><h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">TestUser's Dashboard</span></h3></div>
+		<!-- left -->
+		<h3><i class="glyphicon glyphicon-briefcase"></i>Favourite Tags</h3>
+		<hr>
+		<ul class="nav nav-stacked">
+			<li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Fast</a></li>
+			<li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Trumpet</a></li>
+			<li><a href="javascript:;"><i class="glyphicon glyphicon-flash"></i> Short</a></li>
+		</ul>
+		<hr>		
+	</div><!-- /span-3 -->
 
-       	<hr>
-      	<div class="panel panel-default">
-          	<div class="panel-heading">
-          		<h4 id="mysongstitle">My Songs</h4>
-          		<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
-      		</div>
-          	<div class="panel-body">
-          		<table class="table table-striped" id="ownedTable">
-	        		<thead>
-	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-	        		</thead>
-	        		<tbody>
-		    		</tbody>
-		  		</table>
-          	</div><!--/panel-body-->
-      	</div><!--/panel-->  
+	<div class="col-md-9">  	
+		<!-- column 2 -->	
+		<div id="dashTitle">
+			<h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">Placeholder's Dashboard</span></h3>
+		</div>
 
-    	<hr>
+		<hr>
 
-      	<div class="panel panel-default">
-          	<div class="panel-heading">
-          		<h4 id="mycontributionstitle">My Contributions</h4>
-      		</div>
-          	<div class="panel-body">
-          		<table class="table table-striped" id="collabTable">
-	        		<thead>
-	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-	        		</thead>
-	        		<tbody>
-		    		</tbody>
-		  		</table>
-          	</div><!--/panel-body-->
-      	</div><!--/panel-->
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 id="mysongstitle">My Songs</h4>
+				<button type="button" id="createjinglebutton" class="btn btn-primary" data-toggle="modal" data-target="#createJingleModal">Create Jingle</button>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="ownedTable">
+					<thead>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div><!--/panel-body-->
+		</div><!--/panel-->  
 
-      	<hr>
+		<hr>
 
-      	<div class="panel panel-default">
-          	<div class="panel-heading">
-          		<h4 id="myinvitationsheading">My Invitations</h4>
-      		</div>
-          	<div class="panel-body">
-          		<table class="table table-striped" id="inviteTable">
-	        		<thead>
-	          			<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
-	        		</thead>
-	        		<tbody>
-		    		</tbody>
-		  		</table>
-          	</div><!--/panel-body-->
-      	</div><!--/panel-->          
-  	</div><!--/col-->   
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 id="mycontributionstitle">My Contributions</h4>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="collabTable">
+					<thead>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div><!--/panel-body-->
+		</div><!--/panel-->
+
+		<hr>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 id="myinvitationsheading">My Invitations</h4>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="inviteTable">
+					<thead>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div><!--/panel-body-->
+		</div><!--/panel-->          
+	</div><!--/col-->   
 </div><!--/row-->	
 
 <!-- Create Jingle Modal -->
 <div class="modal fade" id="createJingleModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="createModalLabel">Create Jingle</h4>
-      </div>
-      <div class="modal-body">
-        <form class="form" role="form" action="create a jingle" method="put" id="createjingleform">
-	        <div class="form-group">
-		        <label>Name</label>
-		        <input class="form-control" type="text" id="name" placeholder="My Jingle"/>
-	        </div>
-	        <div class="form-group">
-		        <label>Time Signature</label>
-		        <input class="form-control" type="text" id="timesignature" placeholder="4/4"/>
-	        </div>
-	        <div class="form-group">
-	        	<label>Genre</label>				
-	        	<input class="form-control" type="text" id="genre" placeholder="Grunge"/>
-	        </div>
-	        <div class="form-group">
-	        	<label>Tags</label><br>
-	        	<input class="form-control" type="text" id="tags" placeholder="Awesomeness"/>
-	    	</div>
-	     </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="createModalLabel">Create Jingle</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form" role="form" action="create a jingle" method="put" id="createjingleform">
+					<div class="form-group">
+						<label>Name</label>
+						<input class="form-control" type="text" id="name" placeholder="My Jingle"/>
+					</div>
+					<div class="form-group">
+						<label>Time Signature</label>
+						<input class="form-control" type="text" id="timesignature" placeholder="4/4"/>
+					</div>
+					<div class="form-group">
+						<label>Genre</label>				
+						<input class="form-control" type="text" id="genre" placeholder="Grunge"/>
+					</div>
+					<div class="form-group">
+						<label>Tags</label><br>
+						<input class="form-control" type="text" id="tags" placeholder="Awesomeness"/>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
 </div>
-  <!-- /upper section -->
-
+<!-- /upper section -->
 {% endblock %}

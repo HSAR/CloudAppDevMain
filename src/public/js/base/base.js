@@ -42,15 +42,12 @@ $( document ).ready(function() {
 		connectionFailureMessage();
 	} else {
 		$("#userWelcome").text(currentUserEntity.username);
-		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/web/users/self");
 	}
 });
 
-$body = $("body");
-
 $(document).on({
-    ajaxStart: function() { $body.addClass("loading"); },
- 	ajaxStop: function() { $body.removeClass("loading"); }    
+    ajaxStart: function() { $("body").addClass("loading"); },
+ 	ajaxStop: function() { $("body").removeClass("loading"); }    
 });
 
 

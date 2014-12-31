@@ -1,7 +1,17 @@
-$( document ).ready(function() {
+$(document).ready(function() {
 	var ajax = new AjaxHandler();
-	ajax.search(showResults);
+	ajax.search(getQueryVariable(), showResults);
 });
+
+function getQueryVariable() {
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == "query"){return pair[1];}
+       }
+       return(false);
+}
 
 var showResults = function(response) {
 	var data = jQuery.parseJSON(response);

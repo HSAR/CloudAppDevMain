@@ -1,8 +1,8 @@
 function AjaxHandler() {
-	this.search = function(cb) {
+	this.search = function(query, cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/search/' + query,
+			url : 'http://jinglr-music.appspot.com/api/search/' + query,
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -12,8 +12,8 @@ function AjaxHandler() {
 				} else {
 					//deal with error here
 				}
-			}
-
+			},
+			failure: cb(null)
 		});
 	};
 }
