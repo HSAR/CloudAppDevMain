@@ -32,6 +32,10 @@ handlers:
   script: taskqueue_handlers.application
   login: admin
 
+- url: /.*/users/self.*
+  script: users.application
+  login: required
+
 - url: /web/users.*
   script: users.application
 
