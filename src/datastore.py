@@ -324,14 +324,17 @@ def searchJingle(jingle, sort, isAnd):
 # Resume search by passing a cursor (second item in returned tuple from search)
 # Returns same as searchJingle
 def resumeSearch(cursor):
-    value = Jingle.query().fetch_page(10, start_cursor=cursor)
-    for jingle in value[0]: # results
+    results, cursor, more = Jingle.query().fetch_page(10, start_cursor=cursor)
+
+    jingleDicts = []
+    for jingle in results: # results
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
         jingle.collab_usernames = username_list
+        jingleDicts.append(getJingleDict(jingle, False))
     
-    return value
+    return (jingleDicts, cursor, more)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ BLOCKING WRITE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~

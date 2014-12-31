@@ -22,7 +22,7 @@ handlers:
   script: google.appengine.ext.admin.application
   login: admin
 
-- url: /songs/search.*
+- url: /api/songs/search.*
   script: songs_search.application
 
 - url: /_ah.*
