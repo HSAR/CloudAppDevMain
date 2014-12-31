@@ -1,5 +1,6 @@
 $( document ).ready(function() {
     var path = window.location.pathname;
+    path = path.split("/")[2];
 	var ajax = new AjaxHandler();
 
     ajax.getUser(path, userData);
@@ -8,7 +9,7 @@ $( document ).ready(function() {
     ajax.getUserInvites(path, invitedSongs);
 
     //if user is viewing own profile, allow editing
-    if (currentUserEntity.user_id === path.split("/")[1]) {
+    if (currentUserEntity.user_id === path) {
         //display edit button
     }
 });
@@ -19,6 +20,7 @@ var userData = function(response) {
         data = {username: "testuserplsignore", user_id: "testuidplsignore" }; //test case
     } 
     $("#profileTitle h3 #userHeader").text(" " + data.username + "'s Profile");
+    //$("#username").text(data.username);
     //$("#bio").text(data.bio);
     //$("#tags").text(data.tags);
     

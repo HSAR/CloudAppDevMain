@@ -42,7 +42,7 @@ $( document ).ready(function() {
 		connectionFailureMessage();
 	} else {
 		$("#userWelcome").text(currentUserEntity.username);
-		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/users/self");
+		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/web/users/self");
 	}
 });
 

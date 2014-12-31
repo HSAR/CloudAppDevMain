@@ -15,7 +15,7 @@ function AjaxHandler() {
 }
 
 var requesturls = { 
-	songs: 'http://jinglr-music.appspot.com/users/self/songs',
-	collabs: 'http://jinglr-music.appspot.com/users/self/collabs',
-	invites: 'http://jinglr-music.appspot.com/users/self/invites' 
+	songs: 'http://jinglr-music.appspot.com/api/users/self/songs',
+	collabs: 'http://jinglr-music.appspot.com/api/users/self/collabs',
+	invites: 'http://jinglr-music.appspot.com/api/users/self/invites' 
 }
