@@ -1,5 +1,10 @@
 	/*
-	Handler script for the music editor. Still in early stages
+	Handler script for the editor page. This script deals with the inital setup of the page and the drawing 
+	of DOM elements onto the page from the tune json retreived from the server. The script also handles the UI
+	elements used by the page, such as draggables etc. and manages their interaction.
+
+	There are also three helper scripts used by the editor to deal with channels, ajax calls and midi data and 
+	instances of the classes created by those scripts are used here to handle those respective areas.
 	*/
 
 	//TODO call draw preview on dragged between pitches divs so they dont disappear
@@ -233,12 +238,7 @@
 				MIDI.Player.pause();
 			}
 		});
-		$('.stop-button').click(function(event,ui) {
-			MIDI.Player.stop();
-			$('.progress-bar').html('Ready to play').css({
-				'width' : '100%'
-			});
-		});
+		$('.stop-button').click(resetPlayer);
 		$('.compile-button').click(function(event,ui) {
 			pageData.compiledMidi = false;
 			$('.progress-bar').html('Compiling tune').css({
@@ -247,6 +247,13 @@
 			ajaxHelper.compileTune(pageData.songId,function(data) {
 				loadMidi(data);
 			});
+		});
+	}
+
+	function resetPlayer() {//defined expolictly as referred to by stop button and finished playing callback
+		MIDI.Player.stop();
+		$('.progress-bar').html('Ready to play').css({
+			'width' : '100%'
 		});
 	}
 
@@ -280,6 +287,10 @@
 						});
 
 						MIDI.Player.addListener(function(data) {
+							if(data.now === data.end) {
+								resetPlayer();
+								return;
+							}
 							var playProgress = ((data.now / data.end) * 100) + '%';
 							var progressRounded = Math.round((data.now / data.end) * 100) + '%';
 							$('.progress-bar').html(progressRounded).css({
