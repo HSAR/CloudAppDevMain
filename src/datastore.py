@@ -95,7 +95,7 @@ def getUserDict(user):
 #'collab_usernames' fields
 def getJingleDict(jingle, json = True):
     
-    keys = ['jingle_id', 'title', 'author', 'username', 
+    keys = ['jingle_id', 'title', 'author', 
             'genre', 'length', 'tags', 'collab_users',
             'collab_usernames']
     if json:
@@ -308,15 +308,18 @@ def searchJingle(jingle, sort, isAnd):
         jingle_query = Jingle.query(combineFunction(*query)).order(sort,
                 Jingle.key)
 
-    value = jingle_query.fetch_page(10)
+    results, cursor, more = jingle_query.fetch_page(10)
 
-    for jingle in value[0]: # results
+    jingleDicts = []
+
+    for jingle in results: # results
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
         jingle.collab_usernames = username_list
-    
-    return value
+        jingleDicts.append(getJingleDict(jingle, False))
+
+    return (jingleDicts, cursor, more)
 
 # Resume search by passing a cursor (second item in returned tuple from search)
 # Returns same as searchJingle
