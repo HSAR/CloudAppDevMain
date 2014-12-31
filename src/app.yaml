@@ -42,11 +42,14 @@ handlers:
 - url: /api/users.*
   script: users.application
 
-- url: /songs/.*/editor
+- url: /web/songs/.*
   script: songs.application
   login: required
 
-- url: /songs.*
+- url: /web/songs.*
+  script: songs.application
+
+- url: /api/songs.*
   script: songs.application
 
 - url: .*

@@ -24,7 +24,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-class SongRootHandler(webapp2.RequestHandler):
+class ApiSongHandler(webapp2.RequestHandler):
     # this will eventually contain searching, I think
     def put(self):
         try:
@@ -50,7 +50,7 @@ class SongRootHandler(webapp2.RequestHandler):
             return error.respond(400, 'Invalid JSON in request body')
 
 
-class SongDataHandler(webapp2.RequestHandler):
+class ApiSongSidHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -96,7 +96,7 @@ class SongDataHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class SongGetJSONHandler(webapp2.RequestHandler):
+class ApiSongSidJsonHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -107,7 +107,7 @@ class SongGetJSONHandler(webapp2.RequestHandler):
             return error.respond(404, "Jingle ID has no associated data")
 
 
-class SongGetMidiHandler(webapp2.RequestHandler):
+class ApiSongSidMidiHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -123,7 +123,7 @@ class SongGetMidiHandler(webapp2.RequestHandler):
                 return error.respond(404, "Song not found.")
 
 
-class SongCollaboratorsHandler(webapp2.RequestHandler):
+class ApiSongSidCollabsHandler(webapp2.RequestHandler):
     def get(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -136,7 +136,7 @@ class SongCollaboratorsHandler(webapp2.RequestHandler):
                 return error.respond(404, "No song found with this ID")
 
 
-class NoteChangeHandler(webapp2.RequestHandler):
+class ApiSongSidNoteHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -195,7 +195,7 @@ class NoteChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class InstrumentChangeHandler(webapp2.RequestHandler):
+class ApiSongSidInstrumentHandler(webapp2.RequestHandler):
     def delete(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -274,7 +274,7 @@ class InstrumentChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class TempoChangeHandler(webapp2.RequestHandler):
+class ApiSongSidTempoHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -299,7 +299,7 @@ class TempoChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class SubdivisionChangeHandler(webapp2.RequestHandler):
+class ApiSongSidSubdivisionHandler(webapp2.RequestHandler):
     def put(self, songid):
         if not songid:
             return error.respond(400, "Invalid song ID in request URL")
@@ -324,7 +324,7 @@ class SubdivisionChangeHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class EditorPageHandler(webapp2.RequestHandler):
+class WebSongsSidEditorHandler(webapp2.RequestHandler):
     def get(self, songid):
         user = users.get_current_user()
         if not songid:
@@ -343,7 +343,7 @@ class EditorPageHandler(webapp2.RequestHandler):
             self.response.write(template.render(template_values))
 
 
-class BeginEditing(webapp2.RequestHandler):
+class ApiSongSidTokenHandler(webapp2.RequestHandler):
     def get(self, songid):
         self.response.headers['Content-Type'] = 'application/json'
         if not songid:
@@ -362,28 +362,30 @@ allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/songs/', handler=SongRootHandler,
+                                          webapp2.Route(r'/api/songs/', handler=ApiSongHandler,
                                                         name='songs-root'),
-                                          webapp2.Route(r'/songs/<songid>/', handler=SongDataHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/', handler=ApiSongSidHandler,
                                                         name='state-dump'),
-                                          webapp2.Route(r'/songs/<songid>/json', handler=SongGetJSONHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/json', handler=ApiSongSidJsonHandler,
                                                         name='song-get-by-id'),
-                                          webapp2.Route(r'/songs/<songid>/midi', handler=SongGetMidiHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/midi', handler=ApiSongSidMidiHandler,
                                                         name='song-get-midi-by-id'),
-                                          webapp2.Route(r'/songs/<songid>/notes', handler=NoteChangeHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/notes', handler=ApiSongSidNoteHandler,
                                                         name='notechanges'),
-                                          webapp2.Route(r'/songs/<songid>/instruments', handler=InstrumentChangeHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/instruments',
+                                                        handler=ApiSongSidInstrumentHandler,
                                                         name='instrument-changes'),
-                                          webapp2.Route(r'/songs/<songid>/tempo', handler=TempoChangeHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/tempo', handler=ApiSongSidTempoHandler,
                                                         name='tempo-changes'),
-                                          webapp2.Route(r'/songs/<songid>/subdivisions',
-                                                        handler=SubdivisionChangeHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/subdivisions',
+                                                        handler=ApiSongSidSubdivisionHandler,
                                                         name='subdivision-changes'),
-                                          webapp2.Route(r'/songs/<songid>/token', handler=BeginEditing,
+                                          webapp2.Route(r'/api/songs/<songid>/token', handler=ApiSongSidTokenHandler,
                                                         name='editor'),
-                                          webapp2.Route(r'/songs/<songid>/editor', handler=EditorPageHandler,
+                                          webapp2.Route(r'/api/songs/<songid>/collabs',
+                                                        handler=ApiSongSidCollabsHandler,
                                                         name='editor'),
-                                          webapp2.Route(r'/songs/<songid>/collabs', handler=SongCollaboratorsHandler,
+                                          webapp2.Route(r'/web/songs/<songid>/', handler=WebSongsSidEditorHandler,
                                                         name='editor'),
                                       ], debug=True)
 					
