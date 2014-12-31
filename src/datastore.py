@@ -577,7 +577,7 @@ def createJingle(uid, title, genre=None, tags=None):
         jingle.tags = []
     
     jingle_json = {}
-    jingle_json['head'] = {'subDivisions':4, 'tempo':120, 'barLength':4}
+    jingle_json['head'] = {'subDivisions':8, 'tempo':120, 'barLength':4}
     jingle_json['tracks'] = []
     for i in range(0,15):
         jingle_json['tracks'].append({})

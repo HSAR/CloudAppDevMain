@@ -161,10 +161,6 @@ class UpdateHandler(webapp2.RequestHandler):
                         jingle, new_action = jingle_update.change_tempo(jingle, action)
                         new_action_list.append(new_action)
                     
-                    elif action["action"] == "subDivisions":
-                        jingle, new_action = jingle_update.change_sub_divisions(jingle, action)
-                        new_action_list.append(new_action)
-                    
                     elif action["action"] == "instrumentAdd":
                         jingle, new_action = jingle_update.add_instrument(jingle, action)
                         new_action_list.append(new_action)

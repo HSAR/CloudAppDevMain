@@ -130,23 +130,6 @@ def change_tempo(jingle, action):
     return [jingle, action]
 
 
-def change_sub_divisions(jingle, action):
-    
-    action_sub = action['subDivisions']
-    
-    if type(action_sub) is int:
-        if action_sub < 1 or action_sub > 65535:
-            logging.warning('A sub division was not in the valid range: ' + str(action_sub))
-        else:
-            jingle['head']['subDivisions'] = action_sub
-    else:
-        logging.warning('A non int sub division was given: ' + str(action_sub))
-    
-    action['checksum'] = generate_checksum(jingle)
-    
-    return [jingle, action]
-
-
 def add_instrument(jingle, action):
     
     action_track = action['instrument']['track']
