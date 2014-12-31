@@ -59,11 +59,21 @@ class UserRootHandler(webapp2.RequestHandler):
 
 class UserIdentifiedHandler(webapp2.RequestHandler):
     def get(self, uid):
-        template_values = {
-            'uid': uid,
-        }
-        template = JINJA_ENVIRONMENT.get_template('templates/profile.html')
-        self.response.write(template.render(template_values))
+        if not uid:
+            return error.respond(400, "Invalid user ID in request URL")
+        else:
+            if (uid == 'self'):
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Not signed in")
+                else:
+                    uid = user.user_id()
+                    return self.redirect("/users/" + uid)
+            template_values = {
+                'uid': uid,
+            }
+            template = JINJA_ENVIRONMENT.get_template('templates/profile.html')
+            self.response.write(template.render(template_values))
 
     def patch(self, uid):
         if not uid:
