@@ -28,6 +28,16 @@ handlers:
 - url: /_ah.*
   script: admin.application
 
+- url: /tasks/.*
+  script: taskqueue_handlers.application
+  login: admin
+
+- url: /web/users.*
+  script: users.application
+
+- url: /api/users.*
+  script: users.application
+
 - url: /songs/.*/editor
   script: songs.application
   login: required
@@ -35,13 +45,6 @@ handlers:
 - url: /songs.*
   script: songs.application
 
-- url: /tasks/.*
-  script: taskqueue_handlers.application
-  login: admin
-
-- url: /users.*
-  script: users.application
-  
 - url: .*
   script: main.application
 

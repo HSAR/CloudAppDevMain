@@ -21,7 +21,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-class UserRootHandler(webapp2.RequestHandler):
+class ApiUserHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         if not username:
@@ -57,23 +57,29 @@ class UserRootHandler(webapp2.RequestHandler):
                 return error.respond(400, 'Invalid JSON in request body')
 
 
-class UserIdentifiedHandler(webapp2.RequestHandler):
+class ApiUserUidHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Not signed in")
                 else:
                     uid = user.user_id()
-                    return self.redirect("/users/" + uid)
-            template_values = {
-                'uid': uid,
-            }
-            template = JINJA_ENVIRONMENT.get_template('templates/profile.html')
-            self.response.write(template.render(template_values))
+                    result = datastore.getUserById(uid)
+                    if not result:
+                        create_user_result = datastore.createUser(uid, user.nickname())
+                        if 'errorMessage' in create_user_result:
+                            return error.respond(500, result['errorMessage'])
+            result = datastore.getUserById(uid)
+            if not result:
+                return error.respond(404, "No user found for UID " + uid)
+            else:
+                self.response.write(json.dumps(datastore.getUserDict(result)))
+                self.response.set_status(200)
+            return
 
     def patch(self, uid):
         if not uid:
@@ -115,32 +121,26 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
                     return error.respond(400, 'Invalid JSON in request body')
 
 
-class UserDataHandler(webapp2.RequestHandler):
+class WebUserProfileHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if uid == 'self':
+            if (uid == 'self'):
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Not signed in")
                 else:
                     uid = user.user_id()
-                    result = datastore.getUserById(uid)
-                    if not result:
-                        create_user_result = datastore.createUser(uid, user.nickname())
-                        if 'errorMessage' in create_user_result:
-                            return error.respond(500, result['errorMessage'])
-            result = datastore.getUserById(uid)
-            if not result:
-                return error.respond(404, "No user found for UID " + uid)
-            else:
-                self.response.write(json.dumps(datastore.getUserDict(result)))
-                self.response.set_status(200)
-            return
+                    return self.redirect("/users/" + uid)
+            template_values = {
+                'uid': uid,
+            }
+            template = JINJA_ENVIRONMENT.get_template('templates/profile.html')
+            self.response.write(template.render(template_values))
 
 
-class UserSongsHandler(webapp2.RequestHandler):
+class ApiUserUidSongsHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -160,7 +160,7 @@ class UserSongsHandler(webapp2.RequestHandler):
             return
 
 
-class UserCollabsHandler(webapp2.RequestHandler):
+class ApiUserUidCollabsHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -180,7 +180,7 @@ class UserCollabsHandler(webapp2.RequestHandler):
             return
 
 
-class SingleCollabHandler(webapp2.RequestHandler):
+class ApiUserUidCollabsUidHandler(webapp2.RequestHandler):
     def delete(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -202,7 +202,7 @@ class SingleCollabHandler(webapp2.RequestHandler):
                     self.response.set_status(200)
 
 
-class UserInvitesHandler(webapp2.RequestHandler):
+class ApiUserUidInvitesHandler(webapp2.RequestHandler):
     def get(self, uid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -222,7 +222,7 @@ class UserInvitesHandler(webapp2.RequestHandler):
             return
 
 
-class SingleInviteHandler(webapp2.RequestHandler):
+class ApiUserUidInvitesUidHandler(webapp2.RequestHandler):
     def put(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -271,21 +271,21 @@ allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/users', handler=UserRootHandler,
+                                          webapp2.Route(r'/api/users', handler=ApiUserHandler,
                                                         name='user-get-by-name'),
-                                          webapp2.Route(r'/users/<uid>', handler=UserIdentifiedHandler,
+                                          webapp2.Route(r'/api/users/<uid>', handler=ApiUserUidHandler,
                                                         name='user-get-by-id'),
-                                          webapp2.Route(r'/users/<uid>/json', handler=UserDataHandler,
+                                          webapp2.Route(r'/web//users/<uid>', handler=WebUserProfileHandler,
                                                         name='user-get-by-id'),
-                                          webapp2.Route(r'/users/<uid>/songs', handler=UserSongsHandler,
+                                          webapp2.Route(r'/api/users/<uid>/songs', handler=ApiUserUidSongsHandler,
                                                         name='user-get-songs'),
-                                          webapp2.Route(r'/users/<uid>/collabs/<jid>', handler=SingleCollabHandler,
+                                          webapp2.Route(r'/api/users/<uid>/collabs/<jid>', handler=ApiUserUidCollabsUidHandler,
                                                         name='user-single-collab'),
-                                          webapp2.Route(r'/users/<uid>/collabs', handler=UserCollabsHandler,
+                                          webapp2.Route(r'/api/users/<uid>/collabs', handler=ApiUserUidCollabsHandler,
                                                         name='user-get-collabs'),
-                                          webapp2.Route(r'/users/<uid>/invites/<jid>', handler=SingleInviteHandler,
+                                          webapp2.Route(r'/api/users/<uid>/invites/<jid>', handler=ApiUserUidInvitesUidHandler,
                                                         name='user-single-invite'),
-                                          webapp2.Route(r'/users/<uid>/invites', handler=UserInvitesHandler,
+                                          webapp2.Route(r'/api/users/<uid>/invites', handler=ApiUserUidInvitesHandler,
                                                         name='user-get-invites'),
                                       ], debug=True)
 					
