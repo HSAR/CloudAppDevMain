@@ -1,0 +1,16 @@
+{% extends "/templates/base.html" %}
+{% block title %}Jinglr - Profile{% endblock %}
+{% block head %}
+	{{ super() }}
+{% endblock %}
+{% block content %}
+<h4>Edit Profile</h4>
+<form action="#">
+  <label for="username">Username</label>
+  <textarea name="username" readonly rows="1" cols="50"></textarea><br>
+  <label for="bio">Bio</label>
+  <textarea name="bio" readonly rows="4" cols="50"></textarea><br>
+  <label for="tags">Tags</label>
+  <textarea name="tags" readonly rows="4" cols="50"></textarea><br>
+</form>
+{% endblock %}

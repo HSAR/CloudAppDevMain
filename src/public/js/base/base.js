@@ -5,7 +5,6 @@ var setUser = function(response) {
 	var data = jQuery.parseJSON(response);
 	if (!data) {
         data = {username: "testuserplsignore", user_id: "testuidplsignore" }; //test case
-        //window.location.replace('http://jinglr-music.appspot.com/'); //redirect when not signed in
     } 
     currentUserEntity = data;
 }
@@ -43,7 +42,7 @@ $( document ).ready(function() {
 		connectionFailureMessage();
 	} else {
 		$("#userWelcome").text(currentUserEntity.username);
-		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/profile/" + currentUserEntity.user_id); //this is my assumption on where the profiles will be located
+		$("#profile-url").attr("href", "http://jinglr-music.appspot.com/users/self");
 	}
 });
 
