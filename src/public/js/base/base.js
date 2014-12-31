@@ -18,7 +18,7 @@ var connectionFailureMessage = function() {
 }
 
 var getCurrentUser = function(cb) {
-	commonAjax('http://jinglr-music.appspot.com/users/self', cb);
+	commonAjax('http://jinglr-music.appspot.com/users/self/json', cb);
 };
 
 var commonAjax = function(url, cb) {

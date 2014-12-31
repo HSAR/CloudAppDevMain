@@ -59,27 +59,11 @@ class UserRootHandler(webapp2.RequestHandler):
 
 class UserIdentifiedHandler(webapp2.RequestHandler):
     def get(self, uid):
-        if not uid:
-            return error.respond(400, "Invalid user ID in request URL")
-        else:
-            if uid == 'self':
-                user = users.get_current_user()
-                if not user:
-                    return error.respond(401, "Not signed in")
-                else:
-                    uid = user.user_id()
-                    result = datastore.getUserById(uid)
-                    if not result:
-                        create_user_result = datastore.createUser(uid, user.nickname())
-                        if 'errorMessage' in create_user_result:
-                            return error.respond(500, result['errorMessage'])
-            result = datastore.getUserById(uid)
-            if not result:
-                return error.respond(404, "No user found for UID " + uid)
-            else:
-                self.response.write(json.dumps(datastore.getUserDict(result)))
-                self.response.set_status(200)
-            return
+        template_values = {
+            'uid': uid,
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/profile.html')
+        self.response.write(template.render(template_values))
 
     def patch(self, uid):
         if not uid:
@@ -119,6 +103,31 @@ class UserIdentifiedHandler(webapp2.RequestHandler):
                             self.response.set_status(200)
                 except ValueError:
                     return error.respond(400, 'Invalid JSON in request body')
+
+
+class UserDataHandler(webapp2.RequestHandler):
+    def get(self, uid):
+        if not uid:
+            return error.respond(400, "Invalid user ID in request URL")
+        else:
+            if uid == 'self':
+                user = users.get_current_user()
+                if not user:
+                    return error.respond(401, "Not signed in")
+                else:
+                    uid = user.user_id()
+                    result = datastore.getUserById(uid)
+                    if not result:
+                        create_user_result = datastore.createUser(uid, user.nickname())
+                        if 'errorMessage' in create_user_result:
+                            return error.respond(500, result['errorMessage'])
+            result = datastore.getUserById(uid)
+            if not result:
+                return error.respond(404, "No user found for UID " + uid)
+            else:
+                self.response.write(json.dumps(datastore.getUserDict(result)))
+                self.response.set_status(200)
+            return
 
 
 class UserSongsHandler(webapp2.RequestHandler):
@@ -255,6 +264,8 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/users', handler=UserRootHandler,
                                                         name='user-get-by-name'),
                                           webapp2.Route(r'/users/<uid>', handler=UserIdentifiedHandler,
+                                                        name='user-get-by-id'),
+                                          webapp2.Route(r'/users/<uid>/json', handler=UserDataHandler,
                                                         name='user-get-by-id'),
                                           webapp2.Route(r'/users/<uid>/songs', handler=UserSongsHandler,
                                                         name='user-get-songs'),
