@@ -25,11 +25,13 @@ class UserRootHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         if not username:
-            return error.respond(400, "Missing request parameter(s)")
+            return error.respond(501,
+                                 "User list to be implemented at a future date. "
+                                 "Current functionality: URI parameter 'username' can be used to search for a user.")
         else:
             result = datastore.getUserByUsername(username)
             if not result:
-                return error.respond(404, "No user found for UID " + uid)
+                return error.respond(404, "No user found for username " + username)
             else:
                 self.response.write(json.dumps(datastore.getUserDict(result)))
                 self.response.set_status(200)
