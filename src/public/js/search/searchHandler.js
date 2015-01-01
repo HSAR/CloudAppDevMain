@@ -1,6 +1,11 @@
-$(document).ready(function() {
+var token = null;
+var query = null;
+var sort = null;
+
+var $(document).ready(function() {
 	var ajax = new AjaxHandler();
-	ajax.search(getUrlParam('query'), getUrlParam('sort'), getUrlParam('token'), showResults);
+	query = getUrlParam('query');
+	ajax.search(query, sort, token, showResults);
 });
 
 function getUrlParam(parameter) {
@@ -26,11 +31,16 @@ var showResults = function(response) {
 		}
     	if (data.more) {
     		//enable next page link
-    		var query = getUrlParam('query');
-    		$('#more-results').attr('href', 'http://jinglr-music.appspot.com/search?query=' + getUrlParam("query") + '&token=' + data.token);
+    		$('#more-results').click(showMore());
+    	} else {
+    		$('#more-results').unbind('click');
     	}
 	    for (var i = 0; i < results.length; i++) {
 	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + results[i].title + '">' + results[i].title + '</a></td><td>' + results[i].owner + "</td><td>" + results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
 	    }
 	}
+}
+
+var showMore = function() {
+    ajax.search(query, sort, token, showResults);
 }
