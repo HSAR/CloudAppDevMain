@@ -707,6 +707,10 @@
 	function searchForPossibleUser(name) {
 		//take a name as a string and do a wildcard search for users with similar names
 		var matches = [];
+
+		if(!name || name.length === 0) {//if no input return empty array
+			return matches;
+		}
 		for(var i = 0; i < pageData.users.length; i++) {
 			if(pageData.users[i].username.indexOf(name.trim()) !== -1) {//if we have some sort of match
 				if($('span#userWelcome').html() !== pageData.users[i].username) {//if not us!
