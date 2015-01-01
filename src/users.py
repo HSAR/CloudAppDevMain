@@ -224,7 +224,7 @@ class ApiUserUidInvitesHandler(webapp2.RequestHandler):
             return
 
 
-class ApiUserUidInvitesUidHandler(webapp2.RequestHandler):
+class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
     def put(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
@@ -285,7 +285,7 @@ application = webapp2.WSGIApplication([
                                                         name='user-single-collab'),
                                           webapp2.Route(r'/api/users/<uid>/collabs', handler=ApiUserUidCollabsHandler,
                                                         name='user-get-collabs'),
-                                          webapp2.Route(r'/api/users/<uid>/invites/<jid>', handler=ApiUserUidInvitesUidHandler,
+                                          webapp2.Route(r'/api/users/<uid>/invites/<jid>', handler=ApiUserUidInvitesSidHandler,
                                                         name='user-single-invite'),
                                           webapp2.Route(r'/api/users/<uid>/invites', handler=ApiUserUidInvitesHandler,
                                                         name='user-get-invites'),
