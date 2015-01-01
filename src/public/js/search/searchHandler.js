@@ -2,9 +2,10 @@ var token = null;
 var query = null;
 var sort = null;
 
-var $(document).ready(function() {
+$(document).ready(function() {
 	var ajax = new AjaxHandler();
 	query = getUrlParam('query');
+    $('#search-query').val(query);
 	ajax.search(query, sort, token, showResults);
 });
 
