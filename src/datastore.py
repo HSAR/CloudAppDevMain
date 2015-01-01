@@ -152,6 +152,21 @@ def getUserByUsername(username):
     else:
         return None
 
+#returns a list of the uid and username of every registered user
+def getAllUsers(all_fields):
+    user_query = JinglrUser.query(ancestor=root_user_key)
+    user_list = user_query.fetch()
+    if user_list:
+        if all_fields:
+            return getUserList(user_list)
+        else:
+            list_of_users = []
+            for user in user_list:
+                list_of_users.append({"uid":user.user_id, "username":user.username})
+            return list_of_users
+    else:
+        return None
+        
 
 #takes a user id and returns the list of jingles (possibly empty) that they
 #created. It adds another property called collab_usernames which is a list of

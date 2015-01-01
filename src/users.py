@@ -25,9 +25,10 @@ class ApiUserHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         if not username:
-            return error.respond(501,
-                                 "User list to be implemented at a future date. "
-                                 "Current functionality: URI parameter 'username' can be used to search for a user.")
+            result = datastore.getAllUsers(False)
+            if result:
+                self.response.write(json.dumps(result))
+            self.response.set_status(200)
         else:
             result = datastore.getUserByUsername(username)
             if not result:
