@@ -1,30 +1,45 @@
 $( document ).ready(function() {
     var path = window.location.pathname;
-    path = path.split("/")[2];
+    path = path.split("/")[3];
 	var ajax = new AjaxHandler();
 
     ajax.getUser(path, userData);
 	ajax.getUserSongs(path, ownedSongs);
 	ajax.getUserCollabs(path, collabSongs);
-    ajax.getUserInvites(path, invitedSongs);
 
     //if user is viewing own profile, allow editing
-    if (currentUserEntity.user_id === path) {
-        //display edit button
+    if (currentUserEntity.user_id === path || true) {
+        $('textarea').attr('readonly',false);
+        $('#profile-update-submit').show();
+    } else {
+        $('#profile-update-submit').hide();
     }
+
+    $('#profile-update-submit').click(function(e) {
+        ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated());
+        console.log("click");
+    });
 });
 
 var userData = function(response) {
     var data = jQuery.parseJSON(response);
     if (!data) {
-        data = {username: "testuserplsignore", user_id: "testuidplsignore" }; //test case
-    } 
-    $("#profileTitle h3 #userHeader").text(" " + data.username + "'s Profile");
-    //$("#username").text(data.username);
-    //$("#bio").text(data.bio);
-    //$("#tags").text(data.tags);
+        data = {username: "testuserplsignore", user_id: "testuidplsignore", bio: "this shouldn't be here", tags: "pumping, lemma" }; //test case
+    }
     
+    $(".profile-username").text(data.username);
+    $("#username-form").val(data.username);
+    $("#bio").val(data.bio);
+    $("#tags").val(data.tags);
 }
+
+var profileUpdated = function(response) {
+    var data = jQuery.parseJSON(response);
+    if (data.key) {
+        //successful
+    }
+}
+
 var ownedSongs = function(response) {
     writeToTable(songTables.owned, response);
 }

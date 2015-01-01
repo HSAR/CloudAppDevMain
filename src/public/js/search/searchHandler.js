@@ -25,6 +25,9 @@ var showResults = function(response) {
         $('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
     } else {
     	var results = data.results;
+        token = data.token;
+        sort = data.sort;
+        
     	if (!results) {
 			$('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 			return;

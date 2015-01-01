@@ -41,7 +41,7 @@ $( document ).ready(function() {
 	if(!currentUserEntity) {
 		connectionFailureMessage();
 	} else {
-		$("#userWelcome").text(currentUserEntity.username);
+		$(".username").text(currentUserEntity.username);
 	}
 });
 

@@ -2,33 +2,35 @@
 {% block title %}Jinglr - Profile{% endblock %}
 {% block head %}
 	{{ super() }}
+  <script type="text/javascript" src="/public/js/profile/ajaxHandler.js"></script>
+  <script type="text/javascript" src="/public/js/profile/profileHandler.js"></script>
+  <link rel="stylesheet" type="text/css" href="/public/css/dashboard/dashboard.css" />
 {% endblock %}
 {% block content %}
-<h4>Edit Profile</h4>
+<div id="profileTitle">
+  <h3><i class="glyphicon glyphicon-dashboard"></i><span class="profile-username">Placeholder</span>'s Profile</span></h3>
+</div>
+
+<hr>
+
 <div class="row">
-	<div class="col-md-3">
-		<button type="button" id="editprofilebutton" class="btn btn-primary" data-target="#toggleProfileEdit">Edit</button>
-		<form action="#">
- 		<label for="username">Username</label>
-		<textarea name="username" readonly rows="1" cols="50"></textarea><br>
- 		<label for="bio">Bio</label>
-		<textarea name="bio" readonly rows="4" cols="50"></textarea><br>
-	  	<label for="tags">Tags</label>
-		<textarea name="tags" readonly rows="4" cols="50"></textarea><br>
+	<div class="col-md-4">
+		<form id="profile-update" action="#" method="patch">
+   		<label for="username-form">Username</label><br>
+  		<textarea id="username-form" readonly rows="1" cols="40"></textarea><br>
+   		<label for="bio-form">Bio</label><br>
+  		<textarea id="bio-form" readonly rows="4" cols="40"></textarea><br>
+	  	<label for="tags-form">Tags</label><br>
+		  <textarea id="tags-form" readonly rows="4" cols="40"></textarea><br>
+      <button  id="profile-update-submit" class="btn btn-primary">Edit</button>
 		</form>	
 	</div><!-- /span-3 -->
 
-	<div class="col-md-9">  	
-		<!-- column 2 -->	
-		<div id="profileTitle">
-			<h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">Placeholder's Profile</span></h3>
-		</div>
-
-		<hr>
-		
+	<div class="col-md-8">  	
+		<!-- column 2 -->			
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h4 id="profilesongstitle">Placeholder's Songs</h4>
+				<h4 id="profilesongstitle"><span class="profile-username">Placeholder</span>'s Songs</h4>
 			</div>
 			<div class="panel-body">
 				<table class="table table-striped" id="ownedTable">
@@ -45,7 +47,7 @@
 
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h4 id="profilecontributionstitle">Placeholder's Contributions</h4>
+				<h4 id="profilecontributionstitle"><span class="profile-username">Placeholder</span>'s Contributions</h4>
 			</div>
 			<div class="panel-body">
 				<table class="table table-striped" id="collabTable">
