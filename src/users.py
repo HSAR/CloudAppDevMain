@@ -25,8 +25,9 @@ class ApiUserHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         if not username:
-            result = datastore.getAllUsers(False)
+            result = datastore.getAllUsers()
             if result:
+                result = datastore.getUserList(result, False)
                 self.response.write(json.dumps(result))
             self.response.set_status(200)
         else:

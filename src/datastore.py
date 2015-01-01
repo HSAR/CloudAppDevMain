@@ -81,9 +81,10 @@ def addTokenToCache(jid, channelToken):
 
 #converts a JinglrUser entity to a dictionary. The keys are the same names as
 #the property names of the JinglrUser entity
-def getUserDict(user):
-    
-    keys = ['user_id', 'username', 'bio', 'tags', 'collab_invites']
+def getUserDict(user, all_fields = True):
+    keys = ['user_id', 'username']
+    if all_fields:
+        keys.extend(['bio', 'tags', 'collab_invites'])
     dict = {}
     for property in keys:
         dict[property] = getattr(user, property)
@@ -112,11 +113,11 @@ def getJingleDict(jingle, json = True):
     return dict
 
 
-def getUserList(users):
+def getUserList(users, all_fields = True):
     
     list = []
     for user in users:
-        list.append(getUserDict(user))
+        list.append(getUserDict(user, all_fields))
     return list
 
 
@@ -153,17 +154,11 @@ def getUserByUsername(username):
         return None
 
 #returns a list of the uid and username of every registered user
-def getAllUsers(all_fields):
+def getAllUsers():
     user_query = JinglrUser.query(ancestor=root_user_key)
     user_list = user_query.fetch()
     if user_list:
-        if all_fields:
-            return getUserList(user_list)
-        else:
-            list_of_users = []
-            for user in user_list:
-                list_of_users.append({"uid":user.user_id, "username":user.username})
-            return list_of_users
+        return user_list
     else:
         return None
         
