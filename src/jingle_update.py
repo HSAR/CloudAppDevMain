@@ -30,6 +30,7 @@ def add_note(jingle, action):
                                     
                                         track = jingle['tracks'][action_note_track]
                                         if len(track) > 0:
+                                            #if the corresponding track is not empty
                                             notes = track['notes']
                                             note_start = action_note_pos
                                             note_end = action_note_pos + action_note_length
@@ -43,13 +44,16 @@ def add_note(jingle, action):
                                                     break
                                                 
                                             if note_unique:
-                                                
+                                                #makes sure that the note has a unique ID
+                                                #create the note dict which will be added to the note list
                                                 new_note = {}
                                                 new_note['id']     = action_note_id
                                                 new_note['pos']    = action_note_pos
                                                 new_note['length'] = action_note_length
                                                 new_note['pitch']   = action_note_pitch
                                         
+                                                #we need to remove notes which could be occupying the position of this newly
+                                                #added note. Loop through each note and remove it if it gets in the way
                                                 for note in notes:
                                                     current_start = note['pos']
                                                     current_end = current_start + note['length']

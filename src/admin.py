@@ -16,6 +16,9 @@ class Startup(webapp2.RequestHandler):
         logging.info('======== Startup Complete =======')
 
 
+#this handler is called by the channel service when it detects a channel has
+#been disconnected. It calls stopEditing in the datastore to remove the
+#corresponding client token from the relevant JinglrMap
 class ChannelDisconnect(webapp2.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
@@ -23,6 +26,7 @@ class ChannelDisconnect(webapp2.RequestHandler):
         datastore.stopEditing(client_id)
         self.response.set_status(200)
 
+#this can be called to populate the datastore with some initial data for testing
 class InitialDataLoader(webapp2.RequestHandler):
     def get(self):
         user_key = datastore.root_user_key

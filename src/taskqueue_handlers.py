@@ -20,6 +20,8 @@ taskHandlerRunning = False
 noEditedJinglesCount = 0
 start_lock = threading.Lock()
 
+#This is called when a user starts editing a song to ensure the "work" task
+#queue is running. It needs to run in order to process the actions
 def makeSureTaskHandlerIsRunning():
     
     with start_lock:
@@ -29,47 +31,54 @@ def makeSureTaskHandlerIsRunning():
             taskqueue.add(url='/tasks/work')
 
 
+#This is request handler for the work task queue whose job is to split up the
+#pending actions and give them to several processor task queues to deal with them
 class AutoHandler(webapp2.RequestHandler):
     def post(self):
-        global noEditedJinglesCount
+        global noEditedJinglesCount #used to determine when to stop calling work
         global taskHandlerRunning
-        logging.info("start task handler")
         client_jingles = memcache.Client()
         
+        #get the dictionary of currently edited jingles and the clients tokens
         edited_jingles = client_jingles.get(edited_jingles_key)
         
         if edited_jingles == None:
-            logging.info("cant find edited jingles, getting from data store")
+            #get from datastore if memcache empty and then add back to memcache
             edited_jingles = datastore.getEditedJingles()
             client_jingles.add(edited_jingles_key, json.dumps(edited_jingles), 300)
         else:
             edited_jingles = json.loads(edited_jingles)
         
         if len(edited_jingles) > 0:
-            logging.info("jingles are being edited")
-            noEditedJinglesCount = 0
+            #if there are actually jingles edited
+            noEditedJinglesCount = 0    #set back to 0
+            #gets all the Jingle Ids from the dictionary
             key_list = []
             for jid in edited_jingles:
-                logging.info("Edited Jingle has Id: " + jid)
                 key_list.append(jid)
             
             client = memcache.Client()
+            #get all of the pending actions from the memcache for the currently
+            #edited jingles. Each Jingle ID is a key in the memcache
             actions = client.get_multi(keys=key_list, for_cas=True)
-            logging.info("prepare to see actions")
-            logging.info(actions)
+            #we want to delete all the actions we are going to process from
+            #the memcache.
             actions_removed = {}
             for key in actions:
-                logging.info("action key is: " + key)
+                #set actions_removed to be a dictionary from JID to empty list
                 actions_removed[key] = json.dumps([])
 
+            #attempt to set all the memcahce keys at once
+            #remaining keys contains a list of those which failed to be set
+            #because their values have already changed again
             remaining_keys = client.cas_multi(mapping=actions_removed)
-            logging.info("remaining keys: " + str(remaining_keys))
             
+            #loop until we have managed to deal with all the remaining keys
             while len(remaining_keys) > 0:
-                logging.info("updating actions")
                 newer_actions = client.get_multi(keys=remaining_keys, for_cas=True)
                 actions_removed = {}
                 for key, val in newer_actions.iteritems():
+                    #update our pending actions with the newer actions
                     actions[key] = val
                     actions_removed[key] = json.dumps([])
                 
@@ -77,15 +86,23 @@ class AutoHandler(webapp2.RequestHandler):
             
             actions_loaded = {}
             for key in actions:
-                logging.info("loading key: " + key)
+                #memcache stores the serialised action list so we need to 
+                #deserialise them
                 actions_loaded[key] = json.loads(actions[key])
             
             key_list.sort()
             
+            #work out the number of jingles each task queue should process.
+            #the minimum number is 5 to reduce the number of task queues needed
+            #to keep overheads low and use less of the task queue quota
             jingles_per_queue = 5
             while (jingles_per_queue * number_of_queues) < len(key_list):
                 jingles_per_queue += 1
             
+            #actions are split into slices and each task queue deals with a 
+            #slice. An action slice contains all the pending actions for
+            #several jingles up to the number of jingles_per_queue. The slice
+            #also contains a list of client tokens for each jingle
             start = 0
             end = jingles_per_queue
             items_processed = 0
@@ -96,20 +113,17 @@ class AutoHandler(webapp2.RequestHandler):
                 end += jingles_per_queue
                 items_processed += len(current_slice)
                 
-                logging.info("processing " + str(len(current_slice)) + " items")
-                
                 
                 action_slice = {}
                 for key in current_slice:
-                    logging.info("key: " + key)
                     if key in actions_loaded and actions_loaded[key] != []:
-                        logging.info("it has some actions")
                         action_slice[key] = {}
                         action_slice[key]["actions"] = actions_loaded[key]
                         action_slice[key]["tokens"] = edited_jingles[key]
                 
                 if len(action_slice) > 0:
-                    logging.info("adding a task to a task queue")
+                    #if this action_slice contains actions to be processed
+                    #get the correct queue to process the jingle actions
                     queue_name = "TaskQueue" + str(current_queue)
                     payload = json.dumps(action_slice)
                     taskqueue.add(url = '/tasks/processjinglesactions',
@@ -120,12 +134,13 @@ class AutoHandler(webapp2.RequestHandler):
                 
                 current_queue += 1
         else:
-            logging.info("no jingles are being edited")
+            #increment if there are no jingles being edited
             noEditedJinglesCount += 1
         
         
         if noEditedJinglesCount > 10:
-            logging.info("stopping task handler")
+            #if no jingles have been edited 10 times in a row then we stop running
+            #the work task queue
             taskHandlerRunning = False
         else:
             taskqueue.add(url='/tasks/work')
@@ -133,9 +148,12 @@ class AutoHandler(webapp2.RequestHandler):
         self.response.set_status(200)
 
 
+#This is the request handler for the task queues which actually process the 
+#jingle actions
 class UpdateHandler(webapp2.RequestHandler):
     
     def post(self):
+        #all the action data is in the post payload
         action_dict_json = self.request.body
         action_dict = json.loads(action_dict_json)
         
@@ -143,10 +161,12 @@ class UpdateHandler(webapp2.RequestHandler):
             
             @ndb.transactional
             def update_jingle_internal(jid, data_dict):
-                
+                #get the jingle json for this particular jingle
                 jingle = datastore.getJingleJSON(jid)
+                #the new action list will contain a copy of all the original 
+                #actions but with the added checksum field to each one
                 new_action_list = []
-                
+                #perform the correct action depending on action type
                 for action in data_dict["actions"]:
                     
                     if action["action"] == "noteAdd":
@@ -176,9 +196,12 @@ class UpdateHandler(webapp2.RequestHandler):
                     else:
                         print "Invalid"
 
+                #save the updated jingle
                 datastore.changeJingle(jid, jingle)
                 
                 for token in data_dict["tokens"]:
+                    #now send the list of processed actions to the clients
+                    #working on the jingle
                     channel.send_message(token, json.dumps(new_action_list))
                 
             while True:
@@ -189,6 +212,8 @@ class UpdateHandler(webapp2.RequestHandler):
                     time.sleep(1)
             
             
+        #first of all, each Jingle this task queue needs to deal with are divided
+        #into individual threads for processing that individual jingles actions
         threads = []
         for jid, data_dict in action_dict.iteritems():
             work_thread = threading.Thread(target=update_jingle, kwargs={"jid":jid, "data_dict":data_dict})

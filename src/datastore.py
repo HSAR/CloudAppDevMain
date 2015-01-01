@@ -27,6 +27,7 @@ edited_jingles_key = 'Edited Jingles'
 #that clients can display the username
 def getUsernameByUID(uid):
     
+    #uses memcache to reduce calls to the datastore
     username = memcache.get(uid)
     if username != None:
         return username
@@ -49,7 +50,9 @@ def generate_id(size=32, chars=string.ascii_lowercase
 
 #adds a new token to the memcache
 def addTokenToCache(jid, channelToken):
-    
+    #all tokens are stored under one memcache key ("Edited Jingles")
+    #The value is a dictionary where Jingle IDs are keys and list of tokens
+    #are values
     client = memcache.Client()
     while True:
         edited_jingles = client.gets(edited_jingles_key)
@@ -75,6 +78,35 @@ def addTokenToCache(jid, channelToken):
             edited_jingles = json.dumps(edited_jingles)
             if client.cas(edited_jingles_key, edited_jingles, 300):
                 break
+
+
+def changeJingleProperty(property, value, jid):
+
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+            
+            setattr(jingle, property, value)
+            return jingle.put()
+        except (db.Timeout, db.InternalError):
+            time.sleep(1)
+
+
+def changeUserProperty(property, value, uid):
+    
+    while True:
+        try:
+            user = getUserById(uid)
+            if not user:
+                return None
+            
+            setattr(user, property, value)
+            return user.put()
+        except (db.Timeout, db.InternalError):
+            time.sleep(1)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -444,32 +476,14 @@ def updateUsername(uid, username):
 #if that user does not exist
 def updateBio(uid, bio):
     
-    while True:
-        try:
-            user = getUserById(uid)
-            if not user:
-                return None
-            
-            user.bio = bio
-            return user.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeUserProperty("bio", bio, uid)
 
 
 #takes a user ID and a new list of tags. Returns the user entity key on
 #success or None if that user does not exist
 def updateTags(uid, tags):
     
-    while True:
-        try:
-            user = getUserById(uid)
-            if not user:
-                return None
-            
-            user.tags = tags
-            return user.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeUserProperty("tags", tags, uid)
 
 
 #takes a username and the JID that this user is being invited to collab on
@@ -480,25 +494,26 @@ def updateTags(uid, tags):
 #userKey is the JinglrUser entity key for the updated user entity
 def addCollabInvite(username, jid):
     
+    jingle = getJingleById(jid)
+    if not jingle:
+        return {"errorMessage" : "Invalid Jingle"}
+    
     @ndb.transactional
     def addCollabInviteInternal():
-        jingle = getJingleById(jid)
-        if jingle:
-            user = getUserByUsername(username)
-            if user:
-                user.collab_invites.append(jid)
-                user_key = user.put()
-                
-                return {"userKey" : user_key}
-            else:
-                return {"errorMessage" : "No user has that username"}
+        user = getUserByUsername(username)
+        if user:
+            user.collab_invites.append(jid)
+            user_key = user.put()
+            
+            return {"userKey" : user_key}
         else:
-            return {"errorMessage" : "Invalid Jingle"}
+            return {"errorMessage" : "No user has that username"}
     
     result = None
     while True:
         try:
             result = addCollabInviteInternal()
+            break
         except (db.Timeout, db.InternalError, db.TransactionFailedError):
             time.sleep(1)
     return result
@@ -516,7 +531,7 @@ def answerCollabInvite(uid, jid, accept):
     
     @ndb.transactional(xg=True)
     def answerCollabInviteInternal():
-        user = getUserByID(uid)
+        user = getUserById(uid)
         if user:
             if jid in user.collab_invites:
                 if accept:
@@ -525,7 +540,7 @@ def answerCollabInvite(uid, jid, accept):
                     jingle.collab_users.append(uid)
                     jingle.put()
                     
-                user = getUserByID(uid)
+                user = getUserById(uid)
                 user.collab_invites.remove(jid)
                 user_key = user.put()
                 
@@ -539,8 +554,9 @@ def answerCollabInvite(uid, jid, accept):
     while True:
         try:
             result = answerCollabInviteInternal()
+            break
         except (db.Timeout, db.InternalError, db.TransactionFailedError):
-                    time.sleep(1)
+            time.sleep(1)
     return result
 
 
@@ -573,6 +589,7 @@ def removeCollab(uid, jid):
     while True:
         try:
             result = removeCollabInternal()
+            break
         except (db.Timeout, db.InternalError, db.TransactionFailedError):
             time.sleep(1)
     return result
@@ -620,64 +637,24 @@ def createJingle(uid, title, genre=None, tags=None):
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeTitle(jid, title):
     
-    while True:
-        try:
-            jingle_key = ndb.Key('Jingle', jid)
-            jingle = jingle_key.get()
-            if not jingle:
-                return None
-            
-            jingle.title = title
-            return jingle.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeJingleProperty("title", title, jid)
 
 
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeGenre(jid, genre):
     
-    while True:
-        try:
-            jingle_key = ndb.Key('Jingle', jid)
-            jingle = jingle_key.get()
-            if not jingle:
-                return None
-                
-            jingle.genre = genre
-            return jingle.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeJingleProperty("genre", genre, jid)
 
 
 #returns the Jingle entity key on success, or None if jid is not valid
 def changeTags(jid, tags):
     
-    while True:
-        try:
-            jingle_key = ndb.Key('Jingle', jid)
-            jingle = jingle_key.get()
-            if not jingle:
-                return None
-            
-            jingle.tags = tags 
-            return jingle.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeJingleProperty("tags", tags, jid)
 
 
 def changeJingle(jid, jingle_json):
     
-    while True:
-        try:
-            jingle_key = ndb.Key('Jingle', jid)
-            jingle = jingle_key.get()
-            if not jingle:
-                return None
-            
-            jingle.jingle = jingle_json
-            return jingle.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
+    return changeJingleProperty("jingle", jingle_json, jid)
 
 
 #called when a client wants to start editing a jingle
@@ -720,9 +697,8 @@ def beginEditing(jid):
         except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
     
-    #now update memcache with the new value
-    #{edited_jingles_key : {jid1 : [client_id_list], jid2 : [client_id_list]}}
     if success:
+        #now update memcache with the new value
         addTokenToCache(jid, channelToken)
                     
         taskqueue_handlers.makeSureTaskHandlerIsRunning()

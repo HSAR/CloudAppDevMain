@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
-# This class is used to check whether a user can edit a particular song.
+# This class is used to check whether a user is allowed to perform a particular action
 #
 
 import datastore
 
 from google.appengine.api import users
 
+#only the jingle author or collaborator can edit the jingles song
 def can_edit_song(song_id):
     
     user = users.get_current_user()
@@ -20,6 +21,7 @@ def can_edit_song(song_id):
     else:
         return False
 
+#users are only able to edit themselves
 def can_edit_user(uid):
     user = users.get_current_user()
     if user:
@@ -28,6 +30,8 @@ def can_edit_user(uid):
     else:
         return False
 
+#only the jingle author can invite people to collaborate and change the jingles
+#title, genre and tags
 def jingle_owner(song_id):
     user = users.get_current_user()
     if user:
@@ -40,6 +44,8 @@ def jingle_owner(song_id):
     else:
         return False
         
+#users can only remove themselves from collaborating on a particular jingle
+#jingle authors can remove any collaborator from it
 def can_remove_collab(song_id, user_id):
     user = users.get_current_user()
     if user:
@@ -52,6 +58,7 @@ def can_remove_collab(song_id, user_id):
     else:
         return False
         
+#only registered users are able to perform certain actions
 def is_registered():
     user = users.get_current_user()
     if user:
