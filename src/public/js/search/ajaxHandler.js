@@ -1,13 +1,13 @@
 function AjaxHandler() {
-	this.search = function(query, cb) {
+	this.search = function(query, sort, token, cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/search/' + query,
+			url : 'http://jinglr-music.appspot.com/api/search',
+			data: { query: query, sort: sort, token: token },
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
 				if(data) {
-					console.log('results found for ' + query);
 					cb(data);
 				} else {
 					//deal with error here

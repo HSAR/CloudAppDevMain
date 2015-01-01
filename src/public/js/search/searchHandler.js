@@ -1,14 +1,14 @@
 $(document).ready(function() {
 	var ajax = new AjaxHandler();
-	ajax.search(getQueryVariable(), showResults);
+	ajax.search(getUrlParam('query'), getUrlParam('sort'), getUrlParam('token'), showResults);
 });
 
-function getQueryVariable() {
+function getUrlParam(parameter) {
        var query = window.location.search.substring(1);
        var vars = query.split("&");
        for (var i=0;i<vars.length;i++) {
                var pair = vars[i].split("=");
-               if(pair[0] == "query"){return pair[1];}
+               if(pair[0] == parameter){return pair[1];}
        }
        return(false);
 }
@@ -16,11 +16,21 @@ function getQueryVariable() {
 var showResults = function(response) {
 	var data = jQuery.parseJSON(response);
 	if (!data) {
-        $('#results').append('<tr><td>No reults found.</td><td></td><td></td><td></td></tr>');
+		//if this has happened, there's been an error.
+        $('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
     } else {
-	    for (var i = 0; i < data.length; i++) {
-	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].title + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
-	        //need to deal with pagination
+    	var results = data.results;
+    	if (!results) {
+			$('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
+			return;
+		}
+    	if (data.more) {
+    		//enable next page link
+    		var query = getUrlParam('query');
+    		$('#more-results').attr('href', 'http://jinglr-music.appspot.com/search?query=' + getUrlParam("query") + '&token=' + data.token);
+    	}
+	    for (var i = 0; i < results.length; i++) {
+	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + results[i].title + '">' + results[i].title + '</a></td><td>' + results[i].owner + "</td><td>" + results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
 	    }
 	}
 }
