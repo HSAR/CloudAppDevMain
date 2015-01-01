@@ -37,7 +37,7 @@
 				<div class="top-bar max-height">
 					<div class="col-md-6">
 						<div class="control-buttons">
-							<button class="btn btn-primary add-bar-button">Add bar</button>
+							<button class="btn btn-primary invitee-button">Invite friends</button>
 							<label for="tempo-select">Tempo :</label>
 							<select  id="tempo-select">
 								<option value="60">60 bpm</option>
@@ -86,6 +86,7 @@
 						<button class="btn btn-primary add-instrument half-spaced palette-button horizontal-centered">Add Instrument</button>
 						<button class="btn btn-primary change-instrument half-spaced horizontal-centered">Change Instrument
 						</button>
+						<button class="btn btn-primary add-bar-button half-spaced horizontal-centered">Add Bar</button>
 					</div>
 				</div>
 				<div class="col-md-10 no-left-padding max-height"><div class="bordered canvas" role="tabpanel"></div></div>
@@ -112,6 +113,22 @@
 				<label for="instrument-choice">Choose instrument</label>
 				<select id="instrument-choice"></select>
 			</form>
+		</div>
+	</div>
+
+	<div class="invite-dialog no-display">
+		<div class="dialog-content">
+			
+			<form>
+				<label for="friend-name">Instrument class...</label>
+				<input type="text" class="name-bar"></input>
+			</form>
+			<div class="results">
+				Begin typing and results will be displayed here...
+			<div>
+		</div>
+	</div>
+
 	<script type="text/javascript" src="../../public/js/editor/midiHandler.js"></script>
 	<script type="text/javascript" src="../../public/js/editor/ajaxHandler.js"></script>
 	<script type="text/javascript" src="../../public/js/editor/channelHandler.js"></script>

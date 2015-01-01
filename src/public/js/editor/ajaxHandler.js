@@ -128,4 +128,12 @@ function AjaxHandler() {
 		});
 	}
 
+	this.sendInvite = function(id,uid) {
+
+	}
+
+	this.getUsers = function(id) {
+
+	}
+
 }

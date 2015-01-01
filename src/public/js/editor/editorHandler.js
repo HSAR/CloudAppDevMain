@@ -608,7 +608,7 @@
 	}
 
 	function buildDialogs() {
-
+		ajaxHelper.getUsers(pageData.songId);//set initial user list as something to fall back on
 
 		$('.instrument-dialog').dialog({
 			modal : true,
@@ -655,6 +655,49 @@
 			$('.instrument-dialog').removeClass('no-display');
 			$('.instrument-dialog').dialog('open');
 		});
+
+		$('div.invite-dialog').dialog({
+			modal : true,
+			title : 'Invite friends to collaborate',
+			autoOpen : false,
+			buttons : [{text : 'Cancel', click : function() {
+				$('.instrument-dialog').dialog("close");
+			}}],
+			open : function() {
+				ajaxHelper.getUsers(pageData.songId);//update list of users
+			}
+		});
+
+
+
+		$('input.name-bar').change(function(){
+			//compare name entered to list of users
+			var name = $(this).val();
+			var matches = searchForPossibleUser(name);
+			$('div.results').empty();
+			for(var i = 0; i < matches.length; i++) {
+				var html = '<div class="username">' + matches[i].username + '<button class="btn btn-primary fresh">Invite' +
+				'</button></div>';
+
+				$('div.results').append(html);
+				$('button.fresh').click(function() {//fresh tag used to mark button out to register callback
+					ajaxHelper.sendInvite(pageData.songId,matches[i].uid);
+					$(this).html("Added");
+				});
+				$('button.fresh').removeClass('fresh');//get rid of tag after used to register callback
+			}
+		});
+	}
+
+	function searchForPossibleUser(name) {
+		//take a name as a string and do a wildcard search for users with similar names
+		var matches = [];
+		for(var i; i < pageData.users.length; i++) {
+			if(pageData.users[i].username.indexOf(name.trim()) !== -1) {//if we have some sort of match
+				matches.push(pageData.users[i]);
+			}
+		}
+		return matches;
 	}
 
 	function deleteNote(id) {//deletes a note from the tune json and returns the deleted note
