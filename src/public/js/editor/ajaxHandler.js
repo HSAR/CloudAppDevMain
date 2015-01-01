@@ -129,11 +129,20 @@ function AjaxHandler() {
 	}
 
 	this.sendInvite = function(id,uid) {
-
+		$.ajax({
+			url : 'http://jinglr-music.appspot.com/api/users/' + uid + '/invites/' + id,
+			type : 'PUT'
+		});
 	}
 
 	this.getUsers = function(id) {
-
+		$.ajax({
+			type : 'GET',
+			url : 'http://jinglr-music.appspot.com/api/users',
+			success : function(data) {
+				pageData.users = JSON.parse(data);
+			}
+		});
 	}
 
 }

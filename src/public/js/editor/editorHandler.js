@@ -99,7 +99,7 @@
 			}
 			
 		}
-		tuneJSON.head.barLength = 4;//TODO TEMPORARY DEV FIX
+		
 		var bars = Math.ceil(longestPosition / (tuneJSON.head.subDivisions * tuneJSON.head.barLength));
 		if(bars < 8) {
 			bars = 8;
@@ -268,7 +268,7 @@
 				}
 
 				MIDI.loadPlugin({
-					soundfontUrl : '../../public/soundfonts/',
+					soundfontUrl : '/public/soundfonts/',
 					instruments : instruments,
 					callback : function() {
 						for(var i = 0; i < tuneJSON.tracks.length; i++) {
@@ -553,14 +553,18 @@
 					pos : newPosition,
 					pitch : oldNote.pitch,
 					length : newLength,
+					track : trackId
 				};
-				tuneJSON.tracks[trackId].notes.push(newNoteData);
+				
 				newNoteData.track = trackId;//set the track
 
 				var actionId = generateId('add');
 				var newNoteToSend = { actionId : actionId, note : newNoteData};
 				ajaxHelper.addNote(pageData.songId,newNoteToSend);
 				newNoteToSend.time = Date.now();//add timestamp for quarentining
+
+				delete newNoteData.track;//delete track before inserting into tune json for checksum reasons
+				tuneJSON.tracks[trackId].notes.push(newNoteData);
 				pageData.quarantinedChanges.push(newNoteToSend);
 			}
 			
@@ -661,28 +665,39 @@
 			title : 'Invite friends to collaborate',
 			autoOpen : false,
 			buttons : [{text : 'Cancel', click : function() {
-				$('.instrument-dialog').dialog("close");
+				$('.invite-dialog').dialog("close");
 			}}],
 			open : function() {
 				ajaxHelper.getUsers(pageData.songId);//update list of users
+				$(this).removeClass("no-display");
 			}
 		});
 
+		$('.invite-button').click(function() {
+			$('div.invite-dialog').dialog("open");
+		});
 
 
-		$('input.name-bar').change(function(){
+		$('input.name-bar').keyup(function(){
 			//compare name entered to list of users
 			var name = $(this).val();
 			var matches = searchForPossibleUser(name);
-			$('div.results').empty();
+			console.log(matches);
+			if(!matches || matches.length === 0) {
+				$('table.results-table tbody').empty();
+				$('span.invite-info').html("No results");
+				return;
+			}
+			$('span.invite-info').html("Results");
+			$('table.results-table tbody').empty();
 			for(var i = 0; i < matches.length; i++) {
-				var html = '<div class="username">' + matches[i].username + '<button class="btn btn-primary fresh">Invite' +
-				'</button></div>';
+				var html = '<tr><td>' + matches[i].username + '</td><td><button class="btn btn-primary fresh" id="match' +
+				matches[i].uid + '">Invite' + '</button></td></tr>';
 
-				$('div.results').append(html);
+				$('table.results-table tbody').append(html);
 				$('button.fresh').click(function() {//fresh tag used to mark button out to register callback
-					ajaxHelper.sendInvite(pageData.songId,matches[i].uid);
-					$(this).html("Added");
+					ajaxHelper.sendInvite(pageData.songId,$(this).attr('id').substring(5));
+					$(this).html("Added").attr("disabled","disabled");
 				});
 				$('button.fresh').removeClass('fresh');//get rid of tag after used to register callback
 			}
@@ -692,9 +707,11 @@
 	function searchForPossibleUser(name) {
 		//take a name as a string and do a wildcard search for users with similar names
 		var matches = [];
-		for(var i; i < pageData.users.length; i++) {
+		for(var i = 0; i < pageData.users.length; i++) {
 			if(pageData.users[i].username.indexOf(name.trim()) !== -1) {//if we have some sort of match
-				matches.push(pageData.users[i]);
+				if($('span#userWelcome').html() !== pageData.users[i].username) {//if not us!
+					matches.push(pageData.users[i]);
+				}
 			}
 		}
 		return matches;

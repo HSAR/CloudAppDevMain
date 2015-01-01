@@ -24,7 +24,7 @@
 	<link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="/public/css/jquery-ui.min.css" />
 	<link rel="stylesheet" type="text/css" href="/public/css/editor/edit.css" />
-	<link rel="stylesheet" type="text/css" href="/public/css/base.css" />
+	
 {% endblock %}
 {% block content %}
 	<div id="songid" class="no-display">{{song_id}}</div>
@@ -37,7 +37,7 @@
 				<div class="top-bar max-height">
 					<div class="col-md-6">
 						<div class="control-buttons">
-							<button class="btn btn-primary invitee-button">Invite friends</button>
+							<button class="btn btn-primary invite-button">Invite friends</button>
 							<label for="tempo-select">Tempo :</label>
 							<select  id="tempo-select">
 								<option value="60">60 bpm</option>
@@ -120,20 +120,27 @@
 		<div class="dialog-content">
 			
 			<form>
-				<label for="friend-name">Instrument class...</label>
-				<input type="text" class="name-bar"></input>
+				<label for="name-bar">User name...</label>
+				<input type="text" class="name-bar" id="name-bar"></input>
 			</form>
 			<div class="results">
-				Begin typing and results will be displayed here...
+				<span class="invite-info">Begin typing and results will be displayed here...</span>
+				<table class="results-table">
+					<tbody>
+
+					</tbody>
+				</table>
 			<div>
 		</div>
 	</div>
+	<br/>
+	<br/>
+	<br/>
 
-	<script type="text/javascript" src="../../public/js/editor/midiHandler.js"></script>
-	<script type="text/javascript" src="../../public/js/editor/ajaxHandler.js"></script>
-	<script type="text/javascript" src="../../public/js/editor/channelHandler.js"></script>
-	<script type="text/javascript" src="../../public/js/editor/editorHandler.js"></script>
+	<script type="text/javascript" src="/public/js/editor/midiHandler.js"></script>
+	<script type="text/javascript" src="/public/js/editor/ajaxHandler.js"></script>
+	<script type="text/javascript" src="/public/js/editor/channelHandler.js"></script>
+	<script type="text/javascript" src="/public/js/editor/editorHandler.js"></script>
 </body>
-<br/>
-<br/>
+
 {% endblock %}
