@@ -134,7 +134,7 @@ class WebUserProfileHandler(webapp2.RequestHandler):
                     return error.respond(401, "Not signed in")
                 else:
                     uid = user.user_id()
-                    return self.redirect("/users/" + uid)
+                    return self.redirect("/web/users/" + uid)
             template_values = {
                 'uid': uid,
             }
