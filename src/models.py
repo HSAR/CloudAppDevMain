@@ -16,7 +16,6 @@ class Jingle(ndb.Model):
     length = ndb.IntegerProperty()
     tags = ndb.StringProperty(repeated=True)
     jingle = ndb.JsonProperty()
-    #rating = ndb.FloatProperty()
     collab_users = ndb.StringProperty(repeated=True)
     
 class JinglrMap(ndb.Model):
