@@ -5,12 +5,57 @@
 {% endblock %}
 {% block content %}
 <h4>Edit Profile</h4>
-<form action="#">
-  <label for="username">Username</label>
-  <textarea name="username" readonly rows="1" cols="50"></textarea><br>
-  <label for="bio">Bio</label>
-  <textarea name="bio" readonly rows="4" cols="50"></textarea><br>
-  <label for="tags">Tags</label>
-  <textarea name="tags" readonly rows="4" cols="50"></textarea><br>
-</form>
+<div class="row">
+	<div class="col-md-3">
+		<button type="button" id="editprofilebutton" class="btn btn-primary" data-target="#toggleProfileEdit">Edit</button>
+		<form action="#">
+ 		<label for="username">Username</label>
+		<textarea name="username" readonly rows="1" cols="50"></textarea><br>
+ 		<label for="bio">Bio</label>
+		<textarea name="bio" readonly rows="4" cols="50"></textarea><br>
+	  	<label for="tags">Tags</label>
+		<textarea name="tags" readonly rows="4" cols="50"></textarea><br>
+		</form>	
+	</div><!-- /span-3 -->
+
+	<div class="col-md-9">  	
+		<!-- column 2 -->	
+		<div id="profileTitle">
+			<h3><i class="glyphicon glyphicon-dashboard"></i><span id="userHeader">Placeholder's Profile</span></h3>
+		</div>
+
+		<hr>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 id="profilesongstitle">Placeholder's Songs</h4>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="ownedTable">
+					<thead>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div><!--/panel-body-->
+		</div><!--/panel-->  
+
+		<hr>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 id="profilecontributionstitle">Placeholder's Contributions</h4>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="collabTable">
+					<thead>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div><!--/panel-body-->
+		</div><!--/panel-->         
+	</div><!--/col-->   
+</div><!--/row-->
 {% endblock %}
