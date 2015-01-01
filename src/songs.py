@@ -351,11 +351,16 @@ class ApiSongSidTokenHandler(webapp2.RequestHandler):
         elif not permission.can_edit_song(songid):
             return error.respond(401, "You are not authorised to edit this song")
         else:
-            request_result = datastore.beginEditing(songid)
+            previous_token = self.request.get("prevToken")
+            if not previous_token:
+                request_result = datastore.beginEditing(songid)
+            else:
+                request_result = datastore.requestNewToken(songid, previous_token)
             if not 'token' in request_result:
                 return error.respond(500, "Token request failed")
             else:
                 self.response.out.write(json.dumps(request_result))
+                self.response.set_status(200)
 
 
 allowed_methods = webapp2.WSGIApplication.allowed_methods
