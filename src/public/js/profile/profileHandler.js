@@ -8,29 +8,28 @@ var init = function() {
 	ajax.getUserCollabs(path, collabSongs);
 
     //if user is viewing own profile, allow editing
-    if (currentUserEntity.user_id === path || true) {
+    if (currentUserEntity.user_id === path) {
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
+        $('#profile-update-submit').click(function(e) {
+        var newData = {};
+        if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+                newData.username = $("#username-form").val();
+            }
+            if ($("#bio-form").val() !== oldData.bio) {
+                newData.bio = $("#bio-form").val();
+            }
+            if ($("#tags-form").val() !== oldData.tags) {
+                newData.tags = $("#tags-form").val();
+            }
+
+            if (newData) {
+                ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
+            }        
+        });
     } else {
         $('#profile-update-submit').hide();
     }
-
-    $('#profile-update-submit').click(function(e) {
-        var newData = {};
-        if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
-            newData.username = $("#username-form").val();
-        }
-        if ($("#bio-form").val() !== oldData.bio) {
-            newData.bio = $("#bio-form").val();
-        }
-        if ($("#tags-form").val() !== oldData.tags) {
-            newData.tags = $("#tags-form").val();
-        }
-
-        if (newData) {
-            ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
-        }        
-    });
 }
 
 var oldData = {
