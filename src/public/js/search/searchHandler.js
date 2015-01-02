@@ -6,7 +6,7 @@ var init = function() {
 	var ajax = new AjaxHandler();
 	query = getUrlParam('query');
     $('#search-query').val(query);
-	ajax.search(query, sort, token, showResults);
+	ajax.search(query, sort, token, showResults, connectionFailure);
 }
 
 function getUrlParam(parameter) {

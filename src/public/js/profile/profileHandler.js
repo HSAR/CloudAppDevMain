@@ -3,7 +3,7 @@ var init = function() {
     path = path.split("/")[3];
 	var ajax = new AjaxHandler();
 
-    ajax.getUser(path, userData);
+    ajax.getUser(path, userData, unknownUser);
 	ajax.getUserSongs(path, ownedSongs);
 	ajax.getUserCollabs(path, collabSongs);
 
@@ -16,21 +16,23 @@ var init = function() {
     }
 
     $('#profile-update-submit').click(function(e) {
-        ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated());
+        ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated, connectionFailure);
     });
 }
 
 var userData = function(response) {
-    if (!response) {
-        response = {username: "testuserplsignore", user_id: "testuidplsignore", bio: "this shouldn't be here", tags: "pumping, lemma" }; //test case
-    }
-    
     $(".profile-username").text(response.username);
     $("#username-form").val(response.username);
     $("#bio-form").val(response.bio);
     $("#tags-form").val(response.tags);
 }
 
+var unknownUser = function() {
+    $('#unknown-profile-modal').modal('show');
+    $('#unknown-profile-button').click(function() {
+        location.href="http://jinglr-music.appspot.com/dashboard";
+    })
+}
 var profileUpdated = function(response) {
     if (response.key) {
         //successful

@@ -14,36 +14,35 @@ var setUser = function(response) {
 
 };
 
-var connectionFailureMessage = function() {
+var connectionFailure = function() {
 	$('#connection-failure-modal').modal('show');
 	$('#connection-failure-button').click(function() {
 		location.reload();
 	})  
 };
 
-var getCurrentUser = function(cb) {
-	commonAjax('http://jinglr-music.appspot.com/api/users/self', cb);
+var getCurrentUser = function(cb, error) {
+	commonAjax('http://jinglr-music.appspot.com/api/users/self', cb, error);
 };
 
-var commonAjax = function(url, cb) {
+var commonAjax = function(url, cb, error) {
 	$.ajax({
 		type : 'GET',
 		url : url,
 		dataType  : 'JSON',
 		success : function(data) {
-			if (data) {
-				cb(data);
-			} else {
-				//connectionFailureMessage();
-				getCurrentUser(setUser);
-			}
-		}
-		//failure: connectionFailureMessage()
+			cb(data);
+		},
+		error: function() {
+			if (typeof error == 'function') { 
+ 				error(null);
+ 			}
+ 		}
 	});
 };
 
 $( document ).ready(function() {
-	getCurrentUser(setUser);
+	getCurrentUser(setUser, connectionFailure);
 });
 
 $(document).on({

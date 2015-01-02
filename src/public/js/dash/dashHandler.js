@@ -1,10 +1,9 @@
 var init = function() {
 	var ajax = new AjaxHandler();
-	ajax.getUserSongs(ownedSongs);
-	ajax.getUserCollabs(collabSongs);
-    ajax.getUserInvites(invitedSongs);
+	ajax.getUserSongs(ownedSongs, connectionFailure);
+	ajax.getUserCollabs(collabSongs, connectionFailure);
+    ajax.getUserInvites(invitedSongs, connectionFailure);
 }
-
 
 var ownedSongs = function(response) {
     writeToTable(songTables.owned, response);

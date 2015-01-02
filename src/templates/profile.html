@@ -15,7 +15,7 @@
 
 <div class="row">
 	<div class="col-md-4">
-		<form id="profile-update" action="#" method="patch">
+		<form id="profile-update">
    		<label for="username-form">Username</label><br>
   		<textarea id="username-form" readonly rows="1" cols="40"></textarea><br>
    		<label for="bio-form">Bio</label><br>
@@ -60,4 +60,21 @@
 		</div><!--/panel-->         
 	</div><!--/col-->   
 </div><!--/row-->
+
+<div class="modal fade" id="unknown-profile-modal">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Profile not found</h4>
+          </div>
+          <div class="modal-body">
+            <p>This user does not exist</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="unknown-profile-button" class="btn btn-default">Back</button>
+          </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
