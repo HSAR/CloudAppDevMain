@@ -367,9 +367,9 @@ allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
-                                          webapp2.Route(r'/api/songs/', handler=ApiSongHandler,
+                                          webapp2.Route(r'/api/songs', handler=ApiSongHandler,
                                                         name='songs-root'),
-                                          webapp2.Route(r'/api/songs/<songid>/', handler=ApiSongSidHandler,
+                                          webapp2.Route(r'/api/songs/<songid>', handler=ApiSongSidHandler,
                                                         name='state-dump'),
                                           webapp2.Route(r'/api/songs/<songid>/json', handler=ApiSongSidJsonHandler,
                                                         name='song-get-by-id'),
@@ -390,7 +390,7 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/api/songs/<songid>/collabs',
                                                         handler=ApiSongSidCollabsHandler,
                                                         name='editor'),
-                                          webapp2.Route(r'/web/songs/<songid>/', handler=WebSongsSidEditorHandler,
+                                          webapp2.Route(r'/web/songs/<songid>', handler=WebSongsSidEditorHandler,
                                                         name='editor'),
                                       ], debug=True)
 					
