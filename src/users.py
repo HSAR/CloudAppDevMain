@@ -53,7 +53,6 @@ class ApiUserHandler(webapp2.RequestHandler):
                     if 'errorMessage' in result:
                         return error.respond(500, result['errorMessage'])
                     else:
-                        self.response.write(json.dumps(result))
                         self.response.set_status(200)
             except ValueError:
                 return error.respond(400, 'Invalid JSON in request body')
@@ -123,7 +122,6 @@ class ApiUserUidHandler(webapp2.RequestHandler):
                         if not success:
                             return error.respond(500, "One or more failures encountered while executing field updates")
                         else:
-                            self.response.write(json.dumps(result))
                             self.response.set_status(200)
                 except ValueError:
                     return error.respond(400, 'Invalid JSON in request body')
@@ -206,7 +204,6 @@ class ApiUserUidCollabsUidHandler(webapp2.RequestHandler):
                 if 'errorMessage' in result:
                     return error.respond(500, result['errorMessage'])
                 else:
-                    self.response.write(json.dumps(result))
                     self.response.set_status(200)
 
 
@@ -242,7 +239,6 @@ class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
             if 'errorMessage' in result:
                 return error.respond(500, result['errorMessage'])
             else:
-                self.response.write(json.dumps(result))
                 self.response.set_status(200)
 
     def delete(self, uid, jid):
@@ -271,7 +267,6 @@ class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
                 if 'errorMessage' in result:
                     return error.respond(500, result['errorMessage'])
                 else:
-                    self.response.write(json.dumps(result))
                     self.response.set_status(200)
 
 
