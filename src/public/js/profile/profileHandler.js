@@ -17,25 +17,22 @@ $( document ).ready(function() {
 
     $('#profile-update-submit').click(function(e) {
         ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated());
-        console.log("click");
     });
 });
 
 var userData = function(response) {
-    var data = jQuery.parseJSON(response);
-    if (!data) {
-        data = {username: "testuserplsignore", user_id: "testuidplsignore", bio: "this shouldn't be here", tags: "pumping, lemma" }; //test case
+    if (!response) {
+        response = {username: "testuserplsignore", user_id: "testuidplsignore", bio: "this shouldn't be here", tags: "pumping, lemma" }; //test case
     }
     
-    $(".profile-username").text(data.username);
-    $("#username-form").val(data.username);
-    $("#bio").val(data.bio);
-    $("#tags").val(data.tags);
+    $(".profile-username").text(response.username);
+    $("#username-form").val(response.username);
+    $("#bio").val(response.bio);
+    $("#tags").val(response.tags);
 }
 
 var profileUpdated = function(response) {
-    var data = jQuery.parseJSON(response);
-    if (data.key) {
+    if (response.key) {
         //successful
     }
 }
@@ -49,12 +46,11 @@ var collabSongs = function(response) {
 }
 
 var writeToTable = function(table, response) {
-    var data = jQuery.parseJSON(response);
-    if (!data) {
+    if (!response) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
-        for (var i = 0; i < data.length; i++) {
-            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
+        for (var i = 0; i < response.length; i++) {
+            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + response[i].id + '">' + response[i].title + '</a></td><td>' + response[i].owner + "</td><td>" + response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
         }
     }
 }

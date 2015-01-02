@@ -20,12 +20,11 @@ var invitedSongs = function(response) {
 }
 
 var writeToTable = function(table, response) {
-    var data = jQuery.parseJSON(response);
-    if (!data) {
+    if (!response) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
-        for (var i = 0; i < data.length; i++) {
-            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + data[i].id + '">' + data[i].title + '</a></td><td>' + data[i].owner + "</td><td>" + data[i].tags + "</td><td>" + data[i].genre + "</td></tr>");
+        for (var i = 0; i < response.length; i++) {
+            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + response[i].id + '">' + response[i].title + '</a></td><td>' + response[i].owner + "</td><td>" + response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
         }
     }
 }

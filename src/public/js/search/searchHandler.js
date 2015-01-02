@@ -20,20 +20,19 @@ function getUrlParam(parameter) {
 }
 
 var showResults = function(response) {
-	var data = jQuery.parseJSON(response);
-	if (!data) {
+	if (!response) {
 		//if this has happened, there's been an error.
         $('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
     } else {
-    	var results = data.results;
-        token = data.token;
-        sort = data.sort;
+    	var results = response.results;
+        token = response.token;
+        sort = response.sort;
         
     	if (!results) {
 			$('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 			return;
 		}
-    	if (data.more) {
+    	if (response.more) {
     		//enable next page link
     		$('#more-results').click(showMore());
     	} else {
