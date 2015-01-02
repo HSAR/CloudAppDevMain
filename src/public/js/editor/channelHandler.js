@@ -20,8 +20,8 @@ function ChannelHandler() {
 			
 			drawNote(msg.note,$('#track' + track));
 		} else if(msg.action === 'noteRm') {
-			var deletedNote = deleteNote(msg.id);
-			$('#' + msg.data.id).remove();
+			var deletedNote = deleteNote(msg.noteId);
+			$('#' + msg.noteId).remove();
 		} else if(msg.action === 'instrumentAdd') {
 			addInstrument(msg.instrument.inst,msg.instrument.track);
 		} else if(msg.action === 'instrumentRm') {
