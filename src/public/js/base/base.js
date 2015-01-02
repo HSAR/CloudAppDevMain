@@ -7,7 +7,9 @@ var setUser = function(response) {
 		connectionFailureMessage();
 	} else {
 		$(".username").text(currentUserEntity.username);
-		init();
+		if (typeof init == 'function') { 
+ 			init();
+ 		}
 	}
 
 };

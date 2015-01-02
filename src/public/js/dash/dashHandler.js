@@ -19,7 +19,7 @@ var invitedSongs = function(response) {
 }
 
 var writeToTable = function(table, response) {
-    if (!response) {
+    if (!response || response[0] == null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {

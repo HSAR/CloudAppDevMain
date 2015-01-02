@@ -27,8 +27,8 @@ var userData = function(response) {
     
     $(".profile-username").text(response.username);
     $("#username-form").val(response.username);
-    $("#bio").val(response.bio);
-    $("#tags").val(response.tags);
+    $("#bio-form").val(response.bio);
+    $("#tags-form").val(response.tags);
 }
 
 var profileUpdated = function(response) {
@@ -46,7 +46,7 @@ var collabSongs = function(response) {
 }
 
 var writeToTable = function(table, response) {
-    if (!response) {
+    if (!response || response[0] == null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
