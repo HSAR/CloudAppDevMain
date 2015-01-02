@@ -129,7 +129,7 @@ def getUserDict(user, all_fields = True):
 def getJingleDict(jingle, json = True):
     
     keys = ['jingle_id', 'title', 'author', 
-            'genre', 'length', 'tags', 'collab_users',
+            'genre', 'length', 'tags', 'collab_users', 'username',
             'collab_usernames']
     if json:
         keys.append('jingle')
@@ -355,6 +355,7 @@ def searchJingle(jingle, sort, isAnd):
     jingleDicts = []
 
     for jingle in results: # results
+        jingle.username = getUsernameByUID(jingle.author)
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
