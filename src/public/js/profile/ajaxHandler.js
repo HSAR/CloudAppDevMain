@@ -11,11 +11,11 @@ function AjaxHandler() {
 		commonAjax('http://jinglr-music.appspot.com/api/users/' + path + '/collabs', cb, error);
 	};
 
-	this.updateProfile = function(uid, username, bio, tags, cb, error) {
+	this.updateProfile = function(uid, data, cb, error) {
 		$.ajax({
 			type : 'PATCH',
 			url : 'http://jinglr-music.appspot.com/api/users/' + uid,
-			data : JSON.stringify({ bio: bio, tags: tags, username: username}),
+			data : JSON.stringify(data),
 			dataType  : 'JSON',
 			success : function(data) {
 				cb(data);

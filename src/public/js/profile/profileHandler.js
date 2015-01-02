@@ -16,8 +16,27 @@ var init = function() {
     }
 
     $('#profile-update-submit').click(function(e) {
-        ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated, connectionFailure);
+        var newData = {};
+        if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+            newData.username = $("#username-form").val();
+        }
+        if ($("#bio-form").val() !== oldData.bio) {
+            newData.bio = $("#bio-form").val();
+        }
+        if ($("#tags-form").val() !== oldData.tags) {
+            newData.tags = $("#tags-form").val();
+        }
+
+        if (newData) {
+            ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
+        }        
     });
+}
+
+var oldData = {
+    username: null,
+    bio: null,
+    tags: null
 }
 
 var userData = function(response) {
@@ -25,6 +44,9 @@ var userData = function(response) {
     $("#username-form").val(response.username);
     $("#bio-form").val(response.bio);
     $("#tags-form").val(response.tags);
+    oldData.username = response.username;
+    oldData.bio = response.bio;
+    oldData.tags = response.tags;
 }
 
 var unknownUser = function() {
