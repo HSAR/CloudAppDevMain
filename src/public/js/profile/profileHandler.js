@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+var init = function() {
     var path = window.location.pathname;
     path = path.split("/")[3];
 	var ajax = new AjaxHandler();
@@ -18,7 +18,7 @@ $( document ).ready(function() {
     $('#profile-update-submit').click(function(e) {
         ajax.updateProfile(path, $("#username-form").val(), $("#bio-form").val(), $("#tags-form").val(), profileUpdated());
     });
-});
+}
 
 var userData = function(response) {
     if (!response) {
@@ -62,6 +62,6 @@ var songTables = {
 }
 
 var songTableEmptyMessage = {
-    '#ownedTable': 'User has not created any songs</a>',
+    '#ownedTable': 'User has not created any songs',
     '#collabTable': 'User has not contributed to any songs',
 }

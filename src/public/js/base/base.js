@@ -7,7 +7,9 @@ var setUser = function(response) {
 		connectionFailureMessage();
 	} else {
 		$(".username").text(currentUserEntity.username);
+		init();
 	}
+
 };
 
 var connectionFailureMessage = function() {
@@ -34,10 +36,10 @@ var commonAjax = function(url, cb) {
 				getCurrentUser(setUser);
 			}
 		}
+		//failure: connectionFailureMessage()
 	});
 };
 
-getCurrentUser(setUser);
 $( document ).ready(function() {
 	getCurrentUser(setUser);
 });

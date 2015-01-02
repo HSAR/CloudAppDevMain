@@ -1,10 +1,9 @@
-$( document ).ready(function() {
-    $("#dashTitle h3 #userHeader").text(" " + currentUserEntity.username + "'s Dashboard");
+var init = function() {
 	var ajax = new AjaxHandler();
 	ajax.getUserSongs(ownedSongs);
 	ajax.getUserCollabs(collabSongs);
     ajax.getUserInvites(invitedSongs);
-});
+}
 
 
 var ownedSongs = function(response) {

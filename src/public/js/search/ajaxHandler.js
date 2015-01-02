@@ -2,7 +2,7 @@ function AjaxHandler() {
 	this.search = function(query, sort, token, cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/search',
+			url : 'http://jinglr-music.appspot.com/api/songs/search',
 			data: { query: query, sort: sort, token: token },
 			dataType : 'JSON',
 			success : function(data) {
