@@ -58,6 +58,12 @@ class ApiUserHandler(webapp2.RequestHandler):
             except ValueError:
                 return error.respond(400, 'Invalid JSON in request body')
 
+class ApiUserAutocompleteHandler(webapp2.RequestHandler):
+    def get(self):
+        username = self.request.get("username")
+        results = datastore.completeUsername(username)
+        self.response.write(json.dumps(results))
+        self.response.set_status(200)
 
 class ApiUserUidHandler(webapp2.RequestHandler):
     def get(self, uid):
@@ -275,6 +281,8 @@ webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/api/users', handler=ApiUserHandler,
                                                         name='user-get-by-name'),
+                                          webapp2.Route(r'/api/users/complete', handler=ApiUserAutocompleteHandler,
+                                                        name='user-autocomplete'),
                                           webapp2.Route(r'/api/users/<uid>', handler=ApiUserUidHandler,
                                                         name='user-get-by-id'),
                                           webapp2.Route(r'/web/users/<uid>', handler=WebUserProfileHandler,

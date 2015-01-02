@@ -305,6 +305,23 @@ def getJingleJSON(jid):
     else:
         return None
 
+# Autocomplete for usernames. Returns list of users whose names begin with the
+# given string.
+def completeUsername(partialName):
+    # Build the query
+    query = JinglrUser.query(ancestor=root_user_key)
+    query = query.filter(ndb.AND(JinglrUser.username >= partialName,
+        JinglrUser.username < partialName + u"\ufffd"))
+
+    # Fetch results
+    results = query.fetch(10)
+
+    # Turn into dicts
+    userDicts = []
+    for user in results:
+        userDicts.append(getUserDict(user, False))
+
+    return userDicts
 
 # Basic search for a jingle. Pass in a partial jingle dict with the fields to
 # be searched. Note that only prefix matching will be performed, and only on
