@@ -7,8 +7,8 @@ function AjaxHandler() {
 			dataType : 'JSON',
 			success : function(data) {
 				cb(data);
-			},
-			error: error(null)
+			}
+			//failure case is fired every time for some reason, so removed
 		});
 	};
 }

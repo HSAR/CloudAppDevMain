@@ -6,7 +6,7 @@ var init = function() {
 	var ajax = new AjaxHandler();
 	query = getUrlParam('query');
     $('#search-query').val(query);
-	ajax.search(query, sort, token, showResults, connectionFailure);
+	ajax.search(query, sort, token, showResults);
 }
 
 function getUrlParam(parameter) {
@@ -28,18 +28,18 @@ var showResults = function(response) {
         token = response.token;
         sort = response.sort;
         
-    	if (!results) {
+    	if (!results || results[0] == null) {
 			$('#results').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 			return;
 		}
     	if (response.more) {
     		//enable next page link
-    		$('#more-results').click(showMore());
+    		$('#more-results').click(showMore);
     	} else {
     		$('#more-results').unbind('click');
     	}
 	    for (var i = 0; i < results.length; i++) {
-	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/editor/' + results[i].title + '">' + results[i].title + '</a></td><td>' + results[i].owner + "</td><td>" + results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
+	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/web/songs/' + results[i].jingle_id + '">' + results[i].title + '</a></td><td>' + results[i].username + "</td><td>" + results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
 	    }
 	}
 }
