@@ -3,6 +3,14 @@ var init = function() {
 	ajax.getUserSongs(ownedSongs, connectionFailure);
 	ajax.getUserCollabs(collabSongs, connectionFailure);
     ajax.getUserInvites(invitedSongs, connectionFailure);
+    
+    $("#createJingleButton").click(function() {
+        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, connectionFailure);
+    });
+}
+
+var songCreated = function() {
+    location.reload();
 }
 
 var ownedSongs = function(response) {
