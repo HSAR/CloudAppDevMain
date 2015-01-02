@@ -204,7 +204,9 @@ def getUsersSongs(uid):
     
     jingle_query = Jingle.query(Jingle.author == uid)
     jingle_list = jingle_query.fetch()
+    author_username = getUsernameByUID(uid)
     for jingle in jingle_list:
+        jingle.username = author_username
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
