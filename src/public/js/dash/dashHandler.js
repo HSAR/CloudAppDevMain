@@ -30,7 +30,7 @@ var writeToTable = function(table, response) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
-            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/web/songs/' + results[i].jingle_id + '">' + response[i].title + '</a></td><td>' + response[i].author + "</td><td>" + response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
+            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td><td>' + response[i].author + "</td><td>" + response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
         }
     }
 }
