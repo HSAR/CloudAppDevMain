@@ -2,19 +2,20 @@
 var currentUserEntity = null;
 
 var setUser = function(response) {
-	var data = jQuery.parseJSON(response);
-	if (!data) {
-        data = {username: "testuserplsignore", user_id: "testuidplsignore" }; //test case
-    } 
-    currentUserEntity = data;
-}
+    currentUserEntity = response;
+	if(!currentUserEntity) {
+		connectionFailureMessage();
+	} else {
+		$(".username").text(currentUserEntity.username);
+	}
+};
 
 var connectionFailureMessage = function() {
 	$('#connection-failure-modal').modal('show');
 	$('#connection-failure-button').click(function() {
 		location.reload();
 	})  
-}
+};
 
 var getCurrentUser = function(cb) {
 	commonAjax('http://jinglr-music.appspot.com/api/users/self', cb);
@@ -29,25 +30,21 @@ var commonAjax = function(url, cb) {
 			if (data) {
 				cb(data);
 			} else {
-				//#failwhale
+				//connectionFailureMessage();
+				getCurrentUser(setUser);
 			}
-		},
-		failure : cb(null)
+		}
 	});
-}
+};
 
 getCurrentUser(setUser);
 $( document ).ready(function() {
-	if(!currentUserEntity) {
-		connectionFailureMessage();
-	} else {
-		$(".username").text(currentUserEntity.username);
-	}
+	getCurrentUser(setUser);
 });
 
 $(document).on({
     ajaxStart: function() { $("body").addClass("loading"); },
- 	ajaxStop: function() { $("body").removeClass("loading"); }    
+ 	ajaxStop: function() { $("body").removeClass("loading"); }
 });
 
 
