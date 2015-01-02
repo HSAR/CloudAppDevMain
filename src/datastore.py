@@ -119,7 +119,8 @@ def getUserDict(user, all_fields = True):
         keys.extend(['bio', 'tags', 'collab_invites'])
     dict = {}
     for property in keys:
-        dict[property] = getattr(user, property)
+        if hasattr(user, property):
+            dict[property] = getattr(user, property)
     return dict
 
 
@@ -136,7 +137,8 @@ def getJingleDict(jingle, json = True):
     
     dict = {}
     for property in keys:
-        dict[property] = getattr(jingle, property)
+        if hasattr(jingle, property):
+            dict[property] = getattr(jingle, property)
         
     date = jingle.date_created
     epoch = datetime.datetime.utcfromtimestamp(0)
