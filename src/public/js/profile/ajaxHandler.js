@@ -15,7 +15,7 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PATCH',
 			url : 'http://jinglr-music.appspot.com/api/users/' + uid,
-			data : { bio: bio, tags: tags, username: username},
+			data : JSON.stringify({ bio: bio, tags: tags, username: username}),
 			dataType  : 'JSON',
 			success : function(data) {
 				cb(data);

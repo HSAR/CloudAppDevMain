@@ -16,7 +16,7 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PUT',
 			url : 'http://jinglr-music.appspot.com/api/songs',
-			data : { title: title, genre: genre, tags: tags },
+			data : JSON.stringify({ title: title, genre: genre, tags: tags }),
 			dataType  : 'JSON',
 			success : function(data) {
 				cb(data);
