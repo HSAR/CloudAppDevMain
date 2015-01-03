@@ -5,6 +5,8 @@ var driver = new webdriver.Builder().
     withCapabilities(webdriver.Capabilities.firefox()).
     build();
 
+driver.manage().timeouts().pageLoadTimeout(50000);
+
 describe('Authentication Tests', function () {
 
     it('should serve the login page when accessing the editor and without being logged in', function (done) {
