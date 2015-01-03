@@ -80,6 +80,19 @@ def addTokenToCache(jid, channelToken):
                 break
 
 
+#converts a string of tags into a list of tags
+def getTags(tags):
+    
+    if tags == "":
+        return []
+    else:
+        tags = string.split(tags, ",")
+        new_tags = []
+        for tag in tags:
+            new_tags.append(string.strip(tag))
+        return new_tags
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #converts a JinglrUser entity to a dictionary. The keys are the same names as
@@ -444,7 +457,7 @@ def updateUser(uid, data):
             user.bio = data["bio"]
             
         if "tags" in data:
-            user.tags = data["tags"]
+            user.tags = getTags(data["tags"])
             
         if "username" in data:
             existingUser = getUserByUsername(data["username"])
@@ -598,7 +611,7 @@ def createJingle(uid, title, genre=None, tags=None):
     if genre:
         jingle.genre = genre
     if tags:
-        jingle.tags = tags
+        jingle.tags = getTags(tags)
     else:
         jingle.tags = []
     
@@ -652,7 +665,7 @@ def updateJingle(jid, data):
                 jingle.genre = data["genre"]
             
             if "tags" in data:
-                jingle.tags = data["tags"]
+                jingle.tags = getTags(data["tags"])
             
             result = jingle.put()
             return {"jingleKey" : result}
