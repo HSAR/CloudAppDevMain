@@ -382,7 +382,7 @@ def resumeSearch(cursor):
 def createUser(uid, username):
     
     @ndb.transactional
-    def createUserInternal():
+    def createUserInternal(uid, username):
         
         existingUser = getUserById(uid)
         
@@ -414,7 +414,9 @@ def createUser(uid, username):
     
     while True:
         try:
-            result = createUserInternal()
+            #pass in uid and username to inner function to avoid problem
+            #with python scoping rules
+            result = createUserInternal(uid, username)
             break
         except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
