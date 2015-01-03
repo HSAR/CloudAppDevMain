@@ -14,10 +14,10 @@ describe('basic test', function () {
         driver.get('http://localhost:8080/template').then(function () {
 
             // Find an element on the page and retrieve text within tag - callback, again
-            driver.findElement(webdriver.By.tagName("p")).getText().then(function (value) {
+            driver.findElement(webdriver.By.tagName("h1")).getText().then(function (value) {
 
                 // Jasmine expect statement. Various other expectations are available.
-                expect(value).toBe("Hello Generic User");
+                expect(value).toBe("Jinglr.");
 
                 // Close window - this doesn't matter on the VM, but is mostly for when you run manually
                 driver.quit();
