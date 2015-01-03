@@ -125,6 +125,13 @@
 		$('.pitch').droppable({//remove any previous droppable handlers
 			tolerance : 'pointer',
 			over : function(event,ui) {
+				var canvasArea = $('.tab-pane.active').offset();
+				var canvasHeight =  $('.tab-pane.active').height();
+				var canvasWidth = $('.tab-pane.active').width();
+				if(event.pageX < canvasArea.left || event.pageY < canvasArea.top ||
+				 event.pageX > canvasArea.left + canvasWidth || event.pageY > canvasArea.top + canvasHeight) {
+					return;//event is outside the range of the canvas
+				}
 				pageData.$currentPreviewDiv = $(this);
 				$(event.target).append("<div class='preview no-display'></div>");
 			},
@@ -223,7 +230,10 @@
 	function setPlaybackButtons() {
 		$('.play-button').click(function(event,ui) {
 			if(pageData.compiledMidi && (!MIDI.Player.playing)) {//if we have something to play and not already playing
-				if(MIDI.Player.currentTime > 0) {//if not at the start
+				if(MIDI.Player.endTime === MIDI.Player.currentTime) {
+					MIDI.Player.stop();//reset to start
+					MIDI.Player.start();
+				} else if(MIDI.Player.currentTime > 0) {//if not at the start
 					MIDI.Player.resume();
 				} else {
 					MIDI.Player.start();
@@ -250,7 +260,7 @@
 		});
 	}
 
-	function resetPlayer() {//defined expolictly as referred to by stop button and finished playing callback
+	function resetPlayer() {//defined explictly as referred to by stop button and finished playing callback
 		MIDI.Player.stop();
 		$('.progress-bar').html('Ready to play').css({
 			'width' : '100%'
@@ -692,7 +702,7 @@
 			$('table.results-table tbody').empty();
 			for(var i = 0; i < matches.length; i++) {
 				var html = '<tr><td>' + matches[i].username + '</td><td><button class="btn btn-primary fresh" id="match' +
-				matches[i].uid + '">Invite' + '</button></td></tr>';
+				matches[i].user_id + '">Invite' + '</button></td></tr>';
 
 				$('table.results-table tbody').append(html);
 				$('button.fresh').click(function() {//fresh tag used to mark button out to register callback
