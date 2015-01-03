@@ -28,7 +28,7 @@ describe('Authentication Tests', function () {
                         driver.wait(function() {
                             return driver.findElement(webdriver.By.css(".username")).getText().then(function (authedUser) {
                                 // expect to be correctly signed in
-                                expect(authedUser).toContain("test@example.com");
+                                return authedUser == "test@example.com";
                             });
                         }, 5000);
     
