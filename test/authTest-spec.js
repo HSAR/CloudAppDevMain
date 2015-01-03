@@ -25,7 +25,7 @@ describe('Authentication Tests', function () {
     
                     emailElement = driver.findElement(webdriver.By.name("action"));
                     emailElement.click().then(function () {
-                        driver.findElement(webdriver.By.tag("title")).getText().then(function (title) {
+                        driver.findElement(webdriver.By.tagName("title")).getText().then(function (title) {
                             // expect to be correctly signed in
                             expect(title).toContain("Jinglr - Edit Jingle");
                         });
