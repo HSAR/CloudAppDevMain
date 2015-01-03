@@ -25,11 +25,6 @@ describe('Authentication Tests', function () {
     
                     emailElement = driver.findElement(webdriver.By.name("action"));
                     emailElement.click().then(function () {
-                        driver.findElement(webdriver.By.tagName("title")).getText().then(function (title) {
-                            // expect to be correctly signed in
-                            expect(title).toContain("Jinglr - Edit Jingle");
-                        });
-    
                         // expect to have been redirected back onto the editor page
                         driver.getCurrentUrl().then(function (currURL) {
                             expect(currURL).toBe('http://localhost:8080/web/songs/0');
