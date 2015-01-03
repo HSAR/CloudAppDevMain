@@ -25,6 +25,18 @@ function AjaxHandler() {
 		});
 	}
 
+	this.respondToInvite = function(jingleId, accept, cb, error) {
+		$.ajax({
+			type : 'DELETE',
+			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId,
+			data: { accept: accept },
+			dataType : 'JSON',
+			success : function(data) {
+				cb(data);
+			}
+		});
+	}
+
 	var requesturls = { 
 		songs: window.location.protocol + '//' + window.location.host + '/api/users/self/songs',
 		collabs: window.location.protocol + '//' + window.location.host + '/api/users/self/collabs',
