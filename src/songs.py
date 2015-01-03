@@ -329,6 +329,9 @@ class WebSongsSidEditorHandler(webapp2.RequestHandler):
             signout_bar = (
                 'Signed in as %s. (<a href="%s">sign out</a>)' % (user.nickname(), users.create_logout_url('/')))
             template_values = {
+                'auth_bar': signout_bar,
+                'song_id': songid,
+                'song_title': datastore.getJingleById(songid).title
             }
             template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
             self.response.write(template.render(template_values))
