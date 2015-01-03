@@ -89,7 +89,8 @@ def getTags(tags):
         tags = string.split(tags, ",")
         new_tags = []
         for tag in tags:
-            new_tags.append(string.strip(tag))
+            if tag != "":
+                new_tags.append(string.strip(tag))
         return new_tags
 
 
