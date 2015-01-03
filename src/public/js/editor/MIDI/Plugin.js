@@ -261,7 +261,6 @@ if (window.AudioContext || window.webkitAudioContext) (function () {
 			window.MIDIContext = ctx;//save as global
 		} else {
 			MIDI.Player.ctx = ctx = window.MIDIContext;//use existing context
-			ctx.currentTime = 0;
 		}
 		
 		///
