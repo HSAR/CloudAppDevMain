@@ -8,7 +8,7 @@ var driver = new webdriver.Builder().
 describe('Authentication Tests', function () {
 
     it('should serve the login page when accessing the editor and without being logged in', function (done) {
-        createData.createData().then(function () {
+        createData.createData(function () {
             driver.get('http://localhost:8080/web/songs/0').then(function () {
     
                 driver.findElement(webdriver.By.tagName("h3")).getText().then(function (loginH3) {
