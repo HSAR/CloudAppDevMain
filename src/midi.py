@@ -60,11 +60,11 @@ def getVLQ(delta):
     VLQ[-1] -= 128 #unset the 8th bit for the last byte
     return VLQ
 
-#function takes a jingle JSON and returns an array of bytes which make up the
-#MIDI file for that jingle.
+#function takes a jingle JSON and returns a dictionary in the form:
+#{"midi" : byte array, "instruments" : list of instrument numbers used in song}
 #raises MIDIError if there is a problem creating the MIDI file
-def getMIDI(midiJSON):
-    midi = json.loads(midiJSON) #load the JSON as a python dictionary
+def getMIDI(midi):
+    instrument_list = []
     
     #The following bytes make up the head of a MIDI file
     HEAD_CHUNK_ID   = bytearray([0x4D, 0x54, 0x68, 0x64])   #MIDI Magic Number "MThd"
@@ -146,6 +146,7 @@ def getMIDI(midiJSON):
             if instrument < 0 or instrument > 127:
                 raise MIDIError("Invalid instrument number. Must be in range of 0 to 127")
             
+            instrument_list.append(instrument)
             #here we actually set an instrument to the current channel
             setInstrumentEvent = bytearray([0, 192+currentChannel, instrument])
             trackEvents.extend(setInstrumentEvent)
@@ -229,11 +230,12 @@ def getMIDI(midiJSON):
     midiFile = HEADER_CHUNK
     midiFile.extend(trackChunk)
     
-    return midiFile
+    return {"midi" : midiFile, "instruments" : instrument_list}
     
-#function converts a jingle JSON to a midi file encoded in base64
+#function converts a jingle JSON to a midi file encoded in base64 in a dict:
+#{"midi" : base64 encoded midi, "instruments" : list of instrument numbers used in song}
 #raises MIDIError if there is a problem creating the MIDI file
 def getMIDIBase64(midiJSON):
     midiFile = getMIDI(midiJSON)
-    midiEncoded = base64.b64encode(midiFile)
-    return midiEncoded
+    midiEncoded = base64.b64encode(midiFile["midi"])
+    return {"midi" : midiEncoded, "instruments" : midiFile["instruments"]}

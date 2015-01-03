@@ -104,8 +104,7 @@ class ApiSongSidMidiHandler(webapp2.RequestHandler):
             jingle = datastore.getJingleJSON(songid)
             if jingle:
                 try:
-                    self.response.out.write(midi.getMIDIBase64(json.dumps(
-                        jingle)))
+                    self.response.out.write(json.dumps(midi.getMIDIBase64(jingle)))
                 except midi.MIDIError as exc:
                     return error.respond(500, midi.MIDIError.message)
             else:
