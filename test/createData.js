@@ -15,3 +15,5 @@ var createData = function() {
     });
   });
 };
+
+module.exports.createData = createData;
