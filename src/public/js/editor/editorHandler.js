@@ -219,7 +219,7 @@
 		var deleteData = {
 			noteId : oldNote.id,
 			actionId : actionId,
-			trackId : $('.tab-pane.active').index()
+			trackId : parseInt($('.tab-pane.active').attr('id').substring(5), 10);
 		};
 
 						

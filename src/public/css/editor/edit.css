@@ -35,7 +35,7 @@
 	height : 100%;
 }
 
-.nav li {
+.nav-tabs li {
 	width : 16%;
 	height : 80px;/* Set height large enough to accomodate all instrument names */
 	padding-bottom : 0px;
