@@ -43,7 +43,7 @@ class ApiSongHandler(webapp2.RequestHandler):
                     if 'genre' in parsed_request_json:
                         genre = parsed_request_json['genre']
                     if 'tags' in parsed_request_json:
-                        genre = parsed_request_json['tags']
+                        tags = parsed_request_json['tags']
                     result = datastore.createJingle(user_id, parsed_request_json['title'], genre, tags)
                     self.response.set_status(200)
         except ValueError:
