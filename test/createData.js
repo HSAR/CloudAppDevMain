@@ -4,6 +4,8 @@ var driver = new webdriver.Builder().
     withCapabilities(webdriver.Capabilities.firefox()).
     build();
 
+driver.manage().timeouts().pageLoadTimeout(50000);
+
 var createData = function(thenFunc) {
   driver.get('http://localhost:8080/admin/initialdata').then(function () {
     emailElement = driver.findElement(webdriver.By.name("action"));
