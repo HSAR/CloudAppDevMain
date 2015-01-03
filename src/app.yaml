@@ -42,10 +42,6 @@ handlers:
 - url: /api/users.*
   script: users.application
 
-- url: /web/songs/.*
-  script: songs.application
-  login: required
-
 - url: /web/songs.*
   script: songs.application
 

@@ -320,13 +320,15 @@ class WebSongsSidEditorHandler(webapp2.RequestHandler):
             return error.respond(400, "Invalid song ID in request URL")
         elif not user:
             error.respond(401, "User is not signed in")
+        elif not permission.can_edit_song(songid):
+            template_values = {
+            }
+            template = JINJA_ENVIRONMENT.get_template('templates/401.html')
+            self.response.write(template.render(template_values))
         else:
             signout_bar = (
                 'Signed in as %s. (<a href="%s">sign out</a>)' % (user.nickname(), users.create_logout_url('/')))
             template_values = {
-                'auth_bar': signout_bar,
-                'song_id': songid,
-                'song_title': datastore.getJingleById(songid).title
             }
             template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
             self.response.write(template.render(template_values))
