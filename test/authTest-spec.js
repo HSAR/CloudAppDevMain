@@ -25,10 +25,12 @@ describe('Authentication Tests', function () {
     
                     emailElement = driver.findElement(webdriver.By.name("action"));
                     emailElement.click().then(function () {
-                        driver.findElement(webdriver.By.css(".username")).getText().then(function (authedUser) {
-                            // expect to be correctly signed in
-                            expect(authedUser).toContain("test@example.com");
-                        });
+                        driver.wait(function() {
+                            driver.findElement(webdriver.By.css(".username")).getText().then(function (authedUser) {
+                                // expect to be correctly signed in
+                                expect(authedUser).toContain("test@example.com");
+                            });
+                        }, 5000);
     
                         // expect to have been redirected back onto the editor page
                         driver.getCurrentUrl().then(function (currURL) {
