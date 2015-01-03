@@ -244,7 +244,7 @@ class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
             if not permission.can_edit_user(uid):
                 return error.respond(401, "You are not authorised to edit this user")
             else:
-                response = self.request.get("accept")
+                response = self.request.get("response")
                 if not response:
                     return error.respond(400, 'Missing property in request URI')
                 elif response == 'true':
