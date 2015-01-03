@@ -357,9 +357,11 @@
 		var htmlToAppend = '';
 		htmlToAppend += '<ul class="nav nav-tabs">';
 		if(tuneJSON.tracks.length > 0) {
+			var tabsMade = 0;
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-					if(i === 0) {
+					if(tabsMade === 0) {
+						tabsMade++;
 						htmlToAppend +='<li class="active"><a href="#track' + i +
 						 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
 						 '</span></a></li>';
@@ -379,11 +381,13 @@
 		htmlToAppend += '</ul><div class="tab-content">';
 		//now add the tab panels
 		if(tuneJSON.tracks.length > 0) {
+			tabsMade = 0;
 			pageData.tabCount = currentTabCount;
 			for(var i = 0; i <tuneJSON.tracks.length; i++) {
 				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-					if(i === 0) {
+					if(tabsMade === 0) {
 						htmlToAppend += '<div  class="tab-pane active" id="track' + i +'"></div>';
+						tabsMade++;
 					} else {
 						htmlToAppend+= '<div  class="tab-pane" id="track' + i +'"></div>';
 					}
@@ -402,7 +406,7 @@
 		$('.remove-tab-button').click(function() {
 			deleteInstrument(parseInt($(this).attr('id').substring(10), 10));//get index of track
 		});
-		$('.tab-pane').eq(0).show();
+		
 	}
 
 	function loadBars($target) {
