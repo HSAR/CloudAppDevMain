@@ -108,19 +108,9 @@ class ApiUserUidHandler(webapp2.RequestHandler):
                                     'tags' in parsed_request_json):
                         return error.respond(400, 'Missing property in request JSON')
                     else:
-                        success = True
-                        if 'username' in parsed_request_json:
-                            result = datastore.updateUsername(uid, parsed_request_json['username'])
-                            if 'errorMessage' in result:
-                                return error.respond(500, result['errorMessage'])
-                        if 'bio' in parsed_request_json:
-                            result = datastore.updateBio(uid, parsed_request_json['bio'])
-                            success &= result
-                        if 'tags' in parsed_request_json:
-                            result = datastore.updateTags(uid, parsed_request_json['tags'])
-                            success &= result
-                        if not success:
-                            return error.respond(500, "One or more failures encountered while executing field updates")
+                        result = datastore.updateUser(uid, parsed_request_json)
+                        if 'errorMessage' in result:
+                            return error.respond(500, result['errorMessage'])
                         else:
                             self.response.set_status(200)
                 except ValueError:

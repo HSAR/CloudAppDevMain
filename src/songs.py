@@ -76,18 +76,9 @@ class ApiSongSidHandler(webapp2.RequestHandler):
                                 'tags' in parsed_request_json):
                     return error.respond(400, 'Missing property in request JSON')
                 else:
-                    success = True
-                    if 'title' in parsed_request_json:
-                        result = datastore.changeTitle(songid, parsed_request_json['title'])
-                        success &= result
-                    if 'genre' in parsed_request_json:
-                        result = datastore.changeGenre(songid, parsed_request_json['genre'])
-                        success &= result
-                    if 'tags' in parsed_request_json:
-                        result = datastore.changeTags(songid, parsed_request_json['tags'])
-                        success &= result
-                    if not success:
-                        return error.respond(500, "One or more failures encountered while executing field updates")
+                    result = datastore.updateJingle(songid, parsed_request_json)
+                    if 'errorMessage' in result:
+                        return error.respond(500, result['errorMessage'])
                     else:
                         self.response.set_status(200)
             except ValueError:

@@ -80,35 +80,6 @@ def addTokenToCache(jid, channelToken):
                 break
 
 
-def changeJingleProperty(property, value, jid):
-
-    while True:
-        try:
-            jingle_key = ndb.Key('Jingle', jid)
-            jingle = jingle_key.get()
-            if not jingle:
-                return None
-            
-            setattr(jingle, property, value)
-            return jingle.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
-
-
-def changeUserProperty(property, value, uid):
-    
-    while True:
-        try:
-            user = getUserById(uid)
-            if not user:
-                return None
-            
-            setattr(user, property, value)
-            return user.put()
-        except (db.Timeout, db.InternalError):
-            time.sleep(1)
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #converts a JinglrUser entity to a dictionary. The keys are the same names as
@@ -452,32 +423,34 @@ def createUser(uid, username):
     return result
 
 
-#takes a user ID and a new username
+#takes a uid and a dictionary of new data where the keys can be:
+#'bio', 'tags' and 'username'. It updates the corresponding user with the
+#values in this data dictionary.
 #returns a dictionary in the form:
 #   {"userKey" : userkey}
 #when successful or:
 #   {"errorMessage" : errorMessage}
 #on a fail
-def updateUsername(uid, username):
-    
-    if not username:
-        return {"errorMessage":"Please enter a username"}
-    
+def updateUser(uid, data):
     
     @ndb.transactional
-    def updateUsernameInternal():
-        
-        existingUser = getUserByUsername(username)
-        
-        if existingUser:
-            return {"errorMessage" : "That username has already been taken"}
-        
+    def updateUserInternal():
         user = getUserById(uid)
-        
         if not user:
             return {"errorMessage" : "That is not a valid user"}
         
-        user.username = username
+        if "bio" in data:
+            user.bio = data["bio"]
+            
+        if "tags" in data:
+            user.tags = data["tags"]
+            
+        if "username" in data:
+            existingUser = getUserByUsername(data["username"])
+            if existingUser:
+                return {"errorMessage" : "That username has already been taken"}
+            user.username = data["username"]
+        
         result = user.put()
         return {"userKey" : result}
     
@@ -486,26 +459,12 @@ def updateUsername(uid, username):
     
     while True:
         try:
-            result = updateUsernameInternal()
+            result = updateUserInternal()
             break
         except (db.Timeout, db.TransactionFailedError, db.InternalError):
             time.sleep(1)
     
     return result
-
-
-#takes a user id and a new bio. Returns the user entity key on success or None
-#if that user does not exist
-def updateBio(uid, bio):
-    
-    return changeUserProperty("bio", bio, uid)
-
-
-#takes a user ID and a new list of tags. Returns the user entity key on
-#success or None if that user does not exist
-def updateTags(uid, tags):
-    
-    return changeUserProperty("tags", tags, uid)
 
 
 #takes a username and the JID that this user is being invited to collab on
@@ -656,27 +615,51 @@ def createJingle(uid, title, genre=None, tags=None):
     return result
 
 
-#returns the Jingle entity key on success, or None if jid is not valid
-def changeTitle(jid, title):
-    
-    return changeJingleProperty("title", title, jid)
+#takes a jid and a dictionary of new data where the keys can be:
+#'title', 'tags' and 'genre'. It updates the corresponding jingle with the
+#values in this data dictionary.
+#returns a dictionary in the form:
+#   {"jingleKey" : jinglekey}
+#when successful or:
+#   {"errorMessage" : errorMessage}
+#on a fail
+def updateJingle(jid, data):
 
-
-#returns the Jingle entity key on success, or None if jid is not valid
-def changeGenre(jid, genre):
-    
-    return changeJingleProperty("genre", genre, jid)
-
-
-#returns the Jingle entity key on success, or None if jid is not valid
-def changeTags(jid, tags):
-    
-    return changeJingleProperty("tags", tags, jid)
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return {"errorMessage" : "That is not a valid jingle"}
+            
+            if "title" in data:
+                jingle.title = data["title"]
+            
+            if "genre" in data:
+                jingle.genre = data["genre"]
+            
+            if "tags" in data:
+                jingle.tags = data["tags"]
+            
+            result = jingle.put()
+            return {"jingleKey" : result}
+        except (db.Timeout, db.InternalError):
+            time.sleep(1)
 
 
 def changeJingle(jid, jingle_json):
     
-    return changeJingleProperty("jingle", jingle_json, jid)
+    while True:
+        try:
+            jingle_key = ndb.Key('Jingle', jid)
+            jingle = jingle_key.get()
+            if not jingle:
+                return None
+            
+            jingle.jingle = jingle_json
+            return jingle.put()
+        except (db.Timeout, db.InternalError):
+            time.sleep(1)
 
 
 #called when a client wants to start editing a jingle
