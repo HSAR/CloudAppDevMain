@@ -34,6 +34,7 @@ function StaticPlayer() {
 			});
 		});
 			
+		
 		$('button.play-button').removeClass("fresh-button");//remove tag used to identify new button
 	}
 
