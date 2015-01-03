@@ -18,8 +18,7 @@ trackHeader = bytearray([0x4D, 0x54, 0x72, 0x6B])
 
 #test the most basic midi file - a single note
 def test_one_note_midi():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -30,7 +29,7 @@ def test_one_note_midi():
             }
         ]
     }
-    """
+    
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
                              0x00, 0xC0, 0x00,
@@ -45,12 +44,11 @@ def test_one_note_midi():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "One note MIDI file"
     
 def test_multi_channel():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -145,7 +143,6 @@ def test_multi_channel():
             }
         ]
     }
-    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -203,12 +200,11 @@ def test_multi_channel():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "Multi channel midi"
     
 def test_many_notes():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -225,7 +221,6 @@ def test_many_notes():
             }
         ]
     }
-    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -253,12 +248,11 @@ def test_many_notes():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "Multi note MIDI file"
     
 def test_delta_values():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -276,7 +270,6 @@ def test_delta_values():
             }
         ]
     }
-    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -306,13 +299,12 @@ def test_delta_values():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "Different delta values"
     
 #test when the JSON notes are out of order
 def test_out_of_order():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -326,7 +318,6 @@ def test_out_of_order():
             }
         ]
     }
-    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -348,13 +339,12 @@ def test_out_of_order():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "Out of order"
     
 #test when the JSON notes are out of order
 def test_out_of_order_2():
-    testJSON = """
-    {
+    testJSON = {
         "head": {"subDivisions":96, "tempo":120},
         "tracks": [
             {
@@ -370,7 +360,6 @@ def test_out_of_order_2():
             }
         ]
     }
-    """
     
     trackEvents = bytearray([0x00, 0xFF, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
                              0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20,
@@ -396,241 +385,202 @@ def test_out_of_order_2():
     actualMIDI.extend(trackLength)
     actualMIDI.extend(trackEvents)
     
-    midiObtained = getMIDI(testJSON)
+    midiObtained = getMIDI(testJSON)["midi"]
     assert actualMIDI == midiObtained, "Out of order"
     
 def test_bad_json_formats():
-    JSON = """
-    {}
-    """
+    JSON = {}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "No Head"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'head'", "No Head"
         
-    JSON = """
-    {"head": {"cats":2, "dogs":3}}
-    """
+    JSON = {"head": {"cats":2, "dogs":3}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "No Subdivisions"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'subDivisions' from head", "No SubDivisions"
         
-    JSON = """
-    {"head": {"subDivisions":2, "dogs":3}}
-    """
+    JSON = {"head": {"subDivisions":2, "dogs":3}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "No Tempo"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'tempo' from head", "No Tempo"
         
-    JSON = """
-    {"head": {"subDivisions":65536, "tempo":120}}
-    """
+    JSON = {"head": {"subDivisions":65536, "tempo":120}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "too many Subdivisions"
     except MIDIError as exep:
         assert exep.message == "subDivisions is too large. Maximum value is 65535", "too many SubDivisions"
         
-    JSON = """
-    {"head": {"subDivisions":65535, "tempo":3}}
-    """
+    JSON = {"head": {"subDivisions":65535, "tempo":3}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "tempo too small"
     except MIDIError as exep:
         assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
         
-    JSON = """
-    {"head": {"subDivisions":65535, "tempo":0}}
-    """
+    JSON = {"head": {"subDivisions":65535, "tempo":0}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "tempo too small"
     except MIDIError as exep:
         assert exep.message == "tempo is too small. Minimum value is 4", "tempo too small"
         
-    JSON = """
-    {"head": {"subDivisions":0, "tempo":4}}
-    """
+    JSON = {"head": {"subDivisions":0, "tempo":4}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "subdivisions too small"
     except MIDIError as exep:
         assert exep.message == "subDivisions is too small. Minimum value is 1", "subDivisions too small"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4}}
-    """
+    JSON = {"head": {"subDivisions":1, "tempo":4}}
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no tracks"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'tracks'", "no tracks"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [{"notes":[{"pos":0, "length":0, "pitch":0}]}]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no instrument"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'instrument' from track", "no instrument"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no notes"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'notes' from track", "no notes"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":-1,
                  "notes": [
                  
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "bad instrument"
     except MIDIError as exep:
         assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":128,
                  "notes": [
                  
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "bad instrument"
     except MIDIError as exep:
         assert exep.message == "Invalid instrument number. Must be in range of 0 to 127", "bad instrument"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no position"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'pos' from notes", "no position"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no length"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'length' from notes", "no length"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0, "length":96}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "no note"
     except MIDIError as exep:
         assert exep.message == "Invalid Jingle JSON format. Missing 'pitch' from notes", "no note"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0, "length":96, "pitch":-1}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "bad note"
     except MIDIError as exep:
         assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0, "length":96, "pitch":128}
                  ]}
             ]}
-    """
     try:
         getMIDI(JSON)
-        assert False, "bad note"
+        assert False, "bad note"["midi"]
     except MIDIError as exep:
         assert exep.message == "Invalid note number. Must be in range of 0 to 127", "bad note"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":-1, "length":96, "pitch":0}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "bad position"
     except MIDIError as exep:
         assert exep.message == "Invalid pos. Must not be negative", "bad position"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0, "length":-1, "pitch":0}
                  ]}
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "bad length"
     except MIDIError as exep:
         assert exep.message == "Invalid length. Must not be negative", "bad length"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
@@ -713,15 +663,13 @@ def test_bad_json_formats():
                  ]
                 }
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "too many tracks"
     except MIDIError as exep:
         assert exep.message == "Too many tracks. Maximum number of tracks is 15", "too many tracks"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
@@ -799,24 +747,21 @@ def test_bad_json_formats():
                  ]
                 }
             ]}
-    """
     try:
-        getMIDI(JSON)
+        getMIDI(JSON)["midi"]
         assert False, "just bad"
     except MIDIError as exep:
         assert exep.message == "A delta value was too big. The maximum difference in position values is 268,435,455 subdivisions", "just bad"
         
-    JSON = """
-    {"head": {"subDivisions":1, "tempo":4},
+    JSON = {"head": {"subDivisions":1, "tempo":4},
      "tracks": [
                 {"instrument":0,
                  "notes": [
                     {"pos":0, "length":268435455, "pitch":0}
                  ]}
             ]}
-    """
     try:
-        midi = getMIDI(JSON)
+        midi = getMIDI(JSON)["midi"]
         assert True, "pass test"
     except MIDIError as exep:
         assert False, "pass test"
