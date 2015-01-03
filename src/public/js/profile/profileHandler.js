@@ -51,7 +51,7 @@ var userData = function(response) {
 var unknownUser = function() {
     $('#unknown-profile-modal').modal('show');
     $('#unknown-profile-button').click(function() {
-        location.href="http://jinglr-music.appspot.com/dashboard";
+        location.href=window.location.protocol + '//' + window.location.host + '/dashboard';
     })
 }
 var profileUpdated = function(response) {
@@ -73,7 +73,7 @@ var writeToTable = function(table, response) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
-            $(table).append('<tr><td> <a href="http://jinglr-music.appspot.com/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td><td><a href="http://jinglr-music.appspot.com/web/users/' + response[i].author + '">' + response[i].username + '</a></td><td>'+ response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
+            $(table).append('<tr><td> <a href="/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td><td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td><td>'+ response[i].tags + "</td><td>" + response[i].genre + "</td></tr>");
         }
     }
 }

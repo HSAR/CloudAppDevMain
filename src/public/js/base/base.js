@@ -22,7 +22,7 @@ var connectionFailure = function() {
 };
 
 var getCurrentUser = function(cb, error) {
-	commonAjax('http://jinglr-music.appspot.com/api/users/self', cb, error);
+	commonAjax(window.location.protocol + '//' + window.location.host + '/api/users/self', cb, error);
 };
 
 var commonAjax = function(url, cb, error) {

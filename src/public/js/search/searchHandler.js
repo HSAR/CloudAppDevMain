@@ -39,7 +39,7 @@ var showResults = function(response) {
     		$('#more-results').unbind('click');
     	}
 	    for (var i = 0; i < results.length; i++) {
-	        $('#results').append('<tr><td> <a href="http://jinglr-music.appspot.com/web/songs/' + results[i].jingle_id + '">' + results[i].title + '</a></td><td><a href="http://jinglr-music.appspot.com/web/users/' + results[i].author + '">' + results[i].username + '</a></td><td>'+ results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
+	        $('#results').append('<tr><td> <a href="/web/songs/' + results[i].jingle_id + '">' + results[i].title + '</a></td><td><a href="/web/users/' + results[i].author + '">' + results[i].username + '</a></td><td>'+ results[i].tags + "</td><td>" + results[i].genre + "</td></tr>");
 	    }
 	}
 }

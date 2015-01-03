@@ -9,7 +9,7 @@ function AjaxHandler() {
 	this.getToken = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/token',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/token',
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -28,7 +28,7 @@ function AjaxHandler() {
 	this.getTuneJSON = function(id,cb) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id,
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id,
 			dataType : 'JSON',
 			success : function(data) {
 				console.log(data);
@@ -49,7 +49,7 @@ function AjaxHandler() {
 		console.log(msg);
 		$.ajax({
 			type : 'PUT',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/notes',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/notes',
 			data : JSON.stringify(msg),
 			dataType : 'JSON',
 			error : this.handleError
@@ -59,7 +59,7 @@ function AjaxHandler() {
 		console.log(msg);
 		$.ajax({
 			type : 'DELETE',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/notes?actionId=' + msg.actionId +
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/notes?actionId=' + msg.actionId +
 			'&track=' + msg.trackId + '&noteId=' + msg.noteId,
 			error : this.handleError
 		});
@@ -68,7 +68,7 @@ function AjaxHandler() {
 		//asks the server to compile the tune into a midi file and send it back
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/midi',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/midi',
 			success : function(data) {
 				if(true) {
 					//TODO add some file validation here
@@ -85,7 +85,7 @@ function AjaxHandler() {
 		msg.action = 'instrumentEdit';
 		$.ajax({
 			type : 'PATCH',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/instruments',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/instruments',
 			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
@@ -99,7 +99,7 @@ function AjaxHandler() {
 
 		$.ajax({
 			type : 'PUT',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/instruments',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/instruments',
 			data  : JSON.stringify(msg),
 			success : function() {
 				//TODO
@@ -112,7 +112,7 @@ function AjaxHandler() {
 		console.log(msg);
 		$.ajax({
 			type : 'DELETE',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/instruments?action=instrumentRm&actionId=' +
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/instruments?action=instrumentRm&actionId=' +
 			msg.actionId + '&instrumentTrack=' + msg.instrumentTrack,
 			error : this.handleError
 		});
@@ -122,7 +122,7 @@ function AjaxHandler() {
 		msg.action = "tempo";
 		$.ajax({
 			type : 'PUT',
-			url : 'http://jinglr-music.appspot.com/api/songs/' + id + '/tempo',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/tempo',
 			data : JSON.stringify(msg),
 			error : this.handleError
 		});
@@ -130,7 +130,7 @@ function AjaxHandler() {
 
 	this.sendInvite = function(id,uid) {
 		$.ajax({
-			url : 'http://jinglr-music.appspot.com/api/users/' + uid + '/invites/' + id,
+			url : window.location.protocol + '//' + window.location.host + '/api/users/' + uid + '/invites/' + id,
 			type : 'PUT'
 		});
 	}
@@ -138,7 +138,7 @@ function AjaxHandler() {
 	this.getUsers = function(id) {
 		$.ajax({
 			type : 'GET',
-			url : 'http://jinglr-music.appspot.com/api/users',
+			url : window.location.protocol + '//' + window.location.host + '/api/users',
 			success : function(data) {
 				pageData.users = JSON.parse(data);
 			}

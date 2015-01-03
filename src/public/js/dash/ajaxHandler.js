@@ -15,7 +15,7 @@ function AjaxHandler() {
 	this.createJingle = function(title, genre, tags, cb, error) {
 		$.ajax({
 			type : 'PUT',
-			url : 'http://jinglr-music.appspot.com/api/songs',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs',
 			data : JSON.stringify({ title: title, genre: genre, tags: tags }),
 			dataType  : 'JSON',
 			success : function(data) {
@@ -26,9 +26,9 @@ function AjaxHandler() {
 	}
 
 	var requesturls = { 
-		songs: 'http://jinglr-music.appspot.com/api/users/self/songs',
-		collabs: 'http://jinglr-music.appspot.com/api/users/self/collabs',
-		invites: 'http://jinglr-music.appspot.com/api/users/self/invites' 
+		songs: window.location.protocol + '//' + window.location.host + '/api/users/self/songs',
+		collabs: window.location.protocol + '//' + window.location.host + '/api/users/self/collabs',
+		invites: window.location.protocol + '//' + window.location.host + '/api/users/self/invites' 
 	}
 }
 
