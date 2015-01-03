@@ -473,16 +473,27 @@ def updateUser(uid, data):
 #or on success:
 #    {"userKey" : key}
 #userKey is the JinglrUser entity key for the updated user entity
-def addCollabInvite(username, jid):
+def addCollabInvite(uid, jid):
     
     jingle = getJingleById(jid)
     if not jingle:
         return {"errorMessage" : "Invalid Jingle"}
+
+    if uid in jingle.collab_users:
+        return {"errorMessage" : "This user is already collaborating on " +
+                   "this jingle"}
+
+    if uid == jingle.author:
+        return {"errorMessage" : "You cannot invite yourself to collaborate"}
     
     @ndb.transactional
     def addCollabInviteInternal():
-        user = getUserByUsername(username)
+        user = getUserById(uid)
         if user:
+            if jid in user.collab_invites:
+                return {"errorMessage" : "This user has already been invited"+
+                            " to collaborate on this jingle"}
+            
             user.collab_invites.append(jid)
             user_key = user.put()
             

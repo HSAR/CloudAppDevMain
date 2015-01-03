@@ -224,8 +224,7 @@ class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
         elif not permission.jingle_owner(jid):
             return error.respond(401, "You are not authorised to invite a collaborator to this jingle")
         else:
-            username = datastore.getUsernameByUID(uid)
-            result = datastore.addCollabInvite(username, jid)
+            result = datastore.addCollabInvite(uid, jid)
             if 'errorMessage' in result:
                 return error.respond(500, result['errorMessage'])
             else:
