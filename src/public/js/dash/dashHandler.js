@@ -25,10 +25,11 @@ var collabSongs = function(response) {
 
 var invitedSongs = function(response) {
     if (!response || response[0] == null) {
-        $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td></tr>');
+        $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
-            $('#inviteTable').append('<tr><td>' + response[i].title +'</td>'
+            $('#inviteTable').append(
+                '<tr><td>' + response[i].title +'</td>'
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>'
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + response[i].genre + '</td>'
@@ -63,10 +64,10 @@ var writeToTable = function(table, response) {
         for (var i = 0; i < response.length; i++) {
             var staticPlayer = new StaticPlayer();
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
-            $(table).append('<tr><td> <a href="/web/songs/' + response[i].jingle_id + '">' + response[i].title 
-                + '</a></td><td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td><td>'
-                + response[i].tags + "</td><td>" 
-                + response[i].genre + "</td>"
+            $(table).append('<tr><td> <a href="/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td>' 
+                + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>' 
+                + '<td>' + response[i].tags + '</td>'
+                + '<td>' + response[i].genre + '</td>'
                 + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
             staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
         }
