@@ -398,9 +398,11 @@
 		htmlToAppend += '</div>';
 		$('.canvas').append(htmlToAppend);
 
+
 		$('.remove-tab-button').click(function() {
 			deleteInstrument(parseInt($(this).attr('id').substring(10), 10));//get index of track
 		});
+		$('.tab-pane').eq(0).show();
 	}
 
 	function loadBars($target) {
