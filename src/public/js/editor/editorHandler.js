@@ -269,17 +269,12 @@
 
 	function loadMidi(data) {
 		if(MIDI) {
-			MIDI.Player.loadFile('data:audio/midi;base64,' + data,function() {//stick file format on front of data
+			MIDI.Player.loadFile('data:audio/midi;base64,' + data.midi,function() {//stick file format on front of data
 				var instruments = [];
-				for(var i = 0; i < tuneJSON.tracks.length; i++) {
-					if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-						instruments.push(tuneJSON.tracks[i].instrument);
-					}
-				}
 
 				MIDI.loadPlugin({
 					soundfontUrl : '/public/soundfonts/',
-					instruments : instruments,
+					instruments : data.instruments,
 					callback : function() {
 						for(var i = 0; i < tuneJSON.tracks.length; i++) {
 							if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
