@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import logging
 
 import os
 import datetime
@@ -351,6 +352,24 @@ class ApiSongSidTokenHandler(webapp2.RequestHandler):
                 self.response.set_status(200)
 
 
+def Error404Handler(request, response, exception):
+    logging.exception(exception)
+    template_values = {
+    }
+    template = JINJA_ENVIRONMENT.get_template('templates/404.html')
+    response.write(template.render(template_values))
+    response.set_status(404)
+
+
+def Error500Handler(request, response, exception):
+    logging.exception(exception)
+    template_values = {
+    }
+    template = JINJA_ENVIRONMENT.get_template('templates/500.html')
+    response.write(template.render(template_values))
+    response.set_status(500)
+
+
 allowed_methods = webapp2.WSGIApplication.allowed_methods
 new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
@@ -381,4 +400,6 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/web/songs/<songid>', handler=WebSongsSidEditorHandler,
                                                         name='editor'),
                                       ], debug=True)
+application.error_handlers[404] = Error404Handler
+application.error_handlers[500] = Error500Handler
 					
