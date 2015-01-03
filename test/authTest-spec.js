@@ -40,5 +40,5 @@ describe('Authentication Tests', function () {
                 });
             });
         });
-    });
+    }, 50000 /*timeout*/);
 });
