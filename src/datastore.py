@@ -389,13 +389,12 @@ def createUser(uid, username):
         if existingUser:
             return {"errorMessage":"You have already registered an account"}
         
-        
         existingUser = getUserByUsername(username)
         
-        if existingUser:
-            return {"errorMessage":"That username has already been taken"}
-        
-        
+        while existingUser:
+            username = username + generate_id(size=4, chars=string.digits)
+            existingUser = getUserByUsername(username)
+
         ju = JinglrUser(parent=root_user_key,
                         id=uid,
                         user_id=uid, 
