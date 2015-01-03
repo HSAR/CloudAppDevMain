@@ -72,7 +72,7 @@ function AjaxHandler() {
 			success : function(data) {
 				if(true) {
 					//TODO add some file validation here
-					cb(data);
+					cb(JSON.parse(data));
 				} else {
 					//deal with error here
 				}

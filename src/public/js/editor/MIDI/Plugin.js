@@ -256,7 +256,14 @@ if (window.AudioContext || window.webkitAudioContext) (function () {
 	root.connect = function (conf) {
 		setPlugin(root);
 		//
-		MIDI.Player.ctx = ctx = new AudioContext();
+		if(typeof window.MIDIContext === 'undefined') {
+			MIDI.Player.ctx = ctx = new AudioContext();//create new context
+			window.MIDIContext = ctx;//save as global
+		} else {
+			MIDI.Player.ctx = ctx = window.MIDIContext;//use existing context
+			ctx.currentTime = 0;
+		}
+		
 		///
 		var urlList = [];
 		var keyToNote = MIDI.keyToNote;

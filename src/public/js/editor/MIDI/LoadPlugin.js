@@ -23,6 +23,8 @@ MIDI.loadPlugin = function(conf) {
 	if (typeof(conf) === "function") conf = {
 		callback: conf
 	};
+
+	
 	/// Get the instrument name.
 	var instruments = conf.instruments || conf.instrument || "acoustic_grand_piano";
 	if (typeof(instruments) !== "object") instruments = [ instruments ];

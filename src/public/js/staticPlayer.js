@@ -10,55 +10,51 @@ function StaticPlayer() {
 	this.loadFile = function(url) {
 		$.ajax({
 			url : url,
-			type : GET,
+			type : 'GET',
 			success : function(data) {
 				parsedData = JSON.parse(data);
-				this.compiledFile = parsedData.midi;
-				this.instruments = parsedData.instruments;
-				
+				handler.compiledFile = parsedData.midi;
+				handler.instruments = parsedData.instruments;
+				console.log(parsedData);
 			}
 		});
 	}
 
 	this.attach = function($target) {
-		$target.append(playerHTML);
+		$target.append(this.playerHTML);
 		$('button.fresh-button').click(function() {
 			handler.loadMidi(function(){
 				if(handler.ready && (!MIDI.Player.playing)) {//if we have something to play and not already playing
 					handler.ready = false;//reset ready flag
-				if(MIDI.Player.endTime === MIDI.Player.currentTime) {
-					MIDI.Player.stop();//reset to start
-					MIDI.Player.start();
-				} else if(MIDI.Player.currentTime > 0) {//if not at the start
-					MIDI.Player.resume();
-				} else {
-					MIDI.Player.start();
+					MIDI.Player.stop();//cancel anything already playing
+					MIDI.Player.start();//and begin playback
 				}
 				
-			}
+				
 			});
-			
 		});
+			
 		$('button.play-button').removeClass("fresh-button");//remove tag used to identify new button
 	}
 
 	this.loadMidi = function(cb) {//internal method called on play button click
 		if(MIDI) {
+			console.log(this);
 			MIDI.Player.loadFile('data:audio/midi;base64,' + this.compiledFile,function() {
 				MIDI.loadPlugin({
 					soundfontUrl : '/public/soundfonts/',
 					instruments : this.instruments,
 					callback : function() {
-						for(var i = 0; i < this.instruments.length; i++) {
+						for(var i = 0; i < handler.instruments.length; i++) {
 							
 							if(i < 9) {
-								MIDI.programChange(i,instruments[i]);
+								MIDI.programChange(i,handler.instruments[i]);
 							} else {
-								MIDI.programChange(i + 1,instruments[i]);
+								MIDI.programChange(i + 1,handler.instruments[i]);
 							}
 							
 						}
-						this.ready = true;
+						handler.ready = true;
 						cb();
 					}
 				});

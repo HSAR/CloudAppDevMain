@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="/public/js/dash/ajaxHandler.js"></script>
 	<script type="text/javascript" src="/public/js/dash/dashHandler.js"></script>
 	<link rel="stylesheet" type="text/css" href="/public/css/dashboard/dashboard.css" />
+	{% include "/templates/midiScripts.html" %}
 {% endblock %}
 {% block content %}
 <!-- upper section -->
@@ -38,7 +39,7 @@
 			<div class="panel-body">
 				<table class="table table-striped" id="ownedTable">
 					<thead>
-						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th><th>Preview</th></tr>
 					</thead>
 					<tbody>
 					</tbody>
