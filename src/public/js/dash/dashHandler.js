@@ -32,8 +32,8 @@ var invitedSongs = function(response) {
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>'
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + response[i].genre + '</td>'
-                + '<td><button class="accept-button" type="button" value="'+ response[i].jingle_id +'">Accept</button></td>'
-                + '<td><button class="reject-button" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
+                + '<td><button class="accept-button btn btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
+                + '<button class="reject-button btn btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
             );
         }
 
@@ -49,11 +49,11 @@ var invitedSongs = function(response) {
 }
 
 var acceptedInvite = function() {
-    console.log("accepted");
+    location.reload(); //todo update the tables, show confirmation
 }
 
 var rejectedInvite = function() {
-    console.log("rejected");
+    location.reload(); //todo update the tables, show confirmation
 }
 
 var writeToTable = function(table, response) {

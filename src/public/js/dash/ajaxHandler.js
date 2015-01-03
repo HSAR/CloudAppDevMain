@@ -25,10 +25,10 @@ function AjaxHandler() {
 		});
 	}
 
-	this.respondToInvite = function(jingleId, accept, cb, error) {
+	this.respondToInvite = function(jingleId, response, cb, error) {
 		$.ajax({
 			type : 'DELETE',
-			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId + '?accept=' + accept,
+			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId + '?response=' + response,
 			success : function(data) {
 				cb(data);
 			}
