@@ -28,9 +28,7 @@ function AjaxHandler() {
 	this.respondToInvite = function(jingleId, accept, cb, error) {
 		$.ajax({
 			type : 'DELETE',
-			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId,
-			data: { accept: accept },
-			dataType : 'JSON',
+			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId + '?accept=' + accept,
 			success : function(data) {
 				cb(data);
 			}

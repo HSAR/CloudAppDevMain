@@ -39,11 +39,11 @@ var invitedSongs = function(response) {
 
         $(".accept-button").click(function() {
             console.log($(this).val());
-            ajax.respondToInvite($(this).val(), "true", acceptedInvite);
+            ajax.respondToInvite($(this).val(), true, acceptedInvite);
         });
 
         $(".reject-button").click(function() {
-            ajax.respondToInvite($(this).val(), "false", rejectedInvite);
+            ajax.respondToInvite($(this).val(), false, rejectedInvite);
         });
     }
 }
