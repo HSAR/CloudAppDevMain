@@ -595,6 +595,7 @@ def createJingle(uid, title, genre=None, tags=None):
     jingle_json['tracks'] = []
     for i in range(0,15):
         jingle_json['tracks'].append({})
+    jingle_json['tracks'][0] = {'instrument':0, 'notes':[]}
     jingle.jingle = jingle_json
     
     jingle.collab_users = []
