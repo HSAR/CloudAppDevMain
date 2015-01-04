@@ -19,7 +19,7 @@ var init = function() {
     //if user is viewing own profile, allow editing
     if (currentUserEntity.user_id === path) {
         $('button.edit-button').removeClass('no-display').click(function() {
-            $('.profile-edit').removeClass('no-display');//display the prifle editor
+            $('.profile-edit').removeClass('no-display');//display the profle editor
         });
 
         $('textarea').attr('readonly',false);
@@ -40,8 +40,14 @@ var isFormUpdated = function() {
     }
 
     if (newData) {
-        ajax.updateProfile(path, newData);
+        ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
+    } else {
+        $('.profile-edit').addClass("no-display");//hide profile editor
     }
+}
+
+var profileUpdated = function() {
+    ajax.getUser(path, userData, unknownUser);
     $('.profile-edit').addClass("no-display");//hide profile editor
 }
 
@@ -80,14 +86,19 @@ var unknownUser = function() {
 }
 
 var ownedSongs = function(response) {
-    writeToTable(songTables.owned, response);
+    writeToTable('#ownedTable', response);
 }
 
 var collabSongs = function(response) {
-    writeToTable(songTables.collab, response);
+    writeToTable('#collabTable', response);
 }
 
 var writeToTable = function(table, response) {
+    var songTableEmptyMessage = {
+        '#ownedTable': 'User has not created any songs',
+        '#collabTable': 'User has not contributed to any songs',
+    }
+
     if (!response || response[0] == null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
@@ -104,19 +115,11 @@ var writeToTable = function(table, response) {
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
                 + '<td>' + resultDate.toLocaleDateString() + '<td>'
-                + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
+                + "<td class='preview" + response[i].jingle_id + "'></td></tr>"
+            );
             staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
         }
     }
 }
 
-var songTables = {
-    owned: '#ownedTable',
-    collab: '#collabTable',
-    invites: '#inviteTable'
-}
 
-var songTableEmptyMessage = {
-    '#ownedTable': 'User has not created any songs',
-    '#collabTable': 'User has not contributed to any songs',
-}
