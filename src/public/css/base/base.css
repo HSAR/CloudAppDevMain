@@ -50,7 +50,7 @@ footer {
     left:       0;
     height:     100%;
     width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
+    background: rgba( 220, 220, 220, .9 ) 
                 url('/public/img/ajax-loader.gif') 
                 50% 50% 
                 no-repeat;
