@@ -139,12 +139,12 @@ function MidiHandler() {
 	
 	this.convertPitchToIndex = function(pitch) {
 		//takes a midi pitch number and converts it to index of pitch div in dom
-		var index = 35 - (pitch - startingPitch);
+		var index = 36 - (pitch - startingPitch);
 		return index;
 	}
 
 	this.convertIndexToPitch = function(index) {
-		return (35 - index) + startingPitch;
+		return (36 - index) + startingPitch;
 	}
 
 	this.writeKey = function() {
