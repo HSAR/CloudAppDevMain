@@ -369,6 +369,7 @@ def resumeSearch(cursor):
 
     jingleDicts = []
     for jingle in results:  # results
+        jingle.username = getUsernameByUID(jingle.author)
         username_list = []
         for user_id in jingle.collab_users:
             username_list.append(getUsernameByUID(user_id))
