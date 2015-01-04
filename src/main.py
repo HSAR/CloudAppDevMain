@@ -92,13 +92,17 @@ def Error500Handler(request, response, exception):
     response.write(template.render(template_values))
     response.set_status(500)
 
+class FiveHundredTestHandler(webapp2.RequestHandler):
+    def get(self, key):
+        raise runtime.DeadlineExceededError
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
                                           webapp2.Route(r'/api/uid', handler=UserHandler, name='uid'),
-                                          webapp2.Route(r'/api/logout', handler=LogoutLinkHandler, name='logout'),
                                           webapp2.Route(r'/search', handler=SearchPageHandler, name='search'),
                                           webapp2.Route(r'/dashboard', handler=DashPageHandler, name='dashboard'),
+                                          webapp2.Route(r'/fivehundred', handler=FiveHundredTestHandler,
+                                                        name='fivehundred'),
                                       ], debug=True)
 application.error_handlers[404] = Error404Handler
 application.error_handlers[500] = Error500Handler
