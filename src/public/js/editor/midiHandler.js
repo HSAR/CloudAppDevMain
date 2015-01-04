@@ -149,7 +149,7 @@ function MidiHandler() {
 
 	this.writeKey = function() {
 		htmlString = '<div class="key">';
-		for(var i = 0; i < 36; i++) {
+		for(var i = 0; i < 37; i++) {
 			var pitch;
 			var note;
                         if(i == 0) {

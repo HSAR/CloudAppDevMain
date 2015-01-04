@@ -879,8 +879,8 @@
 	    return new Array( num + 1 ).join( this );
 	}
 
-	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
-	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
+	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(37) + '</div>';
+	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(37) + '</div>';
 	
 
 	
