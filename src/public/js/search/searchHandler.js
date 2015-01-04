@@ -9,7 +9,7 @@ var init = function() {
   $('#search-query').val(query);
   $('a.sort-link').click(function() {
     var sortRule = $(this).attr('id').substring(5);//get what to sort by
-    ajax.search(query,sortRule,token,showResults);//update results to be sorted in specified way
+    ajax.search(query,sortRule,null,showResults);//update results to be sorted in specified way
   });
 	ajax.search(query, sort, token, showResults);
 
