@@ -15,7 +15,16 @@ function AjaxHandler() {
 		$.ajax({
 			type : 'PATCH',
 			url : window.location.protocol + '//' + window.location.host + '/api/users/' + uid,
-			data : JSON.stringify(data)
+			data : JSON.stringify(data),
+			contentType : 'application/json',
+			success : function(data) {
+				console.log("success");
+				console.log(data);
+			},
+			error : function(data) {
+				console.log("failure");
+				console.log(data);
+			}
 		});
 	}
 }
