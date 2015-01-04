@@ -61,34 +61,6 @@ class DashPageHandler(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class TemplatePageHandler(webapp2.RequestHandler):
-    def get(self):
-        template_values = {
-            'name': "Generic User",
-        }
-        template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-        self.response.write(template.render(template_values))
-
-
-class JsonTestHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
-        obj = {
-            'test': 'success',
-        }
-        self.response.out.write(json.dumps(obj))
-
-
-class JsonParameterTestHandler(webapp2.RequestHandler):
-    def get(self, key):
-        value = self.request.get('value')
-        self.response.headers['Content-Type'] = 'application/json'
-        obj = {
-            key: value
-        }
-        self.response.out.write(json.dumps(obj))
-
-
 class UserHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
@@ -117,11 +89,6 @@ class LogoutLinkHandler(webapp2.RequestHandler):
             return error.respond(401, "You are not signed in")
 
 
-class FiveHundredTestHandler(webapp2.RequestHandler):
-    def get(self, key):
-        raise runtime.DeadlineExceededError
-
-
 def Error404Handler(request, response, exception):
     logging.exception(exception)
     template_values = {
@@ -146,12 +113,6 @@ application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/api/logout', handler=LogoutLinkHandler, name='logout'),
                                           webapp2.Route(r'/search', handler=SearchPageHandler, name='search'),
                                           webapp2.Route(r'/dashboard', handler=DashPageHandler, name='dashboard'),
-                                          webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
-                                          webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
-                                          webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler,
-                                                        name='jsonParameterTest'),
-                                          webapp2.Route(r'/fivehundred', handler=FiveHundredTestHandler,
-                                                        name='fivehundred'),
                                       ], debug=True)
 application.error_handlers[404] = Error404Handler
 application.error_handlers[500] = Error500Handler
