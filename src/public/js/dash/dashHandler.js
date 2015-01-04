@@ -12,7 +12,7 @@ var init = function() {
     });
 
     if(currentUserEntity) {
-        var tags = currentUserEntity.tags.split(',');
+        var tags = currentUserEntity.tags;
         for(var i = 0; i < tags.length; i++) {
             var htmlToAppend = '<li><i class="glyphicon glyphicon-flash"></i><a href="'
             + window.location.protocol + '//' + window.location.host + '/search?tag=' + tags[i].trim()
@@ -61,7 +61,7 @@ var latestSongs = function(response) {
     for (var i = 0; i < response.length && i<5; i++) {
             var staticPlayer = new StaticPlayer();
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
-            $('.new-tune-table').append('<tr><td>' + response[i].title + '</td>' 
+            $('.new-tune-table tbody').append('<tr><td>' + response[i].title + '</td>' 
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>' 
                 + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
             staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
