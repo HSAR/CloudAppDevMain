@@ -114,7 +114,7 @@ var writeToTable = function(table, response) {
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>' 
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
-                + '<td>' + resultDate.toLocaleDateString() + '<td>'
+                + '<td>' + resultDate.toLocaleDateString() + '</td>'
                 + "<td class='preview" + response[i].jingle_id + "'></td></tr>"
             );
             staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
