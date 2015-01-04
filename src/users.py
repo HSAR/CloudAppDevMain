@@ -229,7 +229,7 @@ class ApiUserUidInvitesSidHandler(webapp2.RequestHandler):
     def put(self, uid, jid):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
-        elif not permission.jingle_owner(jid):
+        elif not permission.can_edit_song(jid):
             return error.respond(401, "You are not authorised to invite a collaborator to this jingle")
         else:
             result = datastore.addCollabInvite(uid, jid)
