@@ -106,7 +106,7 @@ var writeToTable = function(table, response) {
             var resultDate = new Date(response[i].date_created * 1000);
             var resultGenre = response[i].genre;
           	if (resultGenre === null) {
-          		resultGenre = "";
+          		resultGenre = new String("");
          	 }
             var staticPlayer = new StaticPlayer();
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');

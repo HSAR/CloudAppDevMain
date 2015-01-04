@@ -51,7 +51,7 @@ var showResults = function(response) {
           var resultDate = new Date(results[i].date_created * 1000);
           var resultGenre = results[i].genre;
           if (resultGenre === null) {
-          	resultGenre = "";
+          	resultGenre = new String("");
           }
           $('#results tbody').append(
                 '<tr><td>' + results[i].title + '</td>'
