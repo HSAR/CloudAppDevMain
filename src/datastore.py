@@ -307,7 +307,7 @@ def completeUsername(partialName):
 # be searched. Note that only prefix matching will be performed, and only on
 # the song name. Returns (results, cursor, more) where cursor is what's passed
 # to resumeSearch and more is a flag true if there are more pages
-def searchJingle(jingle, sort, isAnd, descending):
+def searchJingle(jingle, sort, isAnd, descending, token = None):
     # Set the sort
     if "title" in jingle:
         sort = Jingle.title  # limitation of datastore
@@ -349,27 +349,13 @@ def searchJingle(jingle, sort, isAnd, descending):
         jingle_query = Jingle.query(combineFunction(*query)).order(sort,
                                                                    Jingle.key)
 
-    results, cursor, more = jingle_query.fetch_page(10)
+    if token:
+        results, cursor, more = jingle_query.fetch_page(10, start_cursor=token)
+    else:
+        results, cursor, more = jingle_query.fetch_page(10)
 
     jingleDicts = []
 
-    for jingle in results:  # results
-        jingle.username = getUsernameByUID(jingle.author)
-        username_list = []
-        for user_id in jingle.collab_users:
-            username_list.append(getUsernameByUID(user_id))
-        jingle.collab_usernames = username_list
-        jingleDicts.append(getJingleDict(jingle, False))
-
-    return jingleDicts, cursor, more
-
-
-# Resume search by passing a cursor (second item in returned tuple from search)
-# Returns same as searchJingle
-def resumeSearch(token):
-    results, cursor, more = Jingle.query().fetch_page(10, start_cursor=token)
-
-    jingleDicts = []
     for jingle in results:  # results
         jingle.username = getUsernameByUID(jingle.author)
         username_list = []

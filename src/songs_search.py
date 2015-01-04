@@ -33,9 +33,10 @@ class SearchPageHandler(webapp2.RequestHandler):
         descending = self.request.get("descending", default_value=None)
         descendingBool = True if descending == "true" else False
         if token:
-            results, cursor, more = datastore.resumeSearch(Cursor(
-                urlsafe=token))
-        elif query:
+            cursorObj = Cursor(urlsafe=token)
+        else:
+            cursorObj = None
+        if query:
             jingle = {"title": query, "author": query, "genre": query, "tags":
                 query}
             if tag:
@@ -43,11 +44,13 @@ class SearchPageHandler(webapp2.RequestHandler):
             if sort:
                 results, cursor, more = datastore.searchJingle(jingle, sort,
                                                               False,
-                                                              descendingBool)
+                                                              descendingBool,
+                                                              cursorObj)
             else:
                 results, cursor, more = datastore.searchJingle(jingle, "title",
                                                               False,
-                                                              descendingBool)
+                                                              descendingBool,
+                                                              cursorObj)
         else:
             jingle = {}
             if tag:
@@ -55,11 +58,13 @@ class SearchPageHandler(webapp2.RequestHandler):
             if sort:
                 results, cursor, more = datastore.searchJingle(jingle, sort,
                                                               False,
-                                                              descendingBool)
+                                                              descendingBool,
+                                                              cursorObj)
             else:
                 results, cursor, more = datastore.searchJingle(jingle, "title",
                                                               False,
-                                                              descendingBool)
+                                                              descendingBool,
+                                                              cursorObj)
         response = {"results": results, "token": (cursor.urlsafe() if cursor
                                                   else None), "more": more}
         self.response.headers['Content-Type'] = 'application/json'
