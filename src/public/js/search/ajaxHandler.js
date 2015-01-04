@@ -1,7 +1,7 @@
 function AjaxHandler() {
 	this.search = function(query, sort, token, tag, cb, error) {
 		var data = {};
-		if (tags) {
+		if (tag) {
 			data.tag = tag;
 		} else {
 			data.query = query;
