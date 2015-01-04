@@ -107,8 +107,6 @@ def getUserDict(user, all_fields=True):
     for property in keys:
         if hasattr(user, property):
             value = getattr(user, property)
-            if value:
-                value = cgi.escape(value)
             dict[property] = value
     return dict
 
@@ -127,8 +125,6 @@ def getJingleDict(jingle, json=True):
     for property in keys:
         if hasattr(jingle, property):
             value = getattr(jingle, property)
-            if value:
-                value = cgi.escape(value)
             dict[property] = value
 
     date = jingle.date_created
