@@ -3,7 +3,6 @@ function StaticPlayer() {
 	this.playerHTML = '<div class="playback-panel"><button class="play-button fresh-button"><span class="glyphicon glyphicon-play"></span></button>';
 	this.compiledFile = null;
 	this.instruments = null;
-	this.instrumentNumbers = null;//holds copy of instrument array as originial is changed by midi compiler
 	this.ready = false;//whether player is ready to play
 
 	var handler = this;//to refer to class inside event scope
@@ -16,7 +15,7 @@ function StaticPlayer() {
 				parsedData = JSON.parse(data);
 				handler.compiledFile = parsedData.midi;
 				handler.instruments = parsedData.instruments;
-				handler.instrumentNumbers = parsedData.instruments.slice();
+				
 				console.log(parsedData);
 			}
 		});
@@ -42,18 +41,21 @@ function StaticPlayer() {
 
 	this.loadMidi = function(cb) {//internal method called on play button click
 		if(MIDI) {
-			console.log(this);
+			var instruments = [];
+			for(var i = 0; i < handler.instruments.length; i++) {
+				instruments.push(handler.instruments[i].instrument);
+			}
 			MIDI.Player.loadFile('data:audio/midi;base64,' + this.compiledFile,function() {
 				MIDI.loadPlugin({
 					soundfontUrl : '/public/soundfonts/',
-					instruments : handler.instruments,
+					instruments : instruments,
 					callback : function() {
 						for(var i = 0; i < handler.instruments.length; i++) {
-							
-							if(i < 9) {
-								MIDI.programChange(i,handler.instrumentNumbers[i]);
+							var trackNum = handler.instruments[i].track;
+							if(trackNum < 9) {
+								MIDI.programChange(trackNum,handler.instruments[i].instrument);
 							} else {
-								MIDI.programChange(i + 1,handler.instrumentNumbers[i]);
+								MIDI.programChange(trackNum + 1,handler.instruments[i].instrument);
 							}
 							
 						}

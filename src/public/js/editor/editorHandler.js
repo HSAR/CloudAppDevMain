@@ -271,19 +271,21 @@
 		if(MIDI) {
 			MIDI.Player.loadFile('data:audio/midi;base64,' + data.midi,function() {//stick file format on front of data
 				var instruments = [];
-
+				for(var i = 0; i < data.instruments.length; i++) {
+					instruments.push(data.instruments[i].instrument); 
+				}
 				MIDI.loadPlugin({
 					soundfontUrl : '/public/soundfonts/',
-					instruments : data.instruments,
+					instruments : instruments,
 					callback : function() {
-						for(var i = 0; i < tuneJSON.tracks.length; i++) {
-							if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-								if(i < 9) {
-									MIDI.programChange(i,tuneJSON.tracks[i].instrument);
-								} else {
-									MIDI.programChange(i + 1,tuneJSON.tracks[i].instrument);
-								}
+						for(var i = 0; i < data.instruments.length; i++) {
+							var trackNum = data.instruments[i].track;
+							if(trackNum < 9) {
+								MIDI.programChange(trackNum,data.instruments[i].instrument);
+							} else {
+								MIDI.programChange(trackNum + 1,data.instruments[i].instrument);//track 10 reserved so offset
 							}
+							
 						}
 						
 						pageData.compiledMidi = true;
