@@ -65,7 +65,7 @@ def getVLQ(delta):
 
 
 # function takes a jingle JSON and returns a dictionary in the form:
-# {"midi" : byte array, "instruments" : list of instrument numbers used in song}
+# {"midi" : byte array, "instruments" : [{"track":track, "instrument":instrument}]}
 # raises MIDIError if there is a problem creating the MIDI file
 def getMIDI(midi):
     instrument_list = []
@@ -149,7 +149,7 @@ def getMIDI(midi):
             if instrument < 0 or instrument > 127:
                 raise MIDIError("Invalid instrument number. Must be in range of 0 to 127")
 
-            instrument_list.append(instrument)
+            instrument_list.append({"track":currentChannel, "instrument":instrument})
             # here we actually set an instrument to the current channel
             setInstrumentEvent = bytearray([0, 192 + currentChannel, instrument])
             trackEvents.extend(setInstrumentEvent)
@@ -219,18 +219,18 @@ def getMIDI(midi):
     TRACK_END = bytearray([0x00, 0xFF, 0x2F, 0x00])
     trackEvents.extend(TRACK_END)
 
-    #now build up the complete track chunk
+    # now build up the complete track chunk
     trackChunk = TRACK_CHUNK_ID
 
     try:
-        #track chunk contains the length of the trackEvents as 4 bytes
+        # track chunk contains the length of the trackEvents as 4 bytes
         trackChunk.extend(numberToByteArray(len(trackEvents), 4))
     except MIDIError as exep:
         raise MIDIError("MIDI file too large. Maximum size is 4,294,967,295 bytes. (4 GB)")
 
     trackChunk.extend(trackEvents)
 
-    #now combine the header chunk and track chunk to make the midi file
+    # now combine the header chunk and track chunk to make the midi file
     midiFile = HEADER_CHUNK
     midiFile.extend(trackChunk)
 
@@ -238,8 +238,8 @@ def getMIDI(midi):
 
 
 # function converts a jingle JSON to a midi file encoded in base64 in a dict:
-#{"midi" : base64 encoded midi, "instruments" : list of instrument numbers used in song}
-#raises MIDIError if there is a problem creating the MIDI file
+# {"midi" : byte array, "instruments" : [{"track":track, "instrument":instrument}]}
+# raises MIDIError if there is a problem creating the MIDI file
 def getMIDIBase64(midiJSON):
     midiFile = getMIDI(midiJSON)
     midiEncoded = base64.b64encode(midiFile["midi"])
