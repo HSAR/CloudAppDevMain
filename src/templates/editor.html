@@ -35,7 +35,7 @@
 			<div class="row top-row">
 				
 				<div class="top-bar max-height">
-					<div class="col-xs-6">
+					<div class="col-md-6 col-xs-10">
 						<div class="control-buttons">
 							<button class="btn btn-primary invite-button">Invite friends</button>
 							<label for="tempo-select">Tempo :</label>
@@ -53,12 +53,12 @@
 							<button class="connection-button btn btn-warning">Connecting</button>
 						</div>	
 					</div>
-					<div class="col-xs-3">
+					<div class="col-xs-6 col-md-3">
 						<div class="progress">
 							<div class="progress-bar">No tune compiled</div>
 						</div>
 					</div>
-					<div class="col-xs-3">
+					<div class="col-xs-6 col-md-3">
 						<div class="playback-panel">
 								
 							<button class="play-button"><span class="glyphicon glyphicon-play"></span></button>
@@ -70,8 +70,9 @@
 				</div>
 				
 			</div>
+			<div class="row"></div><!-- spare row to hold overflow of top bar for small screens -->
 			<div class="row main-row">
-				<div class="col-xs-2 no-right-padding max-height">
+				<div class="col-xs-3 col-md-2 no-right-padding max-height">
 					<div class="bordered palette">
 						<div class="note note-crotchet half-spaced">
 							<img src="/public/img/quarter_note.png" class="img img-responsive"></img>
@@ -89,7 +90,7 @@
 						<button class="btn btn-primary add-bar-button half-spaced horizontal-centered">Add Bar</button>
 					</div>
 				</div>
-				<div class="col-xs-10 no-left-padding max-height"><div class="bordered canvas" role="tabpanel"></div></div>
+				<div class="col-xs-9 col-md-10 no-left-padding max-height"><div class="bordered canvas" role="tabpanel"></div></div>
 			</div>
 		</div>
 
