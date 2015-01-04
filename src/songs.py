@@ -41,7 +41,10 @@ class ApiSongHandler(webapp2.RequestHandler):
                     if 'tags' in parsed_request_json:
                         tags = parsed_request_json['tags']
                     result = datastore.createJingle(user_id, parsed_request_json['title'], genre, tags)
-                    self.response.set_status(200)
+                    if 'errorMessage' in result:
+                        return error.respond(500, result['errorMessage'])
+                    else:
+                        self.response.set_status(200)
         except ValueError:
             return error.respond(400, 'Invalid JSON in request body')
 

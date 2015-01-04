@@ -599,8 +599,11 @@ def removeCollab(uid, jid):
 #returns new jingle entity key once successful
 def createJingle(uid, title, genre=None, tags=None):
     gen_id = generate_id()
-
-    jingle = Jingle(id=gen_id, jingle_id=gen_id, title=stripHTML(title), author=uid)
+    title=stripHTML(title)
+    if title == "":
+        return {"errorMessage" : "You did not enter a song title"}
+    
+    jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
     if genre:
         jingle.genre = stripHTML(genre)
     if tags:
@@ -625,7 +628,8 @@ def createJingle(uid, title, genre=None, tags=None):
     result = None
     while True:
         try:
-            result = jingle.put()
+            key = jingle.put()
+            result = {"jingleKey" : key}
 
             map_name = gen_id + 'Map'
             jm = JinglrMap(id=map_name, jingle_id=gen_id, client_ids=[],
