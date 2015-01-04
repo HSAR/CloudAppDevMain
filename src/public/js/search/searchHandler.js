@@ -6,7 +6,7 @@ var ajax;
 
 var init = function() {
 	ajax = new AjaxHandler();
-	tag = getUrlParam('tags');
+	tag = getUrlParam('tag');
 	query = getUrlParam('query');
 	sort = getUrlParam('sort');
 	if (query) {
