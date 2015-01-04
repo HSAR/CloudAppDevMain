@@ -21,9 +21,11 @@ function AjaxHandler() {
 				console.log("success");
 				console.log(data);
 			},
-			error : function(data) {
+			error : function(data, something, something2) {
 				console.log("failure");
 				console.log(data);
+				console.log(something);
+				console.log(something2);
 			}
 		});
 	}
