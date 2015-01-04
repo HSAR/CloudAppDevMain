@@ -1,9 +1,17 @@
 function AjaxHandler() {
-	this.search = function(query, sort, token, cb, error) {
+	this.search = function(query, sort, token, tag, cb, error) {
+		var data = {};
+		if (tags) {
+			data.tag = tag;
+		} else {
+			data.query = query;
+		}
+		data.sort = sort;
+		data.token = token;
 		$.ajax({
 			type : 'GET',
 			url : window.location.protocol + '//' + window.location.host + '/api/songs/search',
-			data: { query: query, sort: sort, token: token },
+			data: data,
 			dataType : 'JSON',
 			success : function(data) {
 				cb(data);
