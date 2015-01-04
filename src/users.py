@@ -120,6 +120,10 @@ class ApiUserUidHandler(webapp2.RequestHandler):
                         if 'errorMessage' in result:
                             return error.respond(500, result['errorMessage'])
                         else:
+                            success_object = {
+                                'status': 'true',
+                            }
+                            self.response.write(json.dumps(success_object))
                             self.response.set_status(200)
                 except ValueError:
                     return error.respond(400, 'Invalid JSON in request body')

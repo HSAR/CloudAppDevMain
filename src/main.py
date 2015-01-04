@@ -68,19 +68,15 @@ class UserHandler(webapp2.RequestHandler):
 
 def Error404Handler(request, response, exception):
     logging.exception(exception)
-    template_values = {
-    }
     template = JINJA_ENVIRONMENT.get_template('templates/404.html')
-    response.write(template.render(template_values))
+    response.write(template.render())
     response.set_status(404)
 
 
 def Error500Handler(request, response, exception):
     logging.exception(exception)
-    template_values = {
-    }
     template = JINJA_ENVIRONMENT.get_template('templates/500.html')
-    response.write(template.render(template_values))
+    response.write(template.render())
     response.set_status(500)
 
 class FiveHundredTestHandler(webapp2.RequestHandler):

@@ -23,7 +23,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 
 class ApiSongHandler(webapp2.RequestHandler):
-    # this will eventually contain searching, I think
     def put(self):
         try:
             parsed_request_json = json.loads(self.request.body)
@@ -377,6 +376,8 @@ new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/api/songs', handler=ApiSongHandler,
+                                                        name='songs-root'),
+                                          webapp2.Route(r'/api/songs/recent', handler=ApiSongRecentHandler,
                                                         name='songs-root'),
                                           webapp2.Route(r'/api/songs/<songid>', handler=ApiSongSidHandler,
                                                         name='state-dump'),
