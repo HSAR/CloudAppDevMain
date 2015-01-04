@@ -3,7 +3,7 @@ function AjaxHandler() {
 		var data = {};
 		if (tag) {
 			data.tag = tag;
-		} else {
+		} else if (query) {
 			data.query = query;
 		}
 		data.sort = sort;
