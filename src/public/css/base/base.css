@@ -72,3 +72,8 @@ body.loading .loadingmodal {
   display: none;
 }
 
+button.profile-edit-button {
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+

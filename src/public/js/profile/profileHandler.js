@@ -9,7 +9,10 @@ var init = function() {
 
     //if user is viewing own profile, allow editing
     if (currentUserEntity.user_id === path) {
-        $('.profile-edit').removeClass('no-display');
+        $('button.edit-button').removeClass('no-display').click(function() {
+            $('.profile-edit').removeClass('no-display');//display the prifle editor
+        });
+
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
         $('#profile-update-submit').click(function() {
@@ -26,11 +29,12 @@ var init = function() {
 
             if (newData) {
                 ajax.updateProfile(path, newData, profileUpdated);
-            }        
+            }
+            $('.profile-edit').addClass("no-display");//hide profile editor        
         });
     } else {
         $('#profile-update-submit').hide();
-        $('.profile-read').removeClass('no-display');
+        
     }
 }
 
@@ -49,12 +53,22 @@ var userData = function(response) {
     oldData.bio = $("#bio-form").val()
     oldData.tags = $("#tags-form").val();
 
-    $('#bio-read-content').html(response.bio);
-    var tmp = new String(response.tags);
-    tags = tmp.split(',');
-    for(var i = 0; i < tags.length; i++) {
-        $('div#tags-area').append('<span class="label label-primary">' + tags[i] + '</span>');
+    if(!response.bio || response.bio === '') {//if undefined or empty
+         $('#bio-read-content').html('This Jinglr member has no biography');
+    } else {
+        $('#bio-read-content').html(response.bio);
     }
+    
+    if(!response.tags || response.tags === '') {//if undefined or empty
+         $('div#tags-area').append('<p>This Jinglr member has no favourite tags</p>');
+    } else {
+        var tmp = new String(response.tags);
+        tags = tmp.split(',');
+        for(var i = 0; i < tags.length; i++) {
+            $('div#tags-area').append('<span class="label label-primary">' + tags[i] + '</span>');
+        }
+    }
+    
 }
 
 var unknownUser = function() {

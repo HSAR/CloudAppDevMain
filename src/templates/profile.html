@@ -16,19 +16,9 @@
 
 <div class="row">
 	<div class="col-md-4">
-		<div class="profile-edit no-display">
-		<form id="profile-update">
-   		<label for="username-form">Username</label><br>
-  		<textarea id="username-form" readonly rows="1" cols="40"></textarea><br>
-   		<label for="bio-form">Bio</label><br>
-  		<textarea id="bio-form" readonly rows="4" cols="40"></textarea><br>
-	  	<label for="tags-form">Tags</label><br>
-		  <textarea id="tags-form" readonly rows="4" cols="40"></textarea><br>
-      <button  id="profile-update-submit" class="btn btn-primary">Edit</button>
-		</form>	
-	</div>
+		
 
-	<div class="profile-read no-display">
+	<div class="profile-read">
 		<div class="bio-read">
 			<h2>About me</h2>
 			<p id="bio-read-content"></p>
@@ -39,6 +29,20 @@
 		</div>	
 
 	</div>
+	<button class="btn-primary btn edit-button profile-edit-button no-display">Edit profile</button>
+
+	<div class="profile-edit no-display">
+		<form id="profile-update">
+   		<label for="username-form">Username</label><br>
+  		<textarea id="username-form" readonly rows="1" cols="40"></textarea><br>
+   		<label for="bio-form">Bio</label><br>
+  		<textarea id="bio-form" readonly rows="4" cols="40"></textarea><br>
+	  	<label for="tags-form">Tags</label><br>
+		  <textarea id="tags-form" readonly rows="4" cols="40"></textarea><br>
+      <button  id="profile-update-submit" class="btn btn-primary">Update</button>
+		</form>	
+	</div>
+
 	</div><!-- /span-3 -->
 
 	<div class="col-md-8">  	
