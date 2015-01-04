@@ -30,6 +30,8 @@ class SearchPageHandler(webapp2.RequestHandler):
         sort = self.request.get("sort", default_value=None)
         token = self.request.get("token", default_value=None)
         tag = self.request.get("tag", default_value=None)
+        descending = self.request.get("descending", default_value=None)
+        descendingBool = True if descending == "true" else False
         if token:
             results, cursor, more = datastore.resumeSearch(Cursor(
                 urlsafe=token))
@@ -40,20 +42,24 @@ class SearchPageHandler(webapp2.RequestHandler):
                 jingle["tags"] = tag
             if sort:
                 results, cursor, more = datastore.searchJingle(jingle, sort,
-                                                              False)
+                                                              False,
+                                                              descendingBool)
             else:
                 results, cursor, more = datastore.searchJingle(jingle, "title",
-                                                              False)
+                                                              False,
+                                                              descendingBool)
         else:
             jingle = {}
             if tag:
                 jingle["tags"] = tag
             if sort:
                 results, cursor, more = datastore.searchJingle(jingle, sort,
-                                                              False)
+                                                              False,
+                                                              descendingBool)
             else:
                 results, cursor, more = datastore.searchJingle(jingle, "title",
-                                                              False)
+                                                              False,
+                                                              descendingBool)
         response = {"results": results, "token": (cursor.urlsafe() if cursor
                                                   else None), "more": more}
         self.response.headers['Content-Type'] = 'application/json'
