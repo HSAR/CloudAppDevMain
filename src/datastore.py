@@ -11,6 +11,7 @@ import string
 import json
 from models import JinglrUser, Jingle, JinglrMap
 import logging
+import cgi
 
 import taskqueue_handlers
 
@@ -105,7 +106,10 @@ def getUserDict(user, all_fields=True):
     dict = {}
     for property in keys:
         if hasattr(user, property):
-            dict[property] = getattr(user, property)
+            value = getattr(user, property)
+            if value:
+                value = cgi.escape(value)
+            dict[property] = value
     return dict
 
 
@@ -122,7 +126,10 @@ def getJingleDict(jingle, json=True):
     dict = {}
     for property in keys:
         if hasattr(jingle, property):
-            dict[property] = getattr(jingle, property)
+            value = getattr(jingle, property)
+            if value:
+                value = cgi.escape(value)
+            dict[property] = value
 
     date = jingle.date_created
     epoch = datetime.datetime.utcfromtimestamp(0)
