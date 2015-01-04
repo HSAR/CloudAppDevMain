@@ -49,24 +49,8 @@
 		  </div>
 		</div>
 		<!-- /Navbar -->		
-		<div class="container content"> {% block content %}{% endblock %}</div>
+		<div class="container content" id="page-content"> {% block content %}{% endblock %}</div>
 		<div class="container footer"> {% block footer %}{% endblock %}</div>
 		<div class="loadingmodal"></div>
-		<div class="modal fade" id="connection-failure-modal">
-			<div class="modal-dialog">
-			    <div class="modal-content">
-			      	<div class="modal-header">
-				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				        <h4 class="modal-title">Connection Failure</h4>
-			      	</div>
-			      	<div class="modal-body">
-			        	<p>An error occured connecting to the server. Please try again</p>
-			      	</div>
-			      	<div class="modal-footer">
-				        <button type="button" id="connection-failure-button" class="btn btn-default">Refresh</button>
-			      	</div>
-			    </div><!-- /.modal-content -->
-		  	</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
 	</body>
 </html>

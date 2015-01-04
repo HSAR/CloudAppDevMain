@@ -3,23 +3,22 @@ var currentUserEntity;
 
 var setUser = function(response) {
     currentUserEntity = response;
-	if(!currentUserEntity) {
-		connectionFailureMessage();
-	} else {
-		$(".username").text(currentUserEntity.username);
-		$("#logout-url").attr("href", currentUserEntity.logout);
-		if (typeof init == 'function') { 
- 			init();
- 		}
+	$(".username").text(currentUserEntity.username);
+	$("#logout-url").attr("href", currentUserEntity.logout);
+	if (typeof init == 'function') { 
+		init();
 	}
+}
 
-};
-
-var connectionFailure = function() {
-	$('#connection-failure-modal').modal('show');
-	$('#connection-failure-button').click(function() {
-		location.reload();
-	})  
+var ajaxFailure = function(data) {
+	$('#page-content').prepend(
+			'<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
+	     	+ '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+	     	+ '<h4>An error occured</h4>'
+      		+ '<p>' + data.responseJSON.status + ': ' + data.responseJSON.message + '</p>'
+    		+ '<button class="btn btn-danger" onClick="location.reload();" type="button">Refresh</button>'
+	    	+ '</div>'
+		);
 };
 
 var getCurrentUser = function(cb, error) {
@@ -34,16 +33,16 @@ var commonAjax = function(url, cb, error) {
 		success : function(data) {
 			cb(data);
 		},
-		error: function() {
+		error: function(data) {
 			if (typeof error == 'function') { 
- 				error;
+ 				error(data);
  			}
  		}
 	});
 };
 
 $( document ).ready(function() {
-	getCurrentUser(setUser, connectionFailure);
+	getCurrentUser(setUser, ajaxFailure);
 });
 
 $(document).on({

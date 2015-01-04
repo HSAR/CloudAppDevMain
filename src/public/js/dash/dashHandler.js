@@ -2,13 +2,15 @@ var ajax;
 
 var init = function() {
 	ajax = new AjaxHandler();
-	ajax.getUserSongs(ownedSongs, connectionFailure);
-	ajax.getUserCollabs(collabSongs, connectionFailure);
-    ajax.getUserInvites(invitedSongs, connectionFailure);
-    ajax.getLatestSongs(latestSongs, connectionFailure);
+	ajax.getUserSongs(ownedSongs, ajaxFailure);
+	ajax.getUserCollabs(collabSongs, ajaxFailure);
+    ajax.getUserInvites(invitedSongs, ajaxFailure);
+    ajax.getLatestSongs(latestSongs, ajaxFailure);
     
     $("#createJingleButton").click(function() {
-        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, connectionFailure);
+        if ($("#title-form").val() !== "") {
+            ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
+        }
     });
 
     if(currentUserEntity) {
@@ -78,19 +80,19 @@ var latestSongs = function(response) {
 var songCreated = function() {
     $('#createJingleModal').modal('hide');
     $('#ownedTable > tbody').html("");
-    ajax.getUserSongs(ownedSongs, connectionFailure);
+    ajax.getUserSongs(ownedSongs, ajaxFailure);
 }
 
 var acceptedInvite = function() {
     $('#collabTable > tbody').html("");
     $('#inviteTable > tbody').html("");
-    ajax.getUserCollabs(collabSongs, connectionFailure);
-    ajax.getUserInvites(invitedSongs, connectionFailure);
+    ajax.getUserCollabs(collabSongs, ajaxFailure);
+    ajax.getUserInvites(invitedSongs, ajaxFailure);
 }
 
 var rejectedInvite = function() {
     $('#inviteTable > tbody').html("");
-    ajax.getUserInvites(invitedSongs, connectionFailure);
+    ajax.getUserInvites(invitedSongs, ajaxFailure);
 }
 
 var writeToTable = function(table, response) {

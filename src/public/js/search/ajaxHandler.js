@@ -15,8 +15,10 @@ function AjaxHandler() {
 			dataType : 'JSON',
 			success : function(data) {
 				cb(data);
+			},
+			error : function(data) {
+				error(data);
 			}
-			//failure case is fired every time for some reason, so removed
 		});
 	};
 }

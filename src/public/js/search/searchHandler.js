@@ -16,9 +16,9 @@ var init = function() {
 	}
 	$('a.sort-link').click(function() {
 		var sortRule = $(this).attr('id').substring(5);//get what to sort by
-		ajax.search(query, sortRule, null, tag, showResults);//update results to be sorted in specified way
+		ajax.search(query, sortRule, null, tag, showResults, ajaxFailure);//update results to be sorted in specified way
 	});
-	ajax.search(query, sort, token, tag, showResults);
+	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
 }
 
 function getUrlParam(parameter) {
@@ -73,5 +73,5 @@ var showResults = function(response) {
 }
 
 var showMore = function() {
-	ajax.search(query, sort, token, tag, showResults);
+	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
 }

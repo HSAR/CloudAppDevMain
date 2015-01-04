@@ -17,13 +17,15 @@ function AjaxHandler() {
 		commonAjax(requesturls.latest,cb,error);
 	}
 
-	this.createJingle = function(title, genre, tags, cb) {
+	this.createJingle = function(title, genre, tags, cb, error) {
 		$.ajax({
 			type : 'PUT',
 			url : window.location.protocol + '//' + window.location.host + '/api/songs',
 			data : JSON.stringify({ title: title, genre: genre, tags: tags }),
-			dataType  : 'JSON',
-			complete : cb
+			success : cb,
+			error : function(data) {
+				error(data);
+			}
 		});
 	}
 
@@ -33,6 +35,9 @@ function AjaxHandler() {
 			url : window.location.protocol + '//' + window.location.host + '/api/users/self/invites/' + jingleId + '?response=' + response,
 			success : function(data) {
 				cb(data);
+			},
+			error : function(data) {
+				error(data);
 			}
 		});
 	}

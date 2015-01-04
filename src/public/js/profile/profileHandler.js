@@ -12,9 +12,9 @@ var init = function() {
     path = path.split("/")[3];
 	ajax = new AjaxHandler();
 
-    ajax.getUser(path, userData, unknownUser);
-	ajax.getUserSongs(path, ownedSongs);
-	ajax.getUserCollabs(path, collabSongs);
+    ajax.getUser(path, userData, ajaxFailure);
+	ajax.getUserSongs(path, ownedSongs, ajaxFailure);
+	ajax.getUserCollabs(path, collabSongs, ajaxFailure);
 
     //if user is viewing own profile, allow editing
     if (currentUserEntity.user_id === path) {
@@ -77,13 +77,6 @@ var userData = function(response) {
         }
     }
     
-}
-
-var unknownUser = function() {
-    $('#unknown-profile-modal').modal('show');
-    $('#unknown-profile-button').click(function() {
-        location.href=window.location.protocol + '//' + window.location.host + '/dashboard';
-    })
 }
 
 var ownedSongs = function(response) {
