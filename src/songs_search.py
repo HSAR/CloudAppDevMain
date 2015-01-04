@@ -31,7 +31,7 @@ class SearchPageHandler(webapp2.RequestHandler):
         token = self.request.get("token", default_value=None)
         tag = self.request.get("tag", default_value=None)
         if token:
-            results, token, more = datastore.resumeSearch(Cursor(
+            results, cursor, more = datastore.resumeSearch(Cursor(
                 urlsafe=token))
         elif query:
             jingle = {"title": query, "author": query, "genre": query, "tags":
@@ -39,22 +39,22 @@ class SearchPageHandler(webapp2.RequestHandler):
             if tag:
                 jingle["tags"] = tag
             if sort:
-                results, token, more = datastore.searchJingle(jingle, sort,
+                results, cursor, more = datastore.searchJingle(jingle, sort,
                                                               False)
             else:
-                results, token, more = datastore.searchJingle(jingle, "title",
+                results, cursor, more = datastore.searchJingle(jingle, "title",
                                                               False)
         else:
             jingle = {}
             if tag:
                 jingle["tags"] = tag
             if sort:
-                results, token, more = datastore.searchJingle(jingle, sort,
+                results, cursor, more = datastore.searchJingle(jingle, sort,
                                                               False)
             else:
-                results, token, more = datastore.searchJingle(jingle, "title",
+                results, cursor, more = datastore.searchJingle(jingle, "title",
                                                               False)
-        response = {"results": results, "token": (token.urlsafe() if token
+        response = {"results": results, "token": (cursor.urlsafe() if cursor
                                                   else None), "more": more}
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(response, default=datetimejson))
