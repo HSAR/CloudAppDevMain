@@ -30,7 +30,7 @@ describe('Authentication Tests', function () {
                                 // expect to be correctly signed in
                                 return authedUser == "test@example.com";
                             });
-                        }, 5000);
+                        }, 10000);
     
                         // expect to have been redirected back onto the editor page
                         driver.getCurrentUrl().then(function (currURL) {
