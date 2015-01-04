@@ -11,9 +11,9 @@ var init = function() {
     if (currentUserEntity.user_id === path) {
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
-        $('#profile-update-submit').click(function(e) {
-        var newData = {};
-        if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+        $('#profile-update-submit').click(function() {
+            var newData = {};
+            if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
                 newData.username = $("#username-form").val();
             }
             if ($("#bio-form").val() !== oldData.bio) {
@@ -24,7 +24,7 @@ var init = function() {
             }
 
             if (newData) {
-                ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
+                ajax.updateProfile(path, newData, profileUpdated);
             }        
         });
     } else {
@@ -43,9 +43,9 @@ var userData = function(response) {
     $("#username-form").val(response.username);
     $("#bio-form").val(response.bio);
     $("#tags-form").val(response.tags);
-    oldData.username = response.username;
-    oldData.bio = response.bio;
-    oldData.tags = response.tags;
+    oldData.username = $("#username-form").val();
+    oldData.bio = $("#bio-form").val()
+    oldData.tags = $("#tags-form").val();
 }
 
 var unknownUser = function() {
@@ -55,9 +55,7 @@ var unknownUser = function() {
     })
 }
 var profileUpdated = function(response) {
-    if (response.key) {
-        //successful
-    }
+    console.log(response);
 }
 
 var ownedSongs = function(response) {

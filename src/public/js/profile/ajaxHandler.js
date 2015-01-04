@@ -16,11 +16,7 @@ function AjaxHandler() {
 			type : 'PATCH',
 			url : window.location.protocol + '//' + window.location.host + '/api/users/' + uid,
 			data : JSON.stringify(data),
-			dataType  : 'JSON',
-			success : function(data) {
-				cb(data);
-			},
-			error : error(null)
+			dataType  : 'JSON'
 		});
 	}
 }

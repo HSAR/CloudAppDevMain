@@ -7,20 +7,16 @@ var init = function() {
     ajax.getUserInvites(invitedSongs, connectionFailure);
     
     $("#createJingleButton").click(function() {
-        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, connectionFailure);
+        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated);
     });
 }
 
-var songCreated = function() {
-    location.reload();
-}
-
 var ownedSongs = function(response) {
-    writeToTable(songTables.owned, response);
+    writeToTable('#ownedTable', response);
 }
 
 var collabSongs = function(response) {
-    writeToTable(songTables.collab, response);
+    writeToTable('#collabTable', response);
 }
 
 var invitedSongs = function(response) {
@@ -39,7 +35,6 @@ var invitedSongs = function(response) {
         }
 
         $(".accept-button").click(function() {
-            console.log($(this).val());
             ajax.respondToInvite($(this).val(), true, acceptedInvite);
         });
 
@@ -49,15 +44,29 @@ var invitedSongs = function(response) {
     }
 }
 
+var songCreated = function() {
+    $('#createJingleModal').modal('hide');
+    $('#ownedTable > tbody').html("");
+    ajax.getUserSongs(ownedSongs, connectionFailure);
+}
+
 var acceptedInvite = function() {
-    location.reload(); //todo update the tables, show confirmation
+    $('#collabTable > tbody').html("");
+    $('#inviteTable > tbody').html("");
+    ajax.getUserCollabs(collabSongs, connectionFailure);
+    ajax.getUserInvites(invitedSongs, connectionFailure);
 }
 
 var rejectedInvite = function() {
-    location.reload(); //todo update the tables, show confirmation
+    $('#inviteTable > tbody').html("");
+    ajax.getUserInvites(invitedSongs, connectionFailure);
 }
 
 var writeToTable = function(table, response) {
+    var songTableEmptyMessage = {
+        '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',
+        '#collabTable': 'No collaborations found. Start contributing!',
+    }
     if (!response || response[0] == null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
@@ -74,12 +83,4 @@ var writeToTable = function(table, response) {
     }
 }
 
-var songTables = {
-    owned: '#ownedTable',
-    collab: '#collabTable'
-}
 
-var songTableEmptyMessage = {
-    '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',
-    '#collabTable': 'No collaborations found. Start contributing!',
-}

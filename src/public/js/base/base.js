@@ -1,5 +1,5 @@
 //The user entity of the currently active user
-var currentUserEntity = null;
+var currentUserEntity;
 
 var setUser = function(response) {
     currentUserEntity = response;

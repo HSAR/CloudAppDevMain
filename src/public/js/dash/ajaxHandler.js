@@ -20,8 +20,7 @@ function AjaxHandler() {
 			dataType  : 'JSON',
 			success : function(data) {
 				cb(data);
-			},
-			error : error(null)
+			}
 		});
 	}
 
