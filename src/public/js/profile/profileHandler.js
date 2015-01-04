@@ -5,11 +5,12 @@ var oldData = {
 }
 
 var path;
+var ajax;
 
 var init = function() {
     path = window.location.pathname;
     path = path.split("/")[3];
-	var ajax = new AjaxHandler();
+	ajax = new AjaxHandler();
 
     ajax.getUser(path, userData, unknownUser);
 	ajax.getUserSongs(path, ownedSongs);
