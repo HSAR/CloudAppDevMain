@@ -95,6 +95,12 @@ def getTags(tags):
         return new_tags
 
 
+def stripHTML(value):
+    value = value.replace("<", "")
+    value = value.replace(">", "")
+    return value
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #converts a JinglrUser entity to a dictionary. The keys are the same names as
@@ -378,6 +384,7 @@ def searchJingle(jingle, sort, isAnd, descending, token = None):
 #if successful:
 #{"userKey" : userKey}
 def createUser(uid, username):
+    username = stripHTML(username)
     @ndb.transactional
     def createUserInternal(uid, username):
 
@@ -437,17 +444,22 @@ def updateUser(uid, data):
             return {"errorMessage": "That is not a valid user"}
 
         if "bio" in data:
-            user.bio = data["bio"]
+            user.bio = stripHTML(data["bio"])
 
         if "tags" in data:
-            user.tags = getTags(data["tags"])
+            safe_tags = []
+            tags = getTags(data["tags"])
+            for tag in tags:
+                safe_tags.append(stripHTML(tag))
+            user.tags = safe_tags
 
         if "username" in data:
-            existingUser = getUserByUsername(data["username"])
+            username = stripHTML(data["username"])
+            existingUser = getUserByUsername(username)
             if existingUser:
                 return {"errorMessage": "That username has already been taken"}
-            user.username = data["username"]
-            memcache.set(uid, data["username"], 3600)
+            user.username = username
+            memcache.set(uid, username, 3600)
 
         result = user.put()
         return {"userKey": result}
@@ -589,9 +601,13 @@ def createJingle(uid, title, genre=None, tags=None):
 
     jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
     if genre:
-        jingle.genre = genre
+        jingle.genre = stripHTML(genre)
     if tags:
-        jingle.tags = getTags(tags)
+        tags_list = getTags(tags)
+        safe_tags = []
+        for tag in tags_list:
+            safe_tags.append(stripHTML(tag))
+        jingle.tags = safe_tags
     else:
         jingle.tags = []
 
@@ -638,13 +654,17 @@ def updateJingle(jid, data):
                 return {"errorMessage": "That is not a valid jingle"}
 
             if "title" in data:
-                jingle.title = data["title"]
+                jingle.title = stripHTML(data["title"])
 
             if "genre" in data:
-                jingle.genre = data["genre"]
+                jingle.genre = stripHTML(data["genre"])
 
             if "tags" in data:
-                jingle.tags = getTags(data["tags"])
+                tags = getTags(data["tags"])
+                safe_tags = []
+                for tag in tags:
+                    safe_tags.append(stripHTML(tag))
+                jingle.tags = safe_tags
 
             result = jingle.put()
             return {"jingleKey": result}
