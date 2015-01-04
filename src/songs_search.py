@@ -18,7 +18,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 datetimejson = lambda obj: ( obj.isoformat()
-                             if isinstance(obj, datetime.date) or isinstance(obj, datetime.datetime)
+                             if isinstance(obj, datetime.date) or \
+                                     isinstance(obj, datetime.datetime)
                              else None )
 
 
@@ -49,6 +50,7 @@ class SearchPageHandler(webapp2.RequestHandler):
                                                               False)
         response = {"results": results, "token": (token.urlsafe() if token
                                                   else None), "more": more}
+        self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(response, default=datetimejson))
 
 
