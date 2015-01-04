@@ -64,7 +64,7 @@ var showResults = function(response) {
 				+ '<td><a href="/web/users/' + results[i].author + '">' + results[i].username + '</a></td>'
 				+ '<td>'+ results[i].tags + '</td>'
 				+ '<td>' + resultGenre + '</td>'
-				+ '<td>' + resultDate.toLocaleDateString() + '<td>'
+				+ '<td>' + resultDate.toLocaleDateString() + '</td>'
 				+ "<td class='preview" + results[i].jingle_id + "'></td></tr>"
 			);
 			staticPlayer.attach($('td.preview' + results[i].jingle_id).eq(0));

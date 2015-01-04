@@ -49,14 +49,14 @@ function StaticPlayer() {
 
 	this.loadMidi = function(cb) {//internal method called on play button click
 		if(MIDI) {
-			var instruments = [];
+			handler.requiredInstruments = [];
 			for(var i = 0; i < handler.instruments.length; i++) {
-				instruments.push(handler.instruments[i].instrument);
+				handler.requiredInstruments.push(handler.instruments[i].instrument);
 			}
 			MIDI.Player.loadFile('data:audio/midi;base64,' + this.compiledFile,function() {
 				MIDI.loadPlugin({
 					soundfontUrl : '/public/soundfonts/',
-					instruments : instruments,
+					instruments : handler.requiredInstruments,
 					callback : function() {
 						for(var i = 0; i < handler.instruments.length; i++) {
 							var trackNum = handler.instruments[i].track;
