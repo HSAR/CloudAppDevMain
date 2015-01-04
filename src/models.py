@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
-#This file defines the structure of the entities used in our datastore
-#JinglrUser contains details on registered users
+
+# This file defines the structure of the entities used in our datastore
+# JinglrUser contains details on registered users
 #Each Jingle entity stores the details for a particular song
 #Each Jingle also has a corresponding JinglrMap which is used to keep track
 #of which clients are currently editing the Jingle
@@ -10,7 +11,8 @@ class JinglrUser(ndb.Model):
     bio = ndb.TextProperty()
     tags = ndb.StringProperty(repeated=True)
     collab_invites = ndb.StringProperty(repeated=True)
-    
+
+
 class Jingle(ndb.Model):
     jingle_id = ndb.StringProperty(required=True)
     title = ndb.StringProperty(required=True)
@@ -21,7 +23,8 @@ class Jingle(ndb.Model):
     tags = ndb.StringProperty(repeated=True)
     jingle = ndb.JsonProperty()
     collab_users = ndb.StringProperty(repeated=True)
-    
+
+
 class JinglrMap(ndb.Model):
     jingle_id = ndb.StringProperty(required=True)
     client_ids = ndb.StringProperty(repeated=True)

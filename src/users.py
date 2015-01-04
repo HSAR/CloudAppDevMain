@@ -123,7 +123,7 @@ class WebUserProfileHandler(webapp2.RequestHandler):
         if not uid:
             return error.respond(400, "Invalid user ID in request URL")
         else:
-            if (uid == 'self'):
+            if uid == 'self':
                 user = users.get_current_user()
                 if not user:
                     return error.respond(401, "Not signed in")

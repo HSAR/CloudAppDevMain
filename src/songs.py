@@ -2,7 +2,6 @@
 import logging
 
 import os
-import datetime
 
 import webapp2
 import jinja2
@@ -14,9 +13,7 @@ import permission
 import error
 import midi
 
-from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.api import channel
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(

@@ -7,9 +7,8 @@ import datastore
 
 from google.appengine.api import users
 
-#only the jingle author or collaborator can edit the jingles song
+# only the jingle author or collaborator can edit the jingles song
 def can_edit_song(song_id):
-    
     user = users.get_current_user()
     if user:
         user_id = user.user_id()
@@ -21,6 +20,7 @@ def can_edit_song(song_id):
     else:
         return False
 
+
 #users are only able to edit themselves
 def can_edit_user(uid):
     user = users.get_current_user()
@@ -29,6 +29,7 @@ def can_edit_user(uid):
         return uid == user_id
     else:
         return False
+
 
 #only the jingle author can invite people to collaborate and change the jingles
 #title, genre and tags
@@ -43,7 +44,8 @@ def jingle_owner(song_id):
             return False
     else:
         return False
-        
+
+
 #users can only remove themselves from collaborating on a particular jingle
 #jingle authors can remove any collaborator from it
 def can_remove_collab(song_id, user_id):
@@ -57,7 +59,8 @@ def can_remove_collab(song_id, user_id):
             return False
     else:
         return False
-        
+
+
 #only registered users are able to perform certain actions
 def is_registered():
     user = users.get_current_user()
