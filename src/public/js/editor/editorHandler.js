@@ -687,7 +687,7 @@
 				trackId = i;
 			}
 		}
-		if(track) {//if track supplied, use instead of free track
+		if(track || track === 0) {//if track supplied, use instead of free track
 			trackId = track;
 		}
 
@@ -717,7 +717,7 @@
 		tuneJSON.tracks[trackId].instrument = id;
 		tuneJSON.tracks[trackId].notes = [];
 
-		if(track && trackId !== 0) {
+		if(track || track === 0) {
 			return;//no need to ajax the change as we are reacting to a channel message not making it ourselves
 		}
 		var actionId = generateId("instrumentAdd");
@@ -732,7 +732,7 @@
 
 	function changeInstrument(id,trackId) {//optional trackId for if dealing with channel message
 		$('li.active a span.instrument-name').html(midiHelper.getInstrumentName(id));
-		if(!trackId) {//if no track provided use current track
+		if(!trackId && trackId !== 0) {//if no track provided use current track
 			var track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
 		} else {
 			var track = trackId;
@@ -740,7 +740,7 @@
 		
 		tuneJSON.tracks[track].instrument = id;
 
-		if(trackId && trackId !== 0) {
+		if(trackId || trackId === 0) {
 			return;//no need to send ajax as we are reacting to a channel change
 		}
 		var actionId = generateId('instrumentEdit');
