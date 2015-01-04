@@ -28,8 +28,8 @@ function AjaxHandler() {
             console.log("success")
             }
           }
-        xmlhttp.open("PATCH",window.location.protocol + '//' + window.location.host + '/api/users/' + uid,true);
-        xmlhttp.send();
+        xmlhttp.open("patch",window.location.protocol + '//' + window.location.host + '/api/users/' + uid,true);
+        xmlhttp.send(JSON.stringify(data));
         }
     
     /*
