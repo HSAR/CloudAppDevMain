@@ -717,7 +717,7 @@
 		tuneJSON.tracks[trackId].instrument = id;
 		tuneJSON.tracks[trackId].notes = [];
 
-		if(track) {
+		if(track && trackId !== 0) {
 			return;//no need to ajax the change as we are reacting to a channel message not making it ourselves
 		}
 		var actionId = generateId("instrumentAdd");
@@ -740,7 +740,7 @@
 		
 		tuneJSON.tracks[track].instrument = id;
 
-		if(trackId) {
+		if(trackId && trackId !== 0) {
 			return;//no need to send ajax as we are reacting to a channel change
 		}
 		var actionId = generateId('instrumentEdit');
