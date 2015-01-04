@@ -103,6 +103,20 @@ class UserHandler(webapp2.RequestHandler):
             return error.respond(401, "You are not signed in")
 
 
+class LogoutLinkHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            user_logout = user.create_logout_url()
+            success_object = {
+                'logout': user_logout,
+            }
+            self.response.write(json.dumps(success_object))
+            self.response.set_status(200)
+        else:
+            return error.respond(401, "You are not signed in")
+
+
 class FiveHundredTestHandler(webapp2.RequestHandler):
     def get(self, key):
         raise runtime.DeadlineExceededError
@@ -128,9 +142,10 @@ def Error500Handler(request, response, exception):
 
 application = webapp2.WSGIApplication([
                                           webapp2.Route(r'/', handler=MainHandler, name='home'),
-                                          webapp2.Route(r'/uid', handler=UserHandler, name='uid'),
-                                          webapp2.Route(r'/search', handler=SearchPageHandler, name='home'),
-                                          webapp2.Route(r'/dashboard', handler=DashPageHandler, name='home'),
+                                          webapp2.Route(r'/api/uid', handler=UserHandler, name='uid'),
+                                          webapp2.Route(r'/api/logout', handler=LogoutLinkHandler, name='logout'),
+                                          webapp2.Route(r'/search', handler=SearchPageHandler, name='search'),
+                                          webapp2.Route(r'/dashboard', handler=DashPageHandler, name='dashboard'),
                                           webapp2.Route(r'/template', handler=TemplatePageHandler, name='template'),
                                           webapp2.Route(r'/test/json', handler=JsonTestHandler, name='jsonTest'),
                                           webapp2.Route(r'/test/json/<key:.*>', handler=JsonParameterTestHandler,
