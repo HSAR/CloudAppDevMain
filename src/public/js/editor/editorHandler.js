@@ -10,10 +10,6 @@
 	var ajaxHelper = new AjaxHandler();
 	var midiHelper = new MidiHandler();
 	
-
-	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
-	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
-
 	var tuneJSON;
 
 	var noteValues = {
@@ -30,15 +26,6 @@
 		songId : 0//TODO
 	};
 	
-	$(function() {
-		//set song id before doing anything else
-		if($('div#songid').length > 0) {
-			pageData.songId = $('div#songid').html();
-		}
-
-		initEditor();
-
-	});
 	/**
 	 * Functions for intialising the page
 	 */
@@ -891,6 +878,9 @@
 	{
 	    return new Array( num + 1 ).join( this );
 	}
+
+	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(36) + '</div>';
+	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(36) + '</div>';
 	
 
 	
@@ -910,8 +900,12 @@
 		return tuneJSON.head.subDivisions * tuneJSON.head.barLength;
 	}
 
-	
+	$(function() {
+		//set song id before doing anything else
+		if($('div#songid').length > 0) {
+			pageData.songId = $('div#songid').html();
+		}
 
-	//what do we want to test? loading notes from JSON
+		initEditor();
 
-	
+	});
