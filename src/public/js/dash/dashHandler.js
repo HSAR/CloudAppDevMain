@@ -71,7 +71,7 @@ var latestSongs = function(response) {
             $('#latest-table tbody').append(
             	'<tr><td>' + result[i].title + '</td>'
                 + "<td class='preview" + result[i].jingle_id + "'></td></tr>");
-            staticPlayer.attach($('td.preview' + result[i].jingle_id).eq(0));
+            staticPlayer.attach($('#latest-table td.preview' + result[i].jingle_id).eq(0));
     }
 }
 
@@ -115,7 +115,7 @@ var writeToTable = function(table, response) {
                 + '<td>' + resultGenre + '</td>'
                 + '<td>' + resultDate.toLocaleDateString() + '</td>'
                 + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
-            staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
+            staticPlayer.attach($(table + ' td.preview' + response[i].jingle_id).eq(0));
         }
     }
 }

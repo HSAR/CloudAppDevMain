@@ -5,6 +5,8 @@ function StaticPlayer() {
 	this.instruments = null;
 	this.ready = false;//whether player is ready to play
 
+	var preload = new Image();
+	preload.src = '/public/img/player-load.gif';//preload loading spinner for smoothness
 	var handler = this;//to refer to class inside event scope
 
 	this.loadFile = function(url) {
@@ -24,10 +26,16 @@ function StaticPlayer() {
 	this.attach = function($target) {
 		$target.append(this.playerHTML);
 		$('button.fresh-button').click(function() {
+			var $button = $(this);
+			$button.html('<img src="/public/img/player-load.gif"></img>');
+			setTimeout(function() {
+				$button.html('<span class="glyphicon glyphicon-play"></span>');
+			},12000);//stop displaying loading sign if timed out
 			handler.loadMidi(function(){
 				if(handler.ready && (!MIDI.Player.playing)) {//if we have something to play and not already playing
 					handler.ready = false;//reset ready flag
 					MIDI.Player.stop();//cancel anything already playing
+					$button.html('<span class="glyphicon glyphicon-play"></span>');
 					MIDI.Player.start();//and begin playback
 				}
 				

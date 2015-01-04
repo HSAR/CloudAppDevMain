@@ -118,7 +118,7 @@ var writeToTable = function(table, response) {
                 + '<td>' + resultDate.toLocaleDateString() + '</td>'
                 + "<td class='preview" + response[i].jingle_id + "'></td></tr>"
             );
-            staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
+            staticPlayer.attach($(table + ' td.preview' + response[i].jingle_id).eq(0));
         }
     }
 }
