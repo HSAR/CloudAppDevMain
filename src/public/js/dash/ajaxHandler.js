@@ -12,15 +12,13 @@ function AjaxHandler() {
 		commonAjax(requesturls.invites, cb, error);
 	}
 
-	this.createJingle = function(title, genre, tags, cb, error) {
+	this.createJingle = function(title, genre, tags, cb) {
 		$.ajax({
 			type : 'PUT',
 			url : window.location.protocol + '//' + window.location.host + '/api/songs',
 			data : JSON.stringify({ title: title, genre: genre, tags: tags }),
 			dataType  : 'JSON',
-			success : function(data) {
-				cb(data);
-			}
+			complete : cb
 		});
 	}
 
