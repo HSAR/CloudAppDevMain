@@ -307,7 +307,7 @@ def completeUsername(partialName):
 # be searched. Note that only prefix matching will be performed, and only on
 # the song name. Returns (results, cursor, more) where cursor is what's passed
 # to resumeSearch and more is a flag true if there are more pages
-def searchJingle(jingle, sort, isAnd):
+def searchJingle(jingle, sort, isAnd, descending):
     # Set the sort
     if "title" in jingle:
         sort = Jingle.title  # limitation of datastore
@@ -319,6 +319,8 @@ def searchJingle(jingle, sort, isAnd):
         sort = Jingle.author
     else:
         sort = Jingle.title
+    if descending:
+        sort = -sort
 
     # Use AND or OR when combining items in the dict?
     if isAnd:
@@ -364,8 +366,8 @@ def searchJingle(jingle, sort, isAnd):
 
 # Resume search by passing a cursor (second item in returned tuple from search)
 # Returns same as searchJingle
-def resumeSearch(cursor):
-    results, cursor, more = Jingle.query().fetch_page(10, start_cursor=cursor)
+def resumeSearch(token):
+    results, cursor, more = Jingle.query().fetch_page(10, start_cursor=token)
 
     jingleDicts = []
     for jingle in results:  # results

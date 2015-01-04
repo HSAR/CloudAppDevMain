@@ -1,3 +1,9 @@
+var oldData = {
+    username: null,
+    bio: null,
+    tags: null
+}
+
 var init = function() {
     var path = window.location.pathname;
     path = path.split("/")[3];
@@ -15,7 +21,7 @@ var init = function() {
 
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
-        $('#profile-update-submit').click(function() {
+        $('#profile-update-submit').click(function(e) {
             var newData = {};
             if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
                 newData.username = $("#username-form").val();
@@ -28,20 +34,11 @@ var init = function() {
             }
 
             if (newData) {
-                ajax.updateProfile(path, newData, profileUpdated);
+                ajax.updateProfile(path, newData);
             }
-            $('.profile-edit').addClass("no-display");//hide profile editor        
+            $('.profile-edit').addClass("no-display");//hide profile editor  
         });
-    } else {
-        $('#profile-update-submit').hide();
-        
     }
-}
-
-var oldData = {
-    username: null,
-    bio: null,
-    tags: null
 }
 
 var userData = function(response) {
@@ -76,9 +73,6 @@ var unknownUser = function() {
     $('#unknown-profile-button').click(function() {
         location.href=window.location.protocol + '//' + window.location.host + '/dashboard';
     })
-}
-var profileUpdated = function(response) {
-    console.log(response);
 }
 
 var ownedSongs = function(response) {
