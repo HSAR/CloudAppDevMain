@@ -11,12 +11,11 @@ function AjaxHandler() {
 		commonAjax(window.location.protocol + '//' + window.location.host + '/api/users/' + path + '/collabs', cb, error);
 	};
 
-	this.updateProfile = function(uid, data, cb, error) {
+	this.updateProfile = function(uid, data) {
 		$.ajax({
 			type : 'PATCH',
 			url : window.location.protocol + '//' + window.location.host + '/api/users/' + uid,
 			data : JSON.stringify(data),
-			contentType : 'application/json',
 			success : function(data) {
 				console.log("success");
 				console.log(data);
