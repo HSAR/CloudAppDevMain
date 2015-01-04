@@ -4,8 +4,10 @@ var oldData = {
     tags: null
 }
 
+var path;
+
 var init = function() {
-    var path = window.location.pathname;
+    path = window.location.pathname;
     path = path.split("/")[3];
 	var ajax = new AjaxHandler();
 
@@ -21,24 +23,25 @@ var init = function() {
 
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
-        $('#profile-update-submit').click(function(e) {
-            var newData = {};
-            if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
-                newData.username = $("#username-form").val();
-            }
-            if ($("#bio-form").val() !== oldData.bio) {
-                newData.bio = $("#bio-form").val();
-            }
-            if ($("#tags-form").val() !== oldData.tags) {
-                newData.tags = $("#tags-form").val();
-            }
-
-            if (newData) {
-                ajax.updateProfile(path, newData);
-            }
-            $('.profile-edit').addClass("no-display");//hide profile editor  
-        });
     }
+}
+
+var isFormUpdated = function() {
+    var newData = {};
+    if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+        newData.username = $("#username-form").val();
+    }
+    if ($("#bio-form").val() !== oldData.bio) {
+        newData.bio = $("#bio-form").val();
+    }
+    if ($("#tags-form").val() !== oldData.tags) {
+        newData.tags = $("#tags-form").val();
+    }
+
+    if (newData) {
+        ajax.updateProfile(path, newData);
+    }
+    $('.profile-edit').addClass("no-display");//hide profile editor
 }
 
 var userData = function(response) {
