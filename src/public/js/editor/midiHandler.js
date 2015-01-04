@@ -152,9 +152,12 @@ function MidiHandler() {
 		for(var i = 0; i < 36; i++) {
 			var pitch;
 			var note;
-			if(i < 12) {
+                        if(i == 0) {
+				pitch = "Very High";
+                        }
+                        else if(i <= 12) {
 				pitch = "High";
-			} else if(i < 24) {
+			} else if(i <= 24) {
 				pitch = "Middle";
 			} else {
 				pitch = "Low";
