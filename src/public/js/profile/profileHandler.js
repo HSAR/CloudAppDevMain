@@ -66,13 +66,14 @@ var userData = function(response) {
         $('#bio-read-content').html(response.bio);
     }
     
+    $('#tags-area').html("");
     if(!response.tags || response.tags === '') {//if undefined or empty
-         $('div#tags-area').append('<p>This Jinglr member has no favourite tags</p>');
+         $('#tags-area').append('<p>This Jinglr member has no favourite tags</p>');
     } else {
         var tmp = new String(response.tags);
         tags = tmp.split(',');
         for(var i = 0; i < tags.length; i++) {
-            $('div#tags-area').append('<span class="label label-primary">' + tags[i] + '</span>');
+            $('#tags-area').append('<button class="label label-primary tag-label">' + tags[i] + '</button>');
         }
     }
     
