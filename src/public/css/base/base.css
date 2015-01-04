@@ -68,3 +68,7 @@ body.loading .loadingmodal {
     display: block;
 }
 
+.no-display { /*convenience class for hiding elements */
+  display: none;
+}
+

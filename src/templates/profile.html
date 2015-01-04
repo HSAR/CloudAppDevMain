@@ -16,6 +16,7 @@
 
 <div class="row">
 	<div class="col-md-4">
+		<div class="profile-edit no-display">
 		<form id="profile-update">
    		<label for="username-form">Username</label><br>
   		<textarea id="username-form" readonly rows="1" cols="40"></textarea><br>
@@ -25,6 +26,19 @@
 		  <textarea id="tags-form" readonly rows="4" cols="40"></textarea><br>
       <button  id="profile-update-submit" class="btn btn-primary">Edit</button>
 		</form>	
+	</div>
+
+	<div class="profile-read no-display">
+		<div class="bio-read">
+			<h2>About me</h2>
+			<p id="bio-read-content"></p>
+		</div>
+		<div class="tags-read">
+			<h2>My tags</h2>
+			<div id="tags-area"></div>
+		</div>	
+
+	</div>
 	</div><!-- /span-3 -->
 
 	<div class="col-md-8">  	

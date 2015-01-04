@@ -9,6 +9,7 @@ var init = function() {
 
     //if user is viewing own profile, allow editing
     if (currentUserEntity.user_id === path) {
+        $('.profile-edit').removeClass('no-display');
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
         $('#profile-update-submit').click(function() {
@@ -29,6 +30,7 @@ var init = function() {
         });
     } else {
         $('#profile-update-submit').hide();
+        $('.profile-read').removeClass('no-display');
     }
 }
 
@@ -46,6 +48,12 @@ var userData = function(response) {
     oldData.username = $("#username-form").val();
     oldData.bio = $("#bio-form").val()
     oldData.tags = $("#tags-form").val();
+
+    $('#bio-read-content').html(response.bio);
+    var tags = response.tags.split(',');
+    for(var i = 0; i < tags.length; i++) {
+        $('div#tags-area').append('<span class="label label-primary">' + tags[i] + '</span>');
+    }
 }
 
 var unknownUser = function() {
