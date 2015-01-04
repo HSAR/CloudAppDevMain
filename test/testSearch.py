@@ -40,6 +40,20 @@ def test_search_tags():
     assert response.content_type == 'application/json'
     assert len(response.json['results']) == 1
 
+def test_search_tags_present():
+    createdata()
+    response = app.get('/api/songs/search?tag=Rudolf')
+    assert response.status == '200 OK'
+    assert response.content_type == 'application/json'
+    assert len(response.json['results']) == 1
+
+def test_search_tags_not_present():
+    createdata()
+    response = app.get('/api/songs/search?tag=Merry')
+    assert response.status == '200 OK'
+    assert response.content_type == 'application/json'
+    assert len(response.json['results']) == 0
+
 def test_search_genre():
     createdata()
     response = app.get('/api/songs/search?query=Snow Clouds')
@@ -59,6 +73,14 @@ test_search_tags.nosegae_datastore_v3 = True
 test_search_tags.nosegae_memcache = True
 test_search_tags.nosegae_channel = True
 test_search_tags.nosegae_taskqueue = True
+test_search_tags_present.nosegae_datastore_v3 = True
+test_search_tags_present.nosegae_memcache = True
+test_search_tags_present.nosegae_channel = True
+test_search_tags_present.nosegae_taskqueue = True
+test_search_tags_not_present.nosegae_datastore_v3 = True
+test_search_tags_not_present.nosegae_memcache = True
+test_search_tags_not_present.nosegae_channel = True
+test_search_tags_not_present.nosegae_taskqueue = True
 test_search_genre.nosegae_datastore_v3 = True
 test_search_genre.nosegae_memcache = True
 test_search_genre.nosegae_channel = True

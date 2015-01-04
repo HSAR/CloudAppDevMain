@@ -10,6 +10,7 @@ import random
 import string
 import json
 from models import JinglrUser, Jingle, JinglrMap
+import logging
 
 import taskqueue_handlers
 
