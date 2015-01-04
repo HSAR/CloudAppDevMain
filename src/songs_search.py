@@ -7,6 +7,7 @@ import datastore
 
 import webapp2
 import jinja2
+import logging
 
 import json
 
@@ -28,12 +29,15 @@ class SearchPageHandler(webapp2.RequestHandler):
         query = self.request.get("query", default_value=None)
         sort = self.request.get("sort", default_value=None)
         token = self.request.get("token", default_value=None)
+        tag = self.request.get("tag", default_value=None)
         if token:
             results, token, more = datastore.resumeSearch(Cursor(
                 urlsafe=token))
         elif query:
             jingle = {"title": query, "author": query, "genre": query, "tags":
                 query}
+            if tag:
+                jingle["tags"] = tag
             if sort:
                 results, token, more = datastore.searchJingle(jingle, sort,
                                                               False)
@@ -42,6 +46,8 @@ class SearchPageHandler(webapp2.RequestHandler):
                                                               False)
         else:
             jingle = {}
+            if tag:
+                jingle["tags"] = tag
             if sort:
                 results, token, more = datastore.searchJingle(jingle, sort,
                                                               False)
