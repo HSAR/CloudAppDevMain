@@ -7,6 +7,7 @@ var setUser = function(response) {
 		connectionFailureMessage();
 	} else {
 		$(".username").text(currentUserEntity.username);
+		$("#logout-url").attr("href", currentUserEntity.logout);
 		if (typeof init == 'function') { 
  			init();
  		}
@@ -35,7 +36,7 @@ var commonAjax = function(url, cb, error) {
 		},
 		error: function() {
 			if (typeof error == 'function') { 
- 				error(null);
+ 				error;
  			}
  		}
 	});
