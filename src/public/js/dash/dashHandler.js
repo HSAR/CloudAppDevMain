@@ -60,13 +60,14 @@ var invitedSongs = function(response) {
 }
 
 var latestSongs = function(response) {
-    for (var i = 0; i < response.length && i<5; i++) {
+    var result = response.results;
+    for (var i = 0; i < result.length && i<5; i++) {
             var staticPlayer = new StaticPlayer();
-            staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
-            $('#latestTable').append(
-            	'<tr><td>' + response[i].title + '</td>'
-                + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
-            staticPlayer.attach($('td.preview' + response[i].jingle_id).eq(0));
+            staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + result[i].jingle_id + '/midi');
+            $('#latest-table tbody').append(
+            	'<tr><td>' + result[i].title + '</td>'
+                + "<td class='preview" + result[i].jingle_id + "'></td></tr>");
+            staticPlayer.attach($('td.preview' + result[i].jingle_id).eq(0));
     }
 }
 
