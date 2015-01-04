@@ -75,20 +75,6 @@ class UserHandler(webapp2.RequestHandler):
             return error.respond(401, "You are not signed in")
 
 
-class LogoutLinkHandler(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-        if user:
-            user_logout = user.create_logout_url()
-            success_object = {
-                'logout': user_logout,
-            }
-            self.response.write(json.dumps(success_object))
-            self.response.set_status(200)
-        else:
-            return error.respond(401, "You are not signed in")
-
-
 def Error404Handler(request, response, exception):
     logging.exception(exception)
     template_values = {

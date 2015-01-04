@@ -85,7 +85,11 @@ class ApiUserUidHandler(webapp2.RequestHandler):
             if not result:
                 return error.respond(404, "No user found for UID " + uid)
             else:
-                self.response.write(json.dumps(datastore.getUserDict(result)))
+                user_dict = datastore.getUserDict(result)
+                user = users.get_current_user()
+                if user and uid == user.user_id():
+                    user_dict['logout'] = user.create_logout_url()
+                self.response.write(json.dumps(user_dict))
                 self.response.set_status(200)
             return
 
