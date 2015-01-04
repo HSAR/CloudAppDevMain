@@ -454,7 +454,7 @@ def updateUser(uid, data):
             if existingUser:
                 return {"errorMessage": "That username has already been taken"}
             user.username = data["username"]
-            memcache.set(uid, username, 3600)
+            memcache.set(uid, data["username"], 3600)
 
         result = user.put()
         return {"userKey": result}
