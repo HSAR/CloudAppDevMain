@@ -4,6 +4,7 @@
 	{{ super() }}
   <script type="text/javascript" src="/public/js/search/ajaxHandler.js"></script>
   <script type="text/javascript" src="/public/js/search/searchHandler.js"></script>
+  {% include "/templates/midiScripts.html" %}
 {% endblock %}
 {% block content %}
 <!-- Main -->
@@ -20,6 +21,7 @@
             <th>Owner</th>
             <th>Tags</th>
             <th>Genre</th>
+            <th>Preview</th>
           </tr>
         </thead>
         <tbody>

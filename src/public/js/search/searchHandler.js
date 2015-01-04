@@ -39,11 +39,16 @@ var showResults = function(response) {
     		$('#more-results').unbind('click');
     	}
 	    for (var i = 0; i < results.length; i++) {
-	        $('#results').append(
-                '<tr><td> <a href="/web/songs/' + results[i].jingle_id + '">' + results[i].title + '</a></td>'
+	        var staticPlayer = new StaticPlayer();
+            staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + results[i].jingle_id + '/midi');
+          
+          $('#results').append(
+                '<tr><td>' + results[i].title + '</td>'
                 + '<td><a href="/web/users/' + results[i].author + '">' + results[i].username + '</a></td>'
                 + '<td>'+ results[i].tags + '</td>'
-                + '<td>' + results[i].genre + '</td></tr>');
+                + '<td>' + results[i].genre + '</td>'
+                + "<td class='preview" + results[i].jingle_id + "'></td></tr>");
+          staticPlayer.attach($('td.preview' + results[i].jingle_id).eq(0));
 	    }
 	}
 }

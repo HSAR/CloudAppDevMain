@@ -5,6 +5,7 @@
   <script type="text/javascript" src="/public/js/profile/ajaxHandler.js"></script>
   <script type="text/javascript" src="/public/js/profile/profileHandler.js"></script>
   <link rel="stylesheet" type="text/css" href="/public/css/dashboard/dashboard.css" />
+  {% include "/templates/midiScripts.html" %}
 {% endblock %}
 {% block content %}
 <div id="profileTitle">
@@ -35,7 +36,7 @@
 			<div class="panel-body">
 				<table class="table table-striped" id="ownedTable">
 					<thead>
-						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th><th>Preview</th></tr>
 					</thead>
 					<tbody>
 					</tbody>
@@ -52,7 +53,7 @@
 			<div class="panel-body">
 				<table class="table table-striped" id="collabTable">
 					<thead>
-						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th></tr>
+						<tr><th>Song Name</th><th>Owner</th><th>Tags</th><th>Genre</th><th>Preview</th></tr>
 					</thead>
 					<tbody></tbody>
 				</table>
