@@ -7,7 +7,7 @@ var init = function() {
     ajax.getUserInvites(invitedSongs, connectionFailure);
     
     $("#createJingleButton").click(function() {
-        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated);
+        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, connectionFailure);
     });
 }
 

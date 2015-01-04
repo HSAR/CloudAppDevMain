@@ -50,7 +50,8 @@ var userData = function(response) {
     oldData.tags = $("#tags-form").val();
 
     $('#bio-read-content').html(response.bio);
-    var tags = response.tags.split(',');
+    var tmp = new String(response.tags);
+    tags = tmp.split(',');
     for(var i = 0; i < tags.length; i++) {
         $('div#tags-area').append('<span class="label label-primary">' + tags[i] + '</span>');
     }
