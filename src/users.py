@@ -81,7 +81,7 @@ class ApiUserUidHandler(webapp2.RequestHandler):
                         create_user_result = datastore.createUser(uid, user.nickname())
                         if 'errorMessage' in create_user_result:
                             return error.respond(500, result['errorMessage'])
-                    logout = user.create_logout_url()
+                    logout = users.create_logout_url("/")
             else:
                 logout = None
             result = datastore.getUserById(uid)
