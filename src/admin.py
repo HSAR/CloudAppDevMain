@@ -65,7 +65,7 @@ class InitialDataLoader(webapp2.RequestHandler):
         jm = JinglrMap(id='0Map', jingle_id='0', client_ids=[])
         jm.put()
 
-        time.sleep(10)
+        time.sleep(2)
         token = datastore.beginEditing('0')
         token = token['token']
 
