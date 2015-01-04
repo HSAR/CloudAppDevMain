@@ -37,28 +37,19 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {
-            'name': "Generic User",
-        }
         template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-        self.response.write(template.render(template_values))
+        self.response.write(template.render())
 
 
 class SearchPageHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {
-            'name': "Generic User",
-        }
         template = JINJA_ENVIRONMENT.get_template('templates/search.html')
-        self.response.write(template.render(template_values))
+        self.response.write(template.render())
 
 class DashPageHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {
-            'name': "Generic User",
-        }
         template = JINJA_ENVIRONMENT.get_template('templates/dashboard.html')
-        self.response.write(template.render(template_values))
+        self.response.write(template.render())
 
 
 class UserHandler(webapp2.RequestHandler):
