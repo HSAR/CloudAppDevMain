@@ -3,6 +3,7 @@ function AjaxHandler() {
 	this.getUserSongs = function(cb, error) {
 		commonAjax(requesturls.songs, cb, error);
 	}
+	//sort = date_created&descending=true
 	
 	this.getUserCollabs = function(cb, error) {
 		commonAjax(requesturls.collabs, cb, error);
@@ -10,6 +11,10 @@ function AjaxHandler() {
 
 	this.getUserInvites = function(cb, error) {
 		commonAjax(requesturls.invites, cb, error);
+	}
+
+	this.getLatestSongs = function(cb,error) {
+		commonAjax(requesturls.latest,cb,error);
 	}
 
 	this.createJingle = function(title, genre, tags, cb) {
@@ -35,7 +40,8 @@ function AjaxHandler() {
 	var requesturls = { 
 		songs: window.location.protocol + '//' + window.location.host + '/api/users/self/songs',
 		collabs: window.location.protocol + '//' + window.location.host + '/api/users/self/collabs',
-		invites: window.location.protocol + '//' + window.location.host + '/api/users/self/invites' 
+		invites: window.location.protocol + '//' + window.location.host + '/api/users/self/invites',
+		latest: window.location.protocol + '//' + window.location.host + '/api/songs/search?sort=date_created&descending=true' 
 	}
 }
 
