@@ -98,6 +98,7 @@ def getTags(tags):
 def stripHTML(value):
     value = value.replace("<", "")
     value = value.replace(">", "")
+    value = value.replace("&", "and")
     return value
 
 
@@ -599,7 +600,7 @@ def removeCollab(uid, jid):
 def createJingle(uid, title, genre=None, tags=None):
     gen_id = generate_id()
 
-    jingle = Jingle(id=gen_id, jingle_id=gen_id, title=title, author=uid)
+    jingle = Jingle(id=gen_id, jingle_id=gen_id, title=stripHTML(title), author=uid)
     if genre:
         jingle.genre = stripHTML(genre)
     if tags:
