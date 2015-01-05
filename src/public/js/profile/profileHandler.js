@@ -3,7 +3,6 @@ var oldData = {
     bio: null,
     tags: null
 }
-
 var path;
 var ajax;
 
@@ -40,7 +39,7 @@ var isFormUpdated = function() {
     }
 
     if (newData) {
-        ajax.updateProfile(path, newData, profileUpdated, connectionFailure);
+        ajax.updateProfile(path, newData, profileUpdated, ajaxFailure);
     } else {
         $('.profile-edit').addClass("no-display");//hide profile editor
     }
