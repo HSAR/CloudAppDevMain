@@ -81,7 +81,7 @@ var invitedSongs = function(response) {
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>'
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
-                + '<td>' + resultDate.toLocaleDateString() + '<td>'
+                + '<td>' + resultDate.toLocaleDateString() + '</td>'
                 + '<td><button class="accept-button btn btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
                 + '<button class="reject-button btn btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
             );
