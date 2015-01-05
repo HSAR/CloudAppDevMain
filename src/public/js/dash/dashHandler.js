@@ -8,9 +8,8 @@ var init = function() {
     ajax.getLatestSongs(latestSongs, ajaxFailure);
     
     $("#createJingleButton").click(function() {
-        //if ($("#title-form").val() !== "") {
-            ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
-       // }
+        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
+        $('#createJingleModal').modal('hide');
     });
 
     if(currentUserEntity) {
@@ -78,7 +77,6 @@ var latestSongs = function(response) {
 }
 
 var songCreated = function() {
-    $('#createJingleModal').modal('hide');
     $('#ownedTable > tbody').html("");
     ajax.getUserSongs(ownedSongs, ajaxFailure);
 }
