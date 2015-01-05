@@ -1,3 +1,6 @@
+/**
+Handler class containing midi utiliies, such as converting an istrument number to name etc
+*/
 function MidiHandler() {
 	var instruments = [];
 	var startingPitch = 48; //one octave below middle C
@@ -21,7 +24,7 @@ function MidiHandler() {
 	
 	this.getInstrumentName = function(number) {
 		var name = instruments[number + 1];
-		return name;//TODO check for exceptions
+		return name;
 	}
 
 	

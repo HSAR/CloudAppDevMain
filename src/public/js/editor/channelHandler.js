@@ -1,3 +1,6 @@
+/**
+Handler class which sets up a channel connection with the gae and then handles incoming messages
+*/
 function ChannelHandler() {
 	this.socket = null;
 	this.initialLoad = true;//keep track of if this is the intial loading of the page
@@ -31,7 +34,7 @@ function ChannelHandler() {
 		} else if(msg.action === 'tempo') {
 			$('#tempo-select').val(msg.tempo);
 		}
-	}
+	};
 
 	this.onOpened = function() {
 		//we can now make call to server to get notes json
@@ -41,7 +44,7 @@ function ChannelHandler() {
 			return;
 		}
 		if(!ajaxHelper) {
-			var ajaxHelper = new AjaxHandler();
+			ajaxHelper = new AjaxHandler();
 		}
 		ajaxHelper.getTuneJSON(pageData.songId,function(data) {
 			loadNotesFromJSON(data);
@@ -49,7 +52,7 @@ function ChannelHandler() {
 		});
 		$('.connection-button').addClass('btn-success').removeClass('btn-warning').html('Connected');
 		handler.initialLoad = false;
-	}
+	};
 	this.onMessage = function(message) {
 		//first bin any quarantined changes who have been around for more than a set time
 		for(var i = 0; i < pageData.quarantinedChanges.length; i++) {
@@ -57,7 +60,6 @@ function ChannelHandler() {
 				pageData.quarantinedChanges.splice(i,1);//remove from list of changes
 			}
 		}
-		console.log("message received via channels");
 		
 		msg = JSON.parse(message.data);
 		var serverChecksum;
@@ -65,7 +67,7 @@ function ChannelHandler() {
 			handler.processMessage(msg[i]);
 			serverChecksum = msg[i].checksum;//keep updating checksum so that will finish equal to latest one
 		}
-		console.log(msg);
+
 
 		//if no quarantined changes compare checksums
 		if(pageData.quarantinedChanges.length === 0) {
@@ -74,29 +76,28 @@ function ChannelHandler() {
 			}
 		}
 		
-	}
+	};
 	this.onError = function() {
 		try {
 			this.socket.close();//if socket not closed, do it now
 		} catch(err) {
 			//no need to do anything
 		}
-		console.log("channel error");
+
 		//set connection status button
 		$('button.connection-button').removeClass('btn-success').addClass('btn-danger').html('Disconnected').unbind().click(function() {
 			$('button.connection-button').removeClass('btn-danger').addClass('btn-warning').html('Connecting').unbind();
 			getToken();
 		});
-	}
+	};
 	this.onClose = function() {
-		
-	}
+		//socket never closed deliberately, only on error so handled there
+	};
 	this.initSocket = function(token) {
 		this.channel = new goog.appengine.Channel(token);
-		console.log('initing socket');
 	    this.socket = this.channel.open({onopen : this.onOpened, onmessage : this.onMessage, onerror : this.onError, onclose : this.onClose});
 		
-	}
+	};
 
 	this.checksum = function(object) {
   	/* Sort the notes */
@@ -118,9 +119,5 @@ function ChannelHandler() {
 	  var returnVal = sum(unescape(encodeURIComponent(canonicalJson(object))), 1);
 	  object.head.bars = bars;
 	  return returnVal;
-	}
-
-
-
-	
+	};
 }

@@ -51,9 +51,7 @@ var createTag = function(name) {
         $('.tags-area').append('<button class="btn tag-button new-tag">' + name + 
                 '<i class="glyphicon glyphicon-remove"></i></button>');
         $('.new-tag').click(function() {
-            console.log("reached click event");
             var index = pageData.tags.indexOf(name);
-            console.log(index);
             pageData.tags.splice(index, 1);
             $(this).remove();
         }).removeClass('new-tag');

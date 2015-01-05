@@ -1,3 +1,7 @@
+/*
+Static midi player class for use on non-editor pages, has function loadfile to load a midi file from url and 
+attach to embed the player in a dom element
+*/
 function StaticPlayer() {
 	//the html appended to the page for the player
 	this.playerHTML = '<div class="playback-panel"><button class="play-button fresh-button"><span class="glyphicon glyphicon-play"></span></button>';
@@ -17,12 +21,14 @@ function StaticPlayer() {
 				parsedData = JSON.parse(data);
 				handler.compiledFile = parsedData.midi;
 				handler.instruments = parsedData.instruments;
-				
-				console.log(parsedData);
+
 			}
 		});
 	}
 
+	/*
+	Embeds the player inside the supplied jquery selector and inits its click event
+	*/
 	this.attach = function($target) {
 		$target.append(this.playerHTML);
 		$('button.fresh-button').click(function() {
@@ -58,6 +64,7 @@ function StaticPlayer() {
 					soundfontUrl : '/public/soundfonts/',
 					instruments : handler.requiredInstruments,
 					callback : function() {
+						//set each playback track to correct instrument using data retreived from server
 						for(var i = 0; i < handler.instruments.length; i++) {
 							var trackNum = handler.instruments[i].track;
 							if(trackNum < 9) {
