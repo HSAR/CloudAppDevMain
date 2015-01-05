@@ -10,3 +10,8 @@
 .accept-button{
 	margin-right:5px;
 }
+
+.invite-response-button{
+	float: right;
+	display: inline-block;
+}
