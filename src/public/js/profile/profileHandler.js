@@ -92,18 +92,8 @@ var profileUpdated = function() {
     getCurrentUser(setUser, ajaxFailure); //update currentUserEntity and related fields
     $('.profile-edit').addClass("no-display");//hide profile editor
     $('.alert').alert("close");
-<<<<<<< HEAD
-    $('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
-        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-        + "<p>Profile updated</p>"
-        + '</div>'
-    );
-};
-=======
     alertUser('alert-success', 'Profile updated');
-}
->>>>>>> 446f29e915d31efbc622e9399f57b91eee96e879
+};
 
 var userData = function(response) {
     $(".profile-username").text(response.username);
