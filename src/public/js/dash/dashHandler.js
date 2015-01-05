@@ -40,9 +40,8 @@ var init = function() {
                 var $input = $('#edit-tags-form') 
             }
             var parts = $(this).val().split(',');
-            for(var i = 0; i < parts.length; i++) {
-               createTag(parts[i],$target,$input); 
-            }
+            createTag(parts[0],$target,$input); 
+            
             
         }
     });
