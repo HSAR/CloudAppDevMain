@@ -66,17 +66,15 @@ var isFormUpdated = function() {
         );
         $('.profile-edit').addClass("no-display");
         return;
-    }
+    }   
     if ($("#username-form").val() !== oldData.username && $("#username-form").val() !== "") {
-
-    createTag($('#tags-form').val());//add any remaining stuff in form
-    if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
 
         newData.username = $("#username-form").val();
     }
     if ($("#bio-form").val() !== oldData.bio) {
         newData.bio = $("#bio-form").val();
     }
+    createTag($('#tags-form').val());//add any remaining stuff in form
     if (pageData.tags !== oldData.tags) {
         newData.tags = pageData.tags.join();
     }
