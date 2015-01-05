@@ -68,9 +68,7 @@ function AjaxHandler() {
 			type : 'GET',
 			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/midi',
 			success : function(data) {
-				if(true) {
-					cb(JSON.parse(data));
-				} 
+				cb(JSON.parse(data));
 			},
 			error : this.handleError
 		});

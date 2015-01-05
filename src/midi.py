@@ -87,12 +87,6 @@ def getMIDI(midi):
     if midiHead['subDivisions'] < 1:
         raise MIDIError("subDivisions is too small. Minimum value is 1")
 
-    try:
-        # time division is stored as 2 bytes
-        TIME_DIV = numberToByteArray(midiHead['subDivisions'], 2)
-    except MIDIError as exep:
-        raise MIDIError("subDivisions is too large. Maximum value is 65535")
-
     # Build up the complete header chunk
     HEADER_CHUNK = HEAD_CHUNK_ID
     HEADER_CHUNK.extend(HEAD_CHUNK_SIZE)
@@ -206,7 +200,6 @@ def getMIDI(midi):
             raise MIDIError(
                 "A delta value was too big. The maximum difference in position values is 268,435,455 subdivisions")
 
-        offset = 0
         if noteEvent['noteOn']:
             offset = 0x90
         else:
@@ -221,12 +214,6 @@ def getMIDI(midi):
 
     # now build up the complete track chunk
     trackChunk = TRACK_CHUNK_ID
-
-    try:
-        # track chunk contains the length of the trackEvents as 4 bytes
-        trackChunk.extend(numberToByteArray(len(trackEvents), 4))
-    except MIDIError as exep:
-        raise MIDIError("MIDI file too large. Maximum size is 4,294,967,295 bytes. (4 GB)")
 
     trackChunk.extend(trackEvents)
 

@@ -67,7 +67,6 @@ class InitialDataLoader(webapp2.RequestHandler):
 
         time.sleep(2)
         token = datastore.beginEditing('0')
-        token = token['token']
 
         addInst = {
             "action": "instrumentAdd",

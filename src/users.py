@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 import logging
-
 import os
-import datetime
+import json
 
 import webapp2
 import jinja2
-
-import json
+from google.appengine.api import users
 
 import datastore
 import error
 import permission
-
-from google.appengine.api import users
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(

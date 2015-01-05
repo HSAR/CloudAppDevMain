@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 import os
-import datetime
 
 import webapp2
 import jinja2
@@ -27,7 +26,6 @@ import error
 
 from google.appengine import runtime
 from google.appengine.api import users
-from google.appengine.api import channel
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),

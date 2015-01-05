@@ -7,7 +7,6 @@ import datastore
 
 import webapp2
 import jinja2
-import logging
 
 import json
 
@@ -19,8 +18,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 datetimejson = lambda obj: ( obj.isoformat()
-                             if isinstance(obj, datetime.date) or \
-                                     isinstance(obj, datetime.datetime)
+                             if isinstance(obj, datetime.date) or
+                                isinstance(obj, datetime.datetime)
                              else None )
 
 

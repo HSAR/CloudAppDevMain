@@ -873,10 +873,7 @@
 		var newLeft = $element2.position().left;
 		var newRight = newLeft + $element2.width();
 
-		if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
-			return true;
-		}
-		return false;
+		return (left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight );
 	}
 
 	/*
