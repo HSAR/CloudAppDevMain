@@ -6,12 +6,13 @@ var token,
 
 var init = function() {
 	ajax = new AjaxHandler();
-	sort = getUrlParam('sort');
-	query = getUrlParam('query');
-	tag = getUrlParam('tag');
-	if (query) {
+	sort = decodeURIComponent(getUrlParam('sort'));
+	query = decodeURIComponent(new String(getUrlParam('query')).replace(/\+/g, '%20'));
+	tag = decodeURIComponent(new String(getUrlParam('tag')).replace(/\+/g, '%20'));
+	
+	if (query.length !== 0) {
 		$('#search-query').val(query);
-	} else if (tag) {
+	} else if (tag.length !== 0) {
 		$('#search-query').val(tag);
 	}
     $('#more-results').hide();
@@ -31,7 +32,7 @@ function getUrlParam(parameter) {
 		var pair = vars[i].split("=");
 		if(pair[0] == parameter){return pair[1];}
 	}
-	return(false);
+	return("");
 }
 
 var showResults = function(response, token) {

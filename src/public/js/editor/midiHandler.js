@@ -2,134 +2,22 @@ function MidiHandler() {
 	var instruments = [];
 	var startingPitch = 48; //one octave below middle C
 
-	instruments[1]  =	'Acoustic Grand Piano';
-	instruments [2] =	'Bright Acoustic Piano';
-	instruments [3] =	'Electric Grand Piano';
-	instruments [4] =	'Honky-tonk Piano';
-	instruments [5] = 	'Rhodes Piano';
-	instruments [6] = 	'Chorused Piano';
-	instruments [7] =	'Harpsichord';
-	instruments [8] =	'Clavinet';
-	instruments [9] = 	'Celesta';
-	instruments [10] =	'Glockenspiel';
-	instruments [11] =	'Music Box';
-	instruments [12] =	'Vibraphone';
-	instruments [13] =	'Marimba';
-	instruments [14] =	'Xylophone';
-	instruments [15] =	'Tubular Bells';
-	instruments [16] =	'Dulcimer';
-	instruments [17] =	'Hammond Organ';
-	instruments [18] =	'Percussive Organ';
-	instruments [19] =	'Rock Organ';
-	instruments [20] =	'Church Organ';
-	instruments [21] =	'Reed Organ';
-	instruments [22] =	'Accordion';
-	instruments [23] =	'Harmonica';
-	instruments [24] =	'Tango Accordion';
-	instruments [25] =	'Acoustic Nylon Guitar';
-	instruments [26] =	'Acoustic Steel Guitar';
-	instruments [27] =	'Electric Jazz Guitar';
-	instruments [28] =	'Electric Clean Guitar';
-	instruments [29] =	'Electric Muted Guitar';
-	instruments [30] =	'Overdriven Guitar';
-	instruments [31] =	'Distortion Guitar';
-	instruments [32] =	'Guitar Harmonics';
-	instruments [33] =	'Acoustic Bass';
-	instruments [34] =	'Electric Bass (finger)';
-	instruments [35] =	'Electric Bass (pick)';
-	instruments [36] =	'Fretless Bass';
-	instruments [37] =	'Slap Bass 1';
-	instruments [38] =	'Slap Bass 2';
-	instruments [39] =	'Synth Bass 1';
-	instruments [40] =	'Synth Bass 2';
-	instruments [41] =	'Violin';
-	instruments [42] =	'Viola';
-	instruments [43] =	'Cello';
-	instruments [44] =	'Contrabass';
-	instruments [45] =	'Tremolo Strings';
-	instruments [46] =	'Pizzicato Strings';
-	instruments [47] =	'Orchestral Harp';
-	instruments [48] =	'Timpani';
-	instruments [49] =	'String Ensemble 1';
-	instruments [50] =	'String Ensemble 2';
-	instruments [51] =	'SynthStrings 1';
-	instruments [52] =	'SynthStrings 2';
-	instruments [53] =	'Choir Aahs';
-	instruments [54] =	'Voice Oohs';
-	instruments [55] =	'Synth Voice';
-	instruments [56] =	'Orchestra Hit';
-	instruments [57] =	'Trumpet';
-	instruments [58] =	'Trombone';
-	instruments [59] =	'Tuba';
-	instruments [60] =	'Muted Trumpet';
-	instruments [61] =	'French Horn';
-	instruments [62] =	'Brass Section';
-	instruments [63] =	'SynthBrass 1';
-	instruments [64] =	'SynthBrass 2';
-	instruments [65] =	'Soprano Sax';
-	instruments [66] =	'Alto Sax';
-	instruments [67] =	'Tenor Sax';
-	instruments [68] =	'Baritone Sax';
-	instruments [69] =	'Oboe';
-	instruments [70] =	'English Horn';
-	instruments [71] =	'Bassoon';
-	instruments [72] =	'Clarinet';
-	instruments [73] =	'Piccolo';
-	instruments [74] =	'Flute';
-	instruments [75] =	'Recorder';
-	instruments [76] =	'Pan Flute';
-	instruments [77] =	'Blown Bottle';
-	instruments [78] =	'Shakuhachi';
-	instruments [79] =	'Whistle';
-	instruments [80] =	'Ocarina';
-	instruments [81] =	'Lead 1 (square)';
-	instruments [82] =	'Lead 2 (sawtooth)';
-	instruments [83] =	'Lead 3 (calliope)';
-	instruments [84] =	'Lead 4 (chiff)';
-	instruments [85] =	'Lead 5 (charang)';
-	instruments [86] =	'Lead 6 (voice)';
-	instruments [87] =	'Lead 7 (fifths)';
-	instruments [88] =	'Lead 8 (bass + lead)';
-	instruments [89] =	'Pad 1 (new age)';
-	instruments [90] =	'Pad 2 (warm)';
-	instruments [91] =	'Pad 3 (polysynth)';
-	instruments [92] =	'Pad 4 (choir)';
-	instruments [93] =	'Pad 5 (bowed)';
-	instruments [94] =	'Pad 6 (metallic)';
-	instruments [95] =	'Pad 7 (halo)';
-	instruments [96] =	'Pad 8 (sweep)';
-	instruments [97] =	'FX 1 (rain)';
-	instruments [98] =	'FX 2 (soundtrack)';
-	instruments [99] =	'FX 3 (crystal)';
-	instruments [100]=	'FX 4 (atmosphere)';
-	instruments [101]=	'FX 5 (brightness)';
-	instruments [102]=	'FX 6 (goblins)';
-	instruments [103]=	'FX 7 (echoes)';
-	instruments [104]=	'FX 8 (sci-fi)';
-	instruments [105]=	'Sitar';
-	instruments [106]=	'Banjo';
-	instruments [107]=	'Shamisen';
-	instruments [108]=	'Koto';
-	instruments [109]=	'Kalimba';
-	instruments [110]=	'Bag pipe';
-	instruments [111]=	'Fiddle';
-	instruments [112]=	'Shanai';
-	instruments [113]=	'Tinkle Bell';
-	instruments [114]=	'Agogo';
-	instruments [115]=	'Steel Drums';
-	instruments [116]=	'Woodblock';
-	instruments [117]=	'Taiko Drum';
-	instruments [118]=	'Melodic Tom';
-	instruments [119]=	'Synth Drum';
-	instruments [120]=	'Reverse Cymbal';
-	instruments [121]=	'Guitar Fret Noise';
-	instruments [122]=	'Breath Noise';
-	instruments [123]=	'Seashore';
-	instruments [124]=	'Bird Tweet';
-	instruments [125]=	'Telephone Ring';
-	instruments [126]=	'Helicopter';
-	instruments [127]=	'Applause';
-	instruments [128]=	'Gunshot';
+	instruments = [ 'Invalid Instrument', 'Acoustic Grand Piano', 'Bright Acoustic Piano', 'Electric Grand Piano', 'Honky-tonk Piano',
+	'Rhodes Piano', 'Chorused Piano', 'Harpsichord', 'Clavinet', 'Celesta', 'Glockenspiel', 'Music Box', 'Vibraphone', 'Marimba', 'Xylophone',
+	'Tubular Bells', 'Dulcimer', 'Hammond Organ', 'Percussive Organ', 'Rock Organ', 'Church Organ', 'Reed Organ', 'Accordion', 'Harmonica',
+	'Tango Accordion', 'Acoustic Nylon Guitar', 'Acoustic Steel Guitar', 'Electric Jazz Guitar', 'Electric Clean Guitar',
+	'Electric Muted Guitar', 'Overdriven Guitar', 'Distortion Guitar', 'Guitar Harmonics', 'Acoustic Bass', 'Electric Bass (finger)',
+	'Electric Bass (pick)', 'Fretless Bass', 'Slap Bass 1', 'Slap Bass 2', 'Synth Bass 1', 'Synth Bass 2', 'Violin', 'Viola', 'Cello',
+	'Contrabass', 'Tremolo Strings', 'Pizzicato Strings', 'Orchestral Harp', 'Timpani', 'String Ensemble 1', 'String Ensemble 2',
+	'SynthStrings 1', 'SynthStrings 2', 'Choir Aahs', 'Voice Oohs', 'Synth Voice', 'Orchestra Hit', 'Trumpet', 'Trombone', 'Tuba',
+	'Muted Trumpet', 'French Horn', 'Brass Section', 'SynthBrass 1', 'SynthBrass 2', 'Soprano Sax', 'Alto Sax', 'Tenor Sax', 'Baritone Sax',
+	'Oboe', 'English Horn', 'Bassoon', 'Clarinet', 'Piccolo', 'Flute', 'Recorder', 'Pan Flute', 'Blown Bottle', 'Shakuhachi', 'Whistle',
+	'Ocarina', 'Lead 1 (square)', 'Lead 2 (sawtooth)', 'Lead 3 (calliope)', 'Lead 4 (chiff)', 'Lead 5 (charang)', 'Lead 6 (voice)',
+	'Lead 7 (fifths)', 'Lead 8 (bass + lead)', 'Pad 1 (new age)', 'Pad 2 (warm)', 'Pad 3 (polysynth)', 'Pad 4 (choir)', 'Pad 5 (bowed)',
+	'Pad 6 (metallic)', 'Pad 7 (halo)', 'Pad 8 (sweep)', 'FX 1 (rain)', 'FX 2 (soundtrack)', 'FX 3 (crystal)', 'FX 4 (atmosphere)',
+	'FX 5 (brightness)', 'FX 6 (goblins)', 'FX 7 (echoes)', 'FX 8 (sci-fi)', 'Sitar', 'Banjo', 'Shamisen', 'Koto', 'Kalimba',
+	'Bag pipe', 'Fiddle', 'Shanai', 'Tinkle Bell', 'Agogo', 'Steel Drums', 'Woodblock', 'Taiko Drum', 'Melodic Tom', 'Synth Drum',
+	'Reverse Cymbal', 'Guitar Fret Noise', 'Breath Noise', 'Seashore', 'Bird Tweet', 'Telephone Ring', 'Helicopter', 'Applause', 'Gunshot']
 	
 	this.getInstrumentName = function(number) {
 		var name = instruments[number + 1];
@@ -152,10 +40,10 @@ function MidiHandler() {
 		for(var i = 0; i < 37; i++) {
 			var pitch;
 			var note;
-                        if(i == 0) {
+			if(i == 0) {
 				pitch = "Very High";
-                        }
-                        else if(i <= 12) {
+			}
+			else if(i <= 12) {
 				pitch = "High";
 			} else if(i <= 24) {
 				pitch = "Middle";

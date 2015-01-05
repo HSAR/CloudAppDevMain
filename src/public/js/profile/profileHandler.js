@@ -10,6 +10,10 @@ var pageData = {
 var path;
 
 var init = function() {
+    //empty tables
+    $('#collabTable > tbody').html("");
+    $('#ownedTable > tbody').html("");
+
     path = window.location.pathname;
     path = path.split("/")[3];
 	ajax = new AjaxHandler();
@@ -60,12 +64,7 @@ var isFormUpdated = function() {
     var newData = {};
 
     if ($("#username-form").val() === "") {
-        $('#page-content').prepend(
-            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-            + "<p>Your username cannot be empty</p>"
-            + '</div>'
-        );
+        alertUser('alert-danger', 'Username cannot be empty');
         $('.profile-edit').addClass("no-display");
         return;
     }   
@@ -83,12 +82,7 @@ var isFormUpdated = function() {
     if (!jQuery.isEmptyObject(newData)) {
         ajax.updateProfile(path, newData, profileUpdated, ajaxFailure);
     } else {
-        $('#page-content').prepend(
-            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-            + "<p>You didn't make any changes!</p>"
-            + '</div>'
-        );
+        alertUser('alert-danger', "You didn't make any changes");
         $('.profile-edit').addClass("no-display");//hide profile editor
     }
 };
@@ -98,6 +92,7 @@ var profileUpdated = function() {
     getCurrentUser(setUser, ajaxFailure); //update currentUserEntity and related fields
     $('.profile-edit').addClass("no-display");//hide profile editor
     $('.alert').alert("close");
+<<<<<<< HEAD
     $('#page-content').prepend(
         '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
         + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
@@ -105,6 +100,10 @@ var profileUpdated = function() {
         + '</div>'
     );
 };
+=======
+    alertUser('alert-success', 'Profile updated');
+}
+>>>>>>> 446f29e915d31efbc622e9399f57b91eee96e879
 
 var userData = function(response) {
     $(".profile-username").text(response.username);

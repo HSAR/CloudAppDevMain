@@ -90,8 +90,9 @@ def getTags(tags):
         tags = string.split(tags, ",")
         new_tags = []
         for tag in tags:
+            tag = stripHTML(tag)
             if tag != "":
-                new_tags.append(string.strip(tag))
+                new_tags.append(tag)
         return new_tags
 
 
@@ -99,6 +100,7 @@ def stripHTML(value):
     value = value.replace("<", "")
     value = value.replace(">", "")
     value = value.replace("&", "and")
+    value = string.strip(value)
     return value
 
 
@@ -661,7 +663,11 @@ def updateJingle(jid, data):
                 return {"errorMessage": "That is not a valid jingle"}
 
             if "title" in data:
-                jingle.title = stripHTML(data["title"])
+                title = stripHTML(data["title"])
+                if title != "":
+                    jingle.title = title
+                else:
+                    return {"errorMessage": "You did not enter a valid jingle title"}
 
             if "genre" in data:
                 jingle.genre = stripHTML(data["genre"])

@@ -128,12 +128,17 @@ function AjaxHandler() {
 		});
 	}
 
-	this.sendInvite = function(id,uid) {
+	this.sendInvite = function(id,uid,error) {
 		$.ajax({
 			url : window.location.protocol + '//' + window.location.host + '/api/users/' + uid + '/invites/' + id,
 			type : 'PUT',
+<<<<<<< HEAD
 			error : function(err) {
 				alertUser('alert-danger',err);
+=======
+			error: function(data) {
+				error(data);
+>>>>>>> 446f29e915d31efbc622e9399f57b91eee96e879
 			}
 		});
 	}
