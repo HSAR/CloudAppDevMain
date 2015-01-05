@@ -11,6 +11,12 @@ var setUser = function(response) {
 }
 
 var ajaxFailure = function(data) {
+	console.log(data);
+	console.log(jQuery.parseJSON(data.responseText));
+	//sometimes responseJSON is missing - responseText is parsed instead
+	if (!data.responseJSON) {
+		data.responseJSON = jQuery.parseJSON(data.responseText);
+	}
 	$('#page-content').prepend(
 			'<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
 	     	+ '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'

@@ -8,9 +8,9 @@ var init = function() {
     ajax.getLatestSongs(latestSongs, ajaxFailure);
     
     $("#createJingleButton").click(function() {
-        if ($("#title-form").val() !== "") {
+        //if ($("#title-form").val() !== "") {
             ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
-        }
+       // }
     });
 
     if(currentUserEntity) {
