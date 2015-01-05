@@ -20,9 +20,7 @@ var init = function() {
 
     $("#editJingleButton").click(function() {
         createTag($("#edit-tags-form").val(),$('.tags-area').eq(1),$('#edit-tags-form'));
-        if ($("#edit-title-form").val() !== "") {
-            ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), pageData.tags.join(), songCreated, ajaxFailure);
-        }
+        ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), pageData.tags.join(), songCreated, ajaxFailure);
     });
 
     $('#create-jingle').click(function() {
