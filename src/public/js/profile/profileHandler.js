@@ -2,7 +2,11 @@ var oldData = {
     username: null,
     bio: null,
     tags: null
-}
+};
+
+var pageData = {
+    tags : []
+};
 var path;
 
 var init = function() {
@@ -23,10 +27,36 @@ var init = function() {
         $('textarea').attr('readonly',false);
         $('#profile-update-submit').show();
     }
+
+    $('#tags-form').keyup(function() {
+        if($(this).val().slice(-1) === ',') {//if tag ended
+            createTag($(this).val().slice(0,-1));
+        }
+    });
+}
+
+var createTag = function(name) {
+    if(!name || name === '') {//validate name
+        return;
+    }
+    $('#tags-form').val('');//reset form
+    if(pageData.tags.indexOf(name) === -1) {
+        pageData.tags.push(name);//store that tag
+        $('.tags-area').append('<button class="btn tag-button new-tag">' + name + 
+                '<i class="glyphicon glyphicon-remove"></i></button>');
+        $('.new-tag').click(function() {
+            console.log("reached click event");
+            var index = pageData.tags.indexOf(name);
+            console.log(index);
+            pageData.tags.splice(index, 1);
+            $(this).remove();
+        }).removeClass('new-tag');
+    }
 }
 
 var isFormUpdated = function() {
     var newData = {};
+
     if ($("#username-form").val() === "") {
         $('#page-content').prepend(
             '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
@@ -38,13 +68,17 @@ var isFormUpdated = function() {
         return;
     }
     if ($("#username-form").val() !== oldData.username && $("#username-form").val() !== "") {
+
+    createTag($('#tags-form').val());//add any remaining stuff in form
+    if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+
         newData.username = $("#username-form").val();
     }
     if ($("#bio-form").val() !== oldData.bio) {
         newData.bio = $("#bio-form").val();
     }
-    if ($("#tags-form").val() !== oldData.tags) {
-        newData.tags = $("#tags-form").val();
+    if (pageData.tags !== oldData.tags) {
+        newData.tags = pageData.tags.join();
     }
     if (!jQuery.isEmptyObject(newData)) {
         ajax.updateProfile(path, newData, profileUpdated, ajaxFailure);
@@ -76,10 +110,13 @@ var userData = function(response) {
     $(".profile-username").text(response.username);
     $("#username-form").val(response.username);
     $("#bio-form").val(response.bio);
-    $("#tags-form").val(response.tags);
+    var tagsList = response.tags;
+    for(var i = 0; i < tagsList.length; i++) {
+        createTag(tagsList[i]);
+    }
     oldData.username = $("#username-form").val();
     oldData.bio = $("#bio-form").val()
-    oldData.tags = $("#tags-form").val();
+    oldData.tags = response.tags;
 
     if(!response.bio || response.bio === '') {//if undefined or empty
          $('#bio-read-content').html('This Jinglr member has no biography');

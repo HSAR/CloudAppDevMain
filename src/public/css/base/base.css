@@ -81,3 +81,11 @@ table td {
   word-wrap : break-word;
 }
 
+.tag-button {
+  margin-right : 0.5em;
+  margin-bottom : 0.5em;
+}
+
+.tag-button span {
+  margin-left: 3px;
+}

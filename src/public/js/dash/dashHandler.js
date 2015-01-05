@@ -1,5 +1,5 @@
 var ajax;
-var pageData = { owned : []};
+var pageData = { owned : {}, tags : []};
 
 var init = function() {
 	ajax = new AjaxHandler();
@@ -7,15 +7,39 @@ var init = function() {
 	ajax.getUserCollabs(collabSongs, ajaxFailure);
     ajax.getUserInvites(invitedSongs, ajaxFailure);
     ajax.getLatestSongs(latestSongs, ajaxFailure);
+
+    $('#title-form').val('');//clear cached values on page load
+    $('#genre-form').val('');
+    $('#tags-form').val('');
     
     $("#createJingleButton").click(function() {
-        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
+        createTag($("#tags-form").val(),$('.tags-area').eq(0),$('#tags-form'));
+        ajax.createJingle($("#title-form").val(), $("#genre-form").val(), pageData.tags.join(), songCreated, ajaxFailure);
         $('#createJingleModal').modal('hide');
     });
 
     $("#editJingleButton").click(function() {
+        createTag($("#edit-tags-form").val(),$('.tags-area').eq(1),$('#edit-tags-form'));
         if ($("#edit-title-form").val() !== "") {
-            ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), $("#edit-tags-form").val(), songCreated, ajaxFailure);
+            ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), pageData.tags.join(), songCreated, ajaxFailure);
+        }
+    });
+
+    $('#create-jingle').click(function() {
+        $('.tags-area').empty();
+        pageData.tags = [];//reset tags
+    });
+
+    $('.tags-form').keyup(function() {
+        if($(this).val().slice(-1) === ',') {//if tag ended
+            if($(this).attr('id') === 'tags-form') {
+                var $target = $('.tags-area').eq(0);
+                var $input = $('#tags-form');
+            } else {
+                var $target = $('.tags-area').eq(1);
+                var $input = $('#edit-tags-form') 
+            }
+            createTag($(this).val().slice(0,-1),$target,$input);
         }
     });
 
@@ -84,6 +108,12 @@ var latestSongs = function(response) {
 var songCreated = function() {
     $('#createJingleModal').modal('hide');
     $('#editJingleModal').modal('hide');
+
+
+    $('#title-form').val('');
+    $('#genre-form').val('');
+    $('#tags-form').val('');
+
     $('#ownedTable > tbody').html("");
     ajax.getUserSongs(ownedSongs, ajaxFailure);
     $('.alert').alert("close");
@@ -121,6 +151,23 @@ var rejectedInvite = function() {
     );
 }
 
+var createTag = function(name,$target,$inputArea) {
+    if(!name || name === '') {//validate name
+        return;
+    }
+    $inputArea.val('');//reset form
+    if(pageData.tags.indexOf(name) === -1) {
+        pageData.tags.push(name);//store that tag
+        $target.append('<button class="btn tag-button new-tag">' + name + 
+                '<span class="glyphicon glyphicon-remove"></span></button>');
+        $('.new-tag').click(function() {
+            var index = pageData.tags.indexOf(name);
+            pageData.tags.splice(index, 1);
+            $(this).remove();
+        }).removeClass('new-tag');
+    }
+}
+
 var writeToTable = function(table, response) {
     var songTableEmptyMessage = {
         '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',
@@ -138,8 +185,9 @@ var writeToTable = function(table, response) {
             var staticPlayer = new StaticPlayer();
             var editHTML = '';
             if(table === '#ownedTable') {
-                editHTML = '<td><button class="btn btn-primary new-edit-button" id="edit-jingle-' + i + '" data-toggle="modal" data-target="#editJingleModal">Edit</button></td>';
-                pageData.owned.push(response[i]);
+                editHTML = '<td><button class="btn btn-primary new-edit-button" id="edit-jingle-' 
+                + response[i].jingle_id + '" data-toggle="modal" data-target="#editJingleModal">Edit</button></td>';
+                pageData.owned[response[i].jingle_id] = response[i];
             }
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
             $(table).append('<tr><td> <a href="/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td>' 
@@ -154,9 +202,17 @@ var writeToTable = function(table, response) {
             $('.new-edit-button').click(function() {
                 var id = $(this).attr('id').substring(12);
                 var res = pageData.owned[id];
+
+                pageData.tags = [];
+                $('.tags-area').empty();
+
+                for(var i = 0; i < res.tags.length; i++) {
+                    createTag(res.tags[i],$('.tags-area').eq(1),$('#edit-tags-form'));
+                }
+                
                 $('#edit-title-form').val(res.title);
-                $('#edit-genre-form').val(resultGenre);
-                $('#edit-tags-form').val(res.tags);
+                $('#edit-genre-form').val(res.genre);
+                $('#edit-tags-form').val('');
                 pageData.currentlyEdited = res.jingle_id;
             });
             $('.new-edit-button').removeClass('new-edit-button');
