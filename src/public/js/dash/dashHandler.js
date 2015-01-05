@@ -31,7 +31,7 @@ var init = function() {
     });
 
     $('.tags-form').keyup(function() {
-        if($(this).val().slice(-1) === ',') {//if tag ended
+        if($(this).val().indexOf(',') !== -1) {//if tag ended
             if($(this).attr('id') === 'tags-form') {
                 var $target = $('.tags-area').eq(0);
                 var $input = $('#tags-form');
@@ -39,7 +39,11 @@ var init = function() {
                 var $target = $('.tags-area').eq(1);
                 var $input = $('#edit-tags-form') 
             }
-            createTag($(this).val().slice(0,-1),$target,$input);
+            var parts = $(this).val().split(',');
+            for(var i = 0; i < parts.length; i++) {
+               createTag(parts[i],$target,$input); 
+            }
+            
         }
     });
 
