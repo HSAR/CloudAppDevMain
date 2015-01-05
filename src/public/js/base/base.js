@@ -24,7 +24,7 @@ var ajaxFailure = function(data) {
 
 var alertUser = function(style, message) {
 	$('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert' + style + 'alert-dismissible fade in">'
+        '<div id="ajax-alert" role="alert" class="alert ' + style + ' alert-dismissible fade in">'
         + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
         + '<p>' + message + '</p>'
         + '</div>'
