@@ -16,8 +16,10 @@ var init = function() {
 	}
     $('#more-results').hide();
 	$('a.sort-link').click(function() {
+		$('#more-results').unbind('click');
 		var sortRule = $(this).attr('id').substring(5);//get what to sort by
 		ajax.search(query, sortRule, null, tag, showResults, ajaxFailure);//update results to be sorted in specified way
+                sort = sortRule;
 	});
 	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
 }
@@ -39,7 +41,7 @@ var showResults = function(response, token) {
     }
 	var results = response.results;
 		token = response.token;
-		sort = response.sort;
+		//sort = response.sort;
 		
 	if (!results || results[0] == null) {
 		$('#results tbody').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
@@ -48,7 +50,8 @@ var showResults = function(response, token) {
 	if (response.more) {
 		//enable next page link
 		$('#more-results').click(function() {
-            ajax.search(query, sort, token, tag, showResults, ajaxFailure);
+		  $('#more-results').unbind('click');
+                  ajax.search(query, sort, token, tag, showResults, ajaxFailure);
         });
         $('#more-results').show();
 	} else {
