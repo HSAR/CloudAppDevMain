@@ -82,12 +82,17 @@ var latestSongs = function(response) {
 }
 
 var songCreated = function() {
-
     $('#createJingleModal').modal('hide');
     $('#editJingleModal').modal('hide');
-
     $('#ownedTable > tbody').html("");
     ajax.getUserSongs(ownedSongs, ajaxFailure);
+    $('.alert').alert("close");
+    $('#page-content').prepend(
+        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
+        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+        + "<p>Jingle saved</p>"
+        + '</div>'
+    );
 }
 
 var acceptedInvite = function() {
@@ -95,11 +100,25 @@ var acceptedInvite = function() {
     $('#inviteTable > tbody').html("");
     ajax.getUserCollabs(collabSongs, ajaxFailure);
     ajax.getUserInvites(invitedSongs, ajaxFailure);
+    $('.alert').alert("close");
+    $('#page-content').prepend(
+        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
+        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+        + "<p>Invite accepted</p>"
+        + '</div>'
+    );
 }
 
 var rejectedInvite = function() {
     $('#inviteTable > tbody').html("");
     ajax.getUserInvites(invitedSongs, ajaxFailure);
+    $('.alert').alert("close");
+    $('#page-content').prepend(
+        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
+        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+        + "<p>Invite declined</p>"
+        + '</div>'
+    );
 }
 
 var writeToTable = function(table, response) {

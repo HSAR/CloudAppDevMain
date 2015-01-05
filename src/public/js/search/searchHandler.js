@@ -54,6 +54,7 @@ var showResults = function(response, token) {
 	} else {
         //disable and hide link
 		$('#more-results').unbind('click');
+        $('#more-results').hide();
 	}
 	for (var i = 0; i < results.length; i++) {
 		var staticPlayer = new StaticPlayer();

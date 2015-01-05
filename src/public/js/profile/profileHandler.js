@@ -27,7 +27,17 @@ var init = function() {
 
 var isFormUpdated = function() {
     var newData = {};
-    if ($("#username-form").val() !== oldData.username && $("#username-form").val() != null) {
+    if ($("#username-form").val() === "") {
+        $('#page-content').prepend(
+            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
+            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+            + "<p>Your username cannot be empty</p>"
+            + '</div>'
+        );
+        $('.profile-edit').addClass("no-display");
+        return;
+    }
+    if ($("#username-form").val() !== oldData.username && $("#username-form").val() !== "") {
         newData.username = $("#username-form").val();
     }
     if ($("#bio-form").val() !== oldData.bio) {
@@ -36,17 +46,30 @@ var isFormUpdated = function() {
     if ($("#tags-form").val() !== oldData.tags) {
         newData.tags = $("#tags-form").val();
     }
-
-    if (newData) {
+    if (!jQuery.isEmptyObject(newData)) {
         ajax.updateProfile(path, newData, profileUpdated, ajaxFailure);
     } else {
+        $('#page-content').prepend(
+            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
+            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+            + "<p>You didn't make any changes!</p>"
+            + '</div>'
+        );
         $('.profile-edit').addClass("no-display");//hide profile editor
     }
 }
 
 var profileUpdated = function() {
-    ajax.getUser(path, userData, ajaxFailure);
+    ajax.getUser(path, userData, ajaxFailure); //update profile page
+    getCurrentUser(setUser, ajaxFailure); //update currentUserEntity and related fields
     $('.profile-edit').addClass("no-display");//hide profile editor
+    $('.alert').alert("close");
+    $('#page-content').prepend(
+        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
+        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+        + "<p>Profile updated</p>"
+        + '</div>'
+    );
 }
 
 var userData = function(response) {
@@ -74,7 +97,6 @@ var userData = function(response) {
             $('#tags-area').append('<button class="label label-primary tag-label">' + tags[i] + '</button>');
         }
     }
-    
 }
 
 var ownedSongs = function(response) {
