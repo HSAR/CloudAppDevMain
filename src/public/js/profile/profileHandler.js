@@ -31,7 +31,7 @@ var init = function() {
     $('#tags-form').keyup(function() {
         if($(this).val().indexOf(',') !== -1) {//if tag ended
             var parts = $(this).val().split(',');
-            createTag(parts[i]);
+            createTag(parts[0]);
             
         }
     });
