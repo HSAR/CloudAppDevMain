@@ -73,17 +73,11 @@ button.profile-edit-button {
   margin-bottom: 3em;
 }
 
-h1.splash-title {
-  display: inline;
-  float : left;/* display inline with search bar and to the left */
+table {
+  table-layout: fixed;
 }
 
-/* line up the below with title */
-.search-container form div.form-group {
-  margin-top: 0.9em;
-}
-
-.search-container button {
-  margin-top: 1.5em;
+table td {
+  word-wrap : break-word;
 }
 

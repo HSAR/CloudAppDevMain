@@ -1,3 +1,6 @@
+var ajax;
+var pageData = { owned : []};
+
 var init = function() {
 	ajax = new AjaxHandler();
 	ajax.getUserSongs(ownedSongs, ajaxFailure);
@@ -8,6 +11,12 @@ var init = function() {
     $("#createJingleButton").click(function() {
         ajax.createJingle($("#title-form").val(), $("#genre-form").val(), $("#tags-form").val(), songCreated, ajaxFailure);
         $('#createJingleModal').modal('hide');
+    });
+
+    $("#editJingleButton").click(function() {
+        if ($("#edit-title-form").val() !== "") {
+            ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), $("#edit-tags-form").val(), songCreated, ajaxFailure);
+        }
     });
 
     if(currentUserEntity) {
@@ -73,6 +82,10 @@ var latestSongs = function(response) {
 }
 
 var songCreated = function() {
+
+    $('#createJingleModal').modal('hide');
+    $('#editJingleModal').modal('hide');
+
     $('#ownedTable > tbody').html("");
     ajax.getUserSongs(ownedSongs, ajaxFailure);
 }
@@ -104,14 +117,30 @@ var writeToTable = function(table, response) {
           		resultGenre = new String("");
          	}
             var staticPlayer = new StaticPlayer();
+            var editHTML = '';
+            if(table === '#ownedTable') {
+                editHTML = '<td><button class="btn btn-primary new-edit-button" id="edit-jingle-' + i + '" data-toggle="modal" data-target="#editJingleModal">Edit</button></td>';
+                pageData.owned.push(response[i]);
+            }
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
             $(table).append('<tr><td> <a href="/web/songs/' + response[i].jingle_id + '">' + response[i].title + '</a></td>' 
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>' 
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
                 + '<td>' + resultDate.toLocaleDateString() + '</td>'
-                + "<td class='preview" + response[i].jingle_id + "'></td></tr>");
+                + "<td class='preview" + response[i].jingle_id + "'></td>"
+                + editHTML + '</tr>');
             staticPlayer.attach($(table + ' td.preview' + response[i].jingle_id).eq(0));
+           
+            $('.new-edit-button').click(function() {
+                var id = $(this).attr('id').substring(12);
+                var res = pageData.owned[id];
+                $('#edit-title-form').val(res.title);
+                $('#edit-genre-form').val(resultGenre);
+                $('#edit-tags-form').val(res.tags);
+                pageData.currentlyEdited = res.jingle_id;
+            });
+            $('.new-edit-button').removeClass('new-edit-button');
         }
     }
 }

@@ -29,6 +29,18 @@ function AjaxHandler() {
 		});
 	}
 
+	this.updateJingle = function(jingle_id,title, genre, tags, cb, error) {
+		$.ajax({
+			type : 'PATCH',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + jingle_id,
+			data : JSON.stringify({title : title, genre : genre, tags : tags}),
+			success : cb,
+			error : function(data) {
+				error(data);
+			}
+		});
+	}
+
 	this.respondToInvite = function(jingleId, response, cb, error) {
 		$.ajax({
 			type : 'DELETE',
