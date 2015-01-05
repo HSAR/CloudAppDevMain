@@ -139,7 +139,7 @@ var writeToTable = function(table, response) {
         '#collabTable': 'User has not contributed to any songs',
     };
 
-    if (!response || response[0] === null) {
+    if (response[0] === undefined) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {

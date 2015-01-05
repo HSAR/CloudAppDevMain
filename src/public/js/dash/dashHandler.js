@@ -82,8 +82,8 @@ var invitedSongs = function(response) {
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
                 + '<td>' + resultDate.toLocaleDateString() + '</td>'
-                + '<td><button class="accept-button btn btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
-                + '<button class="reject-button btn btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
+                + '<td><button class="accept-button invite-response-button btn btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
+                + '<button class="reject-button invite-response-button btn btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
             );
         }
 
@@ -181,7 +181,7 @@ var writeToTable = function(table, response) {
         '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',
         '#collabTable': 'No collaborations found. Start contributing!',
     };
-    if (!response || response[0] === null) {
+    if (response[0] === undefined) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {

@@ -44,7 +44,7 @@ var showResults = function(response, token) {
 		token = response.token;
 		//sort = response.sort;
 		
-	if (!results || results[0] === null) {
+	if (results[0] === undefined) {
 		$('#results tbody').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 		return;
 	}
