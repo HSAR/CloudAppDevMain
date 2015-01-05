@@ -90,8 +90,9 @@ def getTags(tags):
         tags = string.split(tags, ",")
         new_tags = []
         for tag in tags:
+            tag = stripHTML(tag)
             if tag != "":
-                new_tags.append(string.strip(tag))
+                new_tags.append(tag)
         return new_tags
 
 
