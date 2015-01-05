@@ -21,6 +21,7 @@ var init = function() {
     $("#editJingleButton").click(function() {
         createTag($("#edit-tags-form").val(),$('.tags-area').eq(1),$('#edit-tags-form'));
         ajax.updateJingle(pageData.currentlyEdited,$("#edit-title-form").val(), $("#edit-genre-form").val(), pageData.tags.join(), songCreated, ajaxFailure);
+        $('#editJingleModal').modal('hide');
     });
 
     $('#create-jingle').click(function() {
@@ -107,10 +108,6 @@ var latestSongs = function(response) {
 }
 
 var songCreated = function() {
-    $('#createJingleModal').modal('hide');
-    $('#editJingleModal').modal('hide');
-
-
     $('#title-form').val('');
     $('#genre-form').val('');
     $('#tags-form').val('');
