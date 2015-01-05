@@ -18,14 +18,18 @@ var ajaxFailure = function(data) {
 	if (!data.responseJSON) {
 		data.responseJSON = jQuery.parseJSON(data.responseText);
 	}
-	$('#page-content').prepend(
-		'<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-     	+ '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-     	+ '<h4>An error occured</h4>'
-  		+ '<p><i>Error ' + data.responseJSON.status + ': ' + data.responseJSON.message + '</i></p>'
-    	+ '</div>'
-	);
+
+	alertUser('alert-danger', 'Error ' + data.responseJSON.status + ': ' + data.responseJSON.message);
 };
+
+var alertUser = function(style, message) {
+	$('#page-content').prepend(
+        '<div id="ajax-alert" role="alert" class="alert' + style + 'alert-dismissible fade in">'
+        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+        + '<p>' + message + '</p>'
+        + '</div>'
+    );
+}
 
 var getCurrentUser = function(cb, error) {
 	commonAjax(window.location.protocol + '//' + window.location.host + '/api/users/self', cb, error);

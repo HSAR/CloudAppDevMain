@@ -134,24 +134,14 @@ var acceptedInvite = function() {
     ajax.getUserCollabs(collabSongs, ajaxFailure);
     ajax.getUserInvites(invitedSongs, ajaxFailure);
     $('.alert').alert("close");
-    $('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
-        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-        + "<p>Invite accepted</p>"
-        + '</div>'
-    );
+    alertUser('alert-success', 'Invite accepted');
 }
 
 var rejectedInvite = function() {
     $('#inviteTable > tbody').html("");
     ajax.getUserInvites(invitedSongs, ajaxFailure);
     $('.alert').alert("close");
-    $('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
-        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-        + "<p>Invite declined</p>"
-        + '</div>'
-    );
+    alertUser('alert-success', 'Invite rejected');
 }
 
 var createTag = function(name,$target,$inputArea) {

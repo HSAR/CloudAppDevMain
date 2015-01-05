@@ -64,12 +64,7 @@ var isFormUpdated = function() {
     var newData = {};
 
     if ($("#username-form").val() === "") {
-        $('#page-content').prepend(
-            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-            + "<p>Your username cannot be empty</p>"
-            + '</div>'
-        );
+        alertUser('alert-danger', 'Username cannot be empty');
         $('.profile-edit').addClass("no-display");
         return;
     }   
@@ -87,12 +82,7 @@ var isFormUpdated = function() {
     if (!jQuery.isEmptyObject(newData)) {
         ajax.updateProfile(path, newData, profileUpdated, ajaxFailure);
     } else {
-        $('#page-content').prepend(
-            '<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-            + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-            + "<p>You didn't make any changes!</p>"
-            + '</div>'
-        );
+        alertUser('alert-danger', "You didn't make any changes");
         $('.profile-edit').addClass("no-display");//hide profile editor
     }
 }
@@ -102,12 +92,7 @@ var profileUpdated = function() {
     getCurrentUser(setUser, ajaxFailure); //update currentUserEntity and related fields
     $('.profile-edit').addClass("no-display");//hide profile editor
     $('.alert').alert("close");
-    $('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
-        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-        + "<p>Profile updated</p>"
-        + '</div>'
-    );
+    alertUser('alert-success', 'Profile updated');
 }
 
 var userData = function(response) {
