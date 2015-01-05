@@ -666,6 +666,8 @@ def updateJingle(jid, data):
                 title = stripHTML(data["title"])
                 if title != "":
                     jingle.title = title
+                else:
+                    return {"errorMessage": "You did not enter a valid jingle title"}
 
             if "genre" in data:
                 jingle.genre = stripHTML(data["genre"])
