@@ -456,6 +456,8 @@ def updateUser(uid, data):
 
         if "username" in data:
             username = stripHTML(data["username"])
+            if username == "":
+                return {"errorMessage": "Usernames must not be empty"}
             existingUser = getUserByUsername(username)
             if existingUser:
                 return {"errorMessage": "That username has already been taken"}
