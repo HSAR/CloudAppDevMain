@@ -89,3 +89,7 @@ table td {
 .tag-button span {
   margin-left: 3px;
 }
+
+.search-container {
+  padding-bottom: 2em;/* provide sufficient space at bottom to clear title */
+}

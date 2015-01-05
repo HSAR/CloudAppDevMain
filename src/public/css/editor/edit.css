@@ -1,6 +1,6 @@
 
 .editor {
-	height : 500px; /*This will need to be changed later as just hard coded */
+	height : 500px; /*Set size required to render inner elements in correct positions */
 }
 
 .palette {
@@ -39,19 +39,6 @@
 	width : 16%;
 	height : 80px;/* Set height large enough to accomodate all instrument names */
 	padding-bottom : 0px;
-}
-
-.note-crotchet {
-	
-}
-
-
-.note { 
-	
-}
-
-.note-quaver {
-	
 }
 
 .note-bin {
@@ -131,13 +118,11 @@
 	white-space: normal;
 }
 
-img {
+img { /*provide border and space evenly horizontally */
 	border : 1px solid black;
 	margin-left: auto;
 	margin-right: auto;
 }
-
-
 
 .no-right-padding {
 	padding-right: 0px;
