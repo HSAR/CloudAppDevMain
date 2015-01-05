@@ -276,6 +276,7 @@
 
 		$('.invite-button').click(function() {
 			$('div.invite-dialog').dialog("open");
+			$('.ui-dialog-titlebar').html("Invite friends to collaborate");
 		});
 
 
