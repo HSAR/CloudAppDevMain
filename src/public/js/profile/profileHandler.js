@@ -12,7 +12,7 @@ var path;
 var init = function() {
     //empty tables
     $('#collabTable > tbody').html("");
-    $('#inviteTable > tbody').html("");
+    $('#ownedTable > tbody').html("");
 
     path = window.location.pathname;
     path = path.split("/")[3];
