@@ -14,6 +14,7 @@ var init = function() {
 	} else if (tag) {
 		$('#search-query').val(tag);
 	}
+    $('#more-results').hide();
 	$('a.sort-link').click(function() {
 		var sortRule = $(this).attr('id').substring(5);//get what to sort by
 		ajax.search(query, sortRule, null, tag, showResults, ajaxFailure);//update results to be sorted in specified way
@@ -49,10 +50,10 @@ var showResults = function(response, token) {
 		$('#more-results').click(function() {
             ajax.search(query, sort, token, tag, showResults, ajaxFailure);
         });
+        $('#more-results').show();
 	} else {
         //disable and hide link
 		$('#more-results').unbind('click');
-        $('#more-results').hide();
 	}
 	for (var i = 0; i < results.length; i++) {
 		var staticPlayer = new StaticPlayer();

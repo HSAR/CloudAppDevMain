@@ -14,7 +14,7 @@ function AjaxHandler() {
 			data: data,
 			dataType : 'JSON',
 			success : function(data) {
-				cb(data);
+				cb(data, token);
 			},
 			error : function(data) {
 				error(data);
