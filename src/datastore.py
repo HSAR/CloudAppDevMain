@@ -99,6 +99,7 @@ def stripHTML(value):
     value = value.replace("<", "")
     value = value.replace(">", "")
     value = value.replace("&", "and")
+    value = string.strip(value)
     return value
 
 
@@ -661,7 +662,9 @@ def updateJingle(jid, data):
                 return {"errorMessage": "That is not a valid jingle"}
 
             if "title" in data:
-                jingle.title = stripHTML(data["title"])
+                title = stripHTML(data["title"])
+                if title != "":
+                    jingle.title = title
 
             if "genre" in data:
                 jingle.genre = stripHTML(data["genre"])
