@@ -10,24 +10,29 @@
 	var ajaxHelper = new AjaxHandler();
 	var midiHelper = new MidiHandler();
 	
-	var tuneJSON;
+	var tuneJSON;//the jingle in json format, which is fetched from the server
 
-	var noteValues = {
+	var noteValues = {//relative lengths of notes
 		quaver : 0.5,
 		crotchet : 1
-	}
+	};
 
+	/* Properties of the page that need to be kept track of */
 	var pageData = {
-		scrollLeft : 0,
-		quarantinedChanges : [],
-		instrumentFunction : null,
-		tabCount : 0,
-		maxTabs : 6,
-		songId : 0//TODO
+		scrollLeft : 0,//the amount the canvas has been scrolled
+		quarantinedChanges : [],//changes made locally not yet approved my server
+		instrumentFunction : null,//tracks whether the dialog opened is add or change instrument
+		maxTabs : 6,//maxium allowed number of tags
+		songId : null,//the id of the song we are editing
+		minimumBars : 8//the minimum number of bars to draw on load
 	};
 	
 	/**
 	 * Functions for intialising the page
+	 */
+
+	 /*
+	 Called on document ready, this draws a loading screen and ajax's for the token needed to open a connection
 	 */
 	function initEditor() {
 		//first thing to do is set up loading page until we can establish a connection
@@ -41,70 +46,79 @@
 		});
 	}
 	
+	/*
+	Called after the Tune JSON has been retreived from the server. Saves it locally and calls function to load the canvas
+	*/
 	function loadNotesFromJSON(data) {
 		tuneJSON = data;
 		loadCanvas();
 	}
 
+	/*
+	Called after canvas has been loaded and initialises all other ui elements
+	*/
 	function loadRemainingUI() {
 		loadPalette();
 		setPlaybackButtons();
 	}
 	
 	function drawLoadScreen() {
-		$('.canvas').append('<h1>Connecting to server<h1>');
+		$('.canvas').append('<h1>Connecting to server<h1>');//display a simple loading message
 	}
 
+	/*
+	Initialises UI components in the left hand palette, this consists largely of the dialogs for adding and 
+	changing instruments and the draggable notes and bin
+	*/
 	function loadPalette() {
-		//we need to load the pallete items and then make em draggable etc.
 		buildDialogs();
 		$('.editor .note').draggable({
 			helper : 'clone',
 			appendTo : 'body',
-			revert : 'invalid',
+			revert : 'invalid',//revert if not dropped onto the canvas
 			drag : function(event,ui) {
-				//ok so we want to see if a preview div has been drawn, and if it has we will update it
+				//we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
-					var noteValue = getNoteValue($(ui.helper));
+					var noteValue = getNoteValue($(ui.helper));//get length of note
 					if(noteValue) {
-						drawPreview(event,noteValue,$('.preview'));
+						drawPreview(event,noteValue,$('.preview'));//draw a preview of the note onto canvas
 					}
 					
 				}
 			}
-		}); //could be a dangerous game as moved out of pallete
-		//console.log($('.pallete'))
+		}); 
 
 		$('.note-bin').droppable({
 			accept : '.music-note',
 			drop : function(event,ui) {
-				if(ui.draggable.hasClass('music-note')) {
-					//deal with moving note here. Easiest thing is going to be to remove it and
-					//send a delete ajax
+				if(ui.draggable.hasClass('music-note')) {//if the dragged item is a note from the canvas
 					var oldId = ui.draggable.attr('id');
-					deleteDraggedNote(oldId);
+					deleteDraggedNote(oldId);//remove note and send a delete ajax
 				}
 			}
 		});
 
 		$('#tempo-select').change(function() {
-			var tempo = $(this).val();
-			tuneJSON.head.tempo = tempo;
+			var tempo = $(this).val();//get the new tempo
+			tuneJSON.head.tempo = tempo;//update tempo locally
 			var actionId = generateId('tempo');
-			ajaxHelper.changeTempo(pageData.songId,{tempo : parseInt(tempo,10), actionId : actionId});
+			ajaxHelper.changeTempo(pageData.songId,{tempo : parseInt(tempo,10), actionId : actionId});//notify server of change
 			pageData.quarantinedChanges.push({actionId : actionId, tempo : parseInt(tempo,10), time : Date.now()});
 		});
 
 		$('.add-bar-button').click(function(){
-			$('.tab-pane.active').append(barHTML);
-			setUpDroppable();
+			$('.tab-pane.active').append(barHTML);//apend a further bar to canvas locally
+			setUpDroppable();//initialise the droppable on the new bar
 		});
 	}
 
+	/*
+	This loads the canvas, including drawing the tracks and notes from the tune json as dom elements, and then initialises 
+	the ui elements in the canvas so that notes can be dropped on it etc
+	*/
 	function loadCanvas() {
 		//this loads canvas from the json we got sent
-		//need to iterate through each track and add tabs (we will need at least one tab regardless)
-		//if tracks is empty add default tab otherwise add tabs as per usual
+		//need to iterate through each track and add tabs 
 		$('.canvas').children().remove(); //get rid of loading message
 		//calculate how many bars are in piece by working out which note has longest position
 		var longestPosition = 0;
@@ -120,112 +134,117 @@
 		}
 		
 		var bars = Math.ceil(longestPosition / (tuneJSON.head.subDivisions * tuneJSON.head.barLength));
-		if(bars < 8) {
-			bars = 8;
+		if(bars < pageData.minimumBars) {
+			bars = pageData.minimumBars;//if bars less than minimum number then draw the minimum number instead
 		}
 
-		tuneJSON.head.bars = bars;
-		
+		tuneJSON.head.bars = bars;//update the number of bars in tube json
 
-		$('#tempo-select').val(tuneJSON.head.tempo + '');
+		$('#tempo-select').val(tuneJSON.head.tempo + '');//set the tempo selector to the tempo specified
 
-		loadTabs();
-		$('.canvas .tab-pane').each(function() {loadBars($(this))});//load bars for each tab
-		loadNotes();
-		updateKey();
+		loadTabs();//load a tab for each track
+		$('.canvas .tab-pane').each(function() {loadBars($(this));});//load bars for each tab
+		loadNotes();//load notes from json into dom
+		updateKey();//update the key of notes at the left of the editor
 
-		setUpDroppable();
+		setUpDroppable();//initialise the droppable ui on canvas elements
 	}
 	
+	/*
+	This function creates a tab for every non-empty track in the tune json, appends it to the document and 
+	initialises the remove button on each tab
+	*/
 	function loadTabs() {
-		//lets handle the lack of tracks here if necessary
-		var currentTabCount = pageData.tabCount;//save the current tab count
 		var htmlToAppend = '';
 		htmlToAppend += '<ul class="nav nav-tabs">';
-		if(tuneJSON.tracks.length > 0) {
-			var tabsMade = 0;
-			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-					if(tabsMade === 0) {
-						tabsMade++;
-						htmlToAppend +='<li class="active"><a href="#track' + i +
-						 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
-						 '</span></a></li>';
-					} else {
-						htmlToAppend += '<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
-						midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
-						'</span><button class="remove-tab-button" id="remove-tab' + i + '"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
-					}
-					pageData.tabCount++;
+		
+		var tabsMade = 0;
+		for(var i = 0; i <tuneJSON.tracks.length; i++) {//create the nav tabs for each nonempty track
+			if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+				if(tabsMade === 0) {//if first tab add an active class to it
+					tabsMade++;
+					htmlToAppend +='<li class="active"><a href="#track' + i +
+					 '"  data-toggle="tab"><span class="instrument-name">' + midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+					 '</span></a></li>';
+				} else {
+					htmlToAppend += '<li role="presentation"><a href="#track' + i + '" role="tab" data-toggle="tab"><span class="instrument-name">' +
+					midiHelper.getInstrumentName(tuneJSON.tracks[i].instrument) + 
+					'</span><button class="remove-tab-button" id="remove-tab' + i + '"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></li>';
 				}
-				
-				
 			}
-		} else {//add default tab
-			$('.canvas').append('<li class="active"><a href="#default"  data-toggle="tab"></a></li>');
+			
+			
 		}
+		
 		htmlToAppend += '</ul><div class="tab-content">';
 		//now add the tab panels
-		if(tuneJSON.tracks.length > 0) {
-			tabsMade = 0;
-			pageData.tabCount = currentTabCount;
-			for(var i = 0; i <tuneJSON.tracks.length; i++) {
-				if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
-					if(tabsMade === 0) {
-						htmlToAppend += '<div  class="tab-pane active" id="track' + i +'"></div>';
-						tabsMade++;
-					} else {
-						htmlToAppend+= '<div  class="tab-pane" id="track' + i +'"></div>';
-					}
-					pageData.tabCount++;
+		
+		tabsMade = 0;
+
+		for(var i = 0; i <tuneJSON.tracks.length; i++) {//create the tab pane for each nonempty track
+			if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+				if(tabsMade === 0) {
+					htmlToAppend += '<div  class="tab-pane active" id="track' + i +'"></div>';
+					tabsMade++;
+				} else {
+					htmlToAppend+= '<div  class="tab-pane" id="track' + i +'"></div>';
 				}
-				
-				
+
 			}
-		} else {
-			$('.canvas').append('<div class="tab-pane" id="default"></div>');
+			
 		}
+		
 		htmlToAppend += '</div>';
 		$('.canvas').append(htmlToAppend);
 
-
-		$('.remove-tab-button').click(function() {
+		$('.remove-tab-button').click(function() {//add remove event to delete button
 			deleteInstrument(parseInt($(this).attr('id').substring(10), 10));//get index of track
 		});
 		
 	}
 
+	/*
+	Appends a key and blank bars to the target (which will be a tab pane)
+	*/
 	function loadBars($target) {
 		$target.append(midiHelper.writeKey());
 		$target.append(barHTML.repeat(tuneJSON.head.bars));
 	}
 
+	/*
+	Goes through the tune JSON and draws each note onto the canvas in its correct place
+	*/
 	function loadNotes() {
 		for(var i = 0; i < tuneJSON.tracks.length; i++) {
-			if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {
+			if(typeof tuneJSON.tracks[i].instrument !== 'undefined') {//if not a blank track
 				for(var j = 0; j<tuneJSON.tracks[i].notes.length; j++){
 					var $tab = $('#track' + i);
-					drawNote(tuneJSON.tracks[i].notes[j],$tab);
+					drawNote(tuneJSON.tracks[i].notes[j],$tab);//calls helper function to draw the note
 				}
 			} 
 			
 		}
 	}
 	
+	/*
+	Responsible for intialising the add instrument, change instrument and invite friends dialog
+	*/
 	function buildDialogs() {
 		ajaxHelper.getUsers(pageData.songId);//set initial user list as something to fall back on
 
+		/* 
+		This dialog is shared between the add and change instrument functions (they just update the title etc)
+		*/
 		$('.instrument-dialog').dialog({
 			modal : true,
 			title : 'Add Instrument',
 			autoOpen : false,
 			buttons : [{text : 'OK', click : function() {
 				//need to work out the instrument to add/change
-				var familyIndex  = parseInt($('select#instrument-class').val());
+				var familyIndex  = parseInt($('select#instrument-class').val());//the family of instrument
 				var instrumentIndex = parseInt($('select#instrument-choice').val());
-				//TODO check cast is safe
-				console.log(familyIndex);
-				console.log(instrumentIndex);
+
+				//calls either add or change instrument (depending on dialog) with the selected instrument as an argument
 				pageData.instrumentFunction(familyIndex * 8 + instrumentIndex);
 				$('.instrument-dialog').dialog("close");
 			}},
@@ -237,14 +256,14 @@
 		$('select#instrument-class').change(function() {
 			var index = $(this).val();
 			$('select#instrument-choice').empty();//remove any current entries
-			for(var i = 0; i < 8; i++) {//loop through family of instruments
+			for(var i = 0; i < 8; i++) {//loop through family of instruments and append to lower select box
 				var instrumentNo = index * 8 + i;
 				$('select#instrument-choice').append("<option value='" + i + "'>" + midiHelper.getInstrumentName(instrumentNo) + "</option>");
 			}
 		});
 		$('select#instrument-class').change();//call it once to set fill it in initially
 
-		$('button.add-instrument').click(function() {
+		$('button.add-instrument').click(function() {//set up dialog to work for add instrument
 			if($('.tab-content').children().length >= pageData.maxTabs) {
 				return;//we have reached maximum number of tabs
 			}
@@ -254,13 +273,16 @@
 			$('.instrument-dialog').dialog('open');
 		});
 
-		$('button.change-instrument').click(function() {
+		$('button.change-instrument').click(function() {//set up dialof to work for change instrument
 			$('.ui-dialog-titlebar').html("Change Instrument");
 			pageData.instrumentFunction = changeInstrument;
 			$('.instrument-dialog').removeClass('no-display');
 			$('.instrument-dialog').dialog('open');
 		});
 
+		/*
+		Create invite friends dialog
+		*/
 		$('div.invite-dialog').dialog({
 			modal : true,
 			title : 'Invite friends to collaborate',
@@ -280,17 +302,18 @@
 
 
 		$('input.name-bar').keyup(function(){
-			//compare name entered to list of users
+			//compare name entered to list of users whenever user types something 
+			//and draw a list of matches below with invite buttons for each one
 			var name = $(this).val();
 			var matches = searchForPossibleUser(name);
-			console.log(matches);
+
 			if(!matches || matches.length === 0) {
 				$('table.results-table tbody').empty();
 				$('span.invite-info').html("No results");
 				return;
 			}
 			$('span.invite-info').html("Results");
-			$('table.results-table tbody').empty();
+			$('table.results-table tbody').empty();//get rid of previous matches 
 			for(var i = 0; i < matches.length; i++) {
 				var html = '<tr><td>' + matches[i].username + '</td><td><button class="btn btn-primary fresh" id="match' +
 				matches[i].user_id + '">Invite' + '</button></td></tr>';
@@ -306,7 +329,8 @@
 	}
 	
 	/*
-	We can use this to to keep track of moving draggable elements whether on initial drop or subsequent moves
+	Draw a preview of a note (the target) with length and position controlled by noteLength and event
+	This is used to draw a preview in the correct location when a dragged note is moved about on screen
 	*/
 	function drawPreview(event,noteLength,$target) {
 		//ok so we can use event.pageX - ui.offset and ignore ones where we get minus values as these are false events
@@ -322,7 +346,7 @@
 			var leftPos = ((position / subDivisions) * 100) + "%";
 			var length = ((noteLength / subDivisions) * 100) + "%";
 
-			$target.css({
+			$target.css({//update css of the preview to match calculated position and length
 				"position" : 'absolute',
 				'left' : leftPos,
 				'width' : length,
@@ -332,12 +356,14 @@
 		}
 	}
 
-	
+	/*
+	Helper function which takes a note as a json and a tab and vreates a dom element for the note
+	in the correct position
+	*/
 	function drawNote(note,$tab) {
 		//first we need to work out what bar note is in and where
-
 		var subDivisions = tuneJSON.head.subDivisions * tuneJSON.head.barLength;
-		var bar = Math.floor(note.pos / subDivisions);
+		var bar = Math.floor(note.pos / subDivisions);//bar the note needs to be drawn in
 		if(bar > tuneJSON.head.bars) {//draw extra bars to allow for note
 			var barsNeeded = bar - tuneJSON.head.bars;
 			$('.tab-pane.active').append(barHTML.repeat(barsNeeded));
@@ -345,24 +371,25 @@
 			tuneJSON.head.bars = bar;
 		}
 		var pitch =  midiHelper.convertPitchToIndex(note.pitch);
-		var left = ((note.pos % subDivisions) / subDivisions) * 100 + '%';//could potentially divide by 0 but js protects us
+		var left = ((note.pos % subDivisions) / subDivisions) * 100 + '%';//left point of note in bar
 		var length = (note.length / subDivisions) * 100 + '%';
-		console.log("bar " + bar);
-		console.log("subDivisions " + subDivisions);
+
+		//append note to correct pitch div
 		$tab.children('.bar').eq(bar).children('.pitch').eq(pitch).append('<div class="newNote" id="note' + note.id +'"></div>');
 
-		$('.newNote').css({
+		$('.newNote').css({//update css of note to give it correct position and length within parent 
 			'position' : 'absolute',
 			'left' : left,
 			'width' : length
 		});
-		addNoteUI($('.newNote'));
+		addNoteUI($('.newNote'));//add ui for dragging and resizing
 		$('.newNote').attr('id', note.id);
 		$('.newNote').addClass('music-note').removeClass('newNote');
 	}
 
-	
-
+	/*
+	Helper function for adding resize and darg ui events to notes
+	*/
 	function addNoteUI($note) {
 		$note.draggable({
 			helper : 'clone',
@@ -370,8 +397,8 @@
 			revert : 'invalid',
 			start : function(event,ui) {
 				$note.addClass('no-display');
-				ui.helper.addClass('no-display');
-				ui.helper.css({
+				ui.helper.addClass('no-display');//hide actual note while dragging and just show helper and previews
+				ui.helper.css({//give helper same size as actual note
 					'height' : $note.height(),
 					'width' : $note.width()
 				});
@@ -379,14 +406,14 @@
 			drag : function(event,ui) {
 				//ok so we want to see if a preview div has been drawn, and if it has we will update it
 				if($('.preview').length) {
-					ui.helper.addClass('no-display');
+					ui.helper.addClass('no-display');//dont display helper if preview is being shown
 					var noteValue = Math.round($note.width() / $note.parent().width() * getsubDivisions());
 					if(noteValue) {
-						drawPreview(event,noteValue,$('.preview'));
+						drawPreview(event,noteValue,$('.preview'));//draw the preview
 					}
 					
 				} else {
-					ui.helper.removeClass('no-display');
+					ui.helper.removeClass('no-display');//show helper of no preview
 				}
 			},
 			stop : function(event, ui) {
@@ -395,9 +422,13 @@
 		});
 		
 		$note.resizable({
-			handles : 'w,e',
+			handles : 'w,e',//handles to drag the note with on left and right
 			containment : 'parent',
 			start : function(event,ui) {
+				/* 
+				It is necessary to track the previous and original position and length of resized note so that 
+				the original note can be sent as a delete ajax
+				*/
 				var subDivisions = getsubDivisions();
 				pageData.previousLeft = Math.round(subDivisions * (ui.originalPosition.left / ui.element.parent().width()));
 				pageData.previousLength = Math.round(subDivisions * (ui.originalElement.width() / ui.element.parent().width()));
@@ -406,10 +437,17 @@
 				pageData.originalLength = pageData.previousLength;
 			},
 			resize : function(event,ui) {
+				/*
+				This purpose of this is to ensure that the resize follows the snappable system and keeps the note aligned
+				with the grid. the notes left position and length in terms of subdivisions is calculated and
+				updated accordingly in the notes style
+				*/
 				var subDivisions = getsubDivisions();//saves overhead of repeated function calls
-				var left = Math.round(subDivisions * (ui.element.position().left / ui.element.parent().width()));
+				var left = Math.round(subDivisions * (ui.element.position().left / ui.element.parent().width()));//find left point
 				var leftPercent = (left / subDivisions) * 100 + '%';
 				var length;
+
+				//work out whether length should be updated and if so do it else use previous value
 				if(left === pageData.previousLeft) {
 					if(ui.element.position().left !== pageData.previousLeftRaw) {
 						length = pageData.previousLength;
@@ -418,11 +456,11 @@
 					}
 				} else {
 					var leftDifference = left - pageData.previousLeft;
-					console.log(leftDifference);
 					length = pageData.previousLength - leftDifference;
 				}
+
 				var lengthPercent = (length / subDivisions) * 100 + '%';
-				ui.element.css({
+				ui.element.css({//update css of element to reflect new position and length
 					'left' : leftPercent,
 					'width' : lengthPercent
 				});
@@ -432,13 +470,13 @@
 			},
 			stop : function(event,ui) {
 				var conflict = false;
-				ui.element.parent().children().each(function(i) {
+				ui.element.parent().children().each(function(i) {//check for any overlap conflicts against other notes
 					if($(this).attr('id') !== ui.element.attr('id') && isConflicting(ui.element,$(this))) {
 						//check for possible conflicts
 						conflict = true;
 					}
 				}); 
-				if(conflict) {
+				if(conflict) {//if conflict, revert dragged note to original position and stop there
 					var originalLeft = (pageData.originalLeft / getsubDivisions()) * 100 + '%';
 					var originalLength = (pageData.originalLength / getsubDivisions()) * 100 + '%';
 					ui.element.css({
@@ -446,17 +484,21 @@
 						'width' : originalLength
 					});
 					return;
-				}	
+				}
+				/*
+				Delete the note in the tune json and send an ajax of its old position and then add a new
+				note to the tune json with the new position and length and send an add ajax with these paramaters
+				*/	
 				var id = $note.attr('id');	
-				console.log(id);
-				var oldNote = deleteNote(id);
+
+				var oldNote = deleteNote(id);//deletye from tune json
 				var trackId = parseInt($('.tab-pane.active').attr('id').substring(5), 10);//get tab index in json
 				var action = generateId('delete');
 				var deleteData = {noteId : oldNote.id, trackId : trackId, actionId : action };
 
-				ajaxHelper.deleteNote(pageData.songId,deleteData);
+				ajaxHelper.deleteNote(pageData.songId,deleteData);//send delete ajax
 				pageData.quarantinedChanges.push({actionId : action, note : oldNote , time : Date.now()});
-				var newId = generateId();
+				var newId = generateId();//generate id for the new note
 				$note.attr('id',newId);
 				//need to put new size into a data and ajax it and update id of div
 				var subDivisions = getsubDivisions();//saves overhead of repeated function calls
@@ -476,7 +518,7 @@
 
 				var actionId = generateId('add');
 				var newNoteToSend = { actionId : actionId, note : newNoteData};
-				ajaxHelper.addNote(pageData.songId,newNoteToSend);
+				ajaxHelper.addNote(pageData.songId,newNoteToSend);//notify the server of new note
 				newNoteToSend.time = Date.now();//add timestamp for quarentining
 
 				delete newNoteData.track;//delete track before inserting into tune json for checksum reasons
@@ -487,47 +529,46 @@
 		});
 	}
 	
+	/*
+	This function sets up the droppable ui for the canvas so that it can deal with notes being dragged onto it
+	*/
 	function setUpDroppable() {
 
-		$('.pitch').droppable({//remove any previous droppable handlers
+		$('.pitch').droppable({
 			tolerance : 'pointer',
 			over : function(event,ui) {
 				var canvasArea = $('.tab-pane.active').offset();
 				var canvasHeight =  $('.tab-pane.active').height();
 				var canvasWidth = $('.tab-pane.active').width();
-				if(event.pageX < canvasArea.left || event.pageY < canvasArea.top ||
+				if(event.pageX < canvasArea.left || event.pageY < canvasArea.top ||//ensure event occured within canvas
 				 event.pageX > canvasArea.left + canvasWidth || event.pageY > canvasArea.top + canvasHeight) {
 					return;//event is outside the range of the canvas
 				}
 				pageData.$currentPreviewDiv = $(this);
-				$(event.target).append("<div class='preview no-display'></div>");
+				$(event.target).append("<div class='preview no-display'></div>");//append preview div to pitch
 			},
 			out : function(event,ui) {
-				$(event.target).children('.preview').remove();
+				$(event.target).children('.preview').remove();//remove preview div from pitch
 			},
 			drop : function(event,ui) {
-				//we need to reclass the preview div here and add it to the model
-
-				//ajax some shit here
-
-				//also need to handle two notes being dropped on top of each other.
-				if($('.preview').length !== 1) {
+				if($('.preview').length !== 1) {//if no preview or more than one preview
 					$('.preview').remove();
 					return;//something has gone wrong with drawing code so do not carry on!
 				}
 				var conflict = false;
-				$(event.target).children('.music-note').each(function(i) {
+				$(event.target).children('.music-note').each(function(i) {//check for overlap conflict with other notes
+
 					if($(this).attr('id') !== ui.draggable.attr('id') && isConflicting($(this),$('.preview'))) {
 						conflict = true;
 					}
 				});
-				if(conflict) {
+				if(conflict) {//if conflict remove the preview
 					if(ui.draggable.hasClass('music-note')) {
 						ui.draggable.removeClass('no-display');//make original position visible again
 					}
 					$('.preview').remove();
 				} else {
-					if(ui.draggable.hasClass('music-note')) {
+					if(ui.draggable.hasClass('music-note')) {//if we are dragging an existing note
 						//deal with moving note here. Easiest thing is going to be to remove it and
 						//send a delete ajax
 						var oldId = ui.draggable.attr('id');
@@ -536,11 +577,11 @@
 					
 					//we need to turn preview's position into a json to send to server
 					var left = $('.preview').position().left / $('.preview').parent().width();
-					console.log("left " + left);
+
 					var width = $('.preview').width() / $('.preview').parent().width();
 					var bar = $('.preview').parent().parent().index() - 1;//gets index of bar, allowing for key
 					
-					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions)
+					var subDivisions = (tuneJSON.head.barLength * tuneJSON.head.subDivisions);
 					var notePosition = (bar * subDivisions) + Math.round(left * subDivisions);
 					var noteLength = Math.round(width * subDivisions);
 					var noteTrack = parseInt($('.tab-pane.active').attr('id').substring(5), 10);//get trackid from dom element id
@@ -577,6 +618,9 @@
 		});
 	}
 
+	/*
+	Helper for deleting a dragged note using ther id of the original note
+	*/
 	function deleteDraggedNote(oldId) {
 		var oldNote = deleteNote(oldId);//will also delete the note from json
 		$('#' + oldId).remove();
@@ -594,6 +638,9 @@
 		pageData.quarantinedChanges.push({actionId : actionId, note : oldNote, time : Date.now()});
 	}
 
+	/*
+	Initialise the playback buttons used to compile and play the jingle
+	*/
 	function setPlaybackButtons() {
 		$('.play-button').click(function(event,ui) {
 			if(pageData.compiledMidi && (!MIDI.Player.playing)) {//if we have something to play and not already playing
@@ -621,7 +668,7 @@
 			$('.progress-bar').html('Compiling tune').css({
 				'width' : '100%'
 			});
-			ajaxHelper.compileTune(pageData.songId,function(data) {
+			ajaxHelper.compileTune(pageData.songId,function(data) {//fetch compiled tune from server and load it
 				loadMidi(data);
 			});
 		});
@@ -634,6 +681,9 @@
 		});
 	}
 
+	/*
+	Load the midi js plugin for the compiled midi fetched from server
+	*/
 	function loadMidi(data) {
 		if(MIDI) {
 			MIDI.Player.loadFile('data:audio/midi;base64,' + data.midi,function() {//stick file format on front of data
@@ -677,9 +727,11 @@
 		}
 	}
 	
+	/*
+	Adds an instrument to the jingle by creating a new tab for, updating the tune json and notifying
+	the server of the change
+	*/
 	function addInstrument(id,track) {//optional argument of track for when loading from channels
-		var tabsLength = pageData.tabCount;
-
 		//find an empty track for our new instrument to reside in
 		var trackId;
 		for(var i = 0; i < tuneJSON.tracks.length && !trackId; i++) {//stop once trackId is set
@@ -698,7 +750,7 @@
 		htmlToAppend = '<div class="tab-pane" id="track' + trackId +'"></div>';
 		$('.tab-content').append(htmlToAppend);
 		loadBars($('.tab-content').children().last());
-		pageData.tabCount++;
+		
 
 		$('.nav-tabs a:last').tab('show');
 
@@ -723,19 +775,23 @@
 		var actionId = generateId("instrumentAdd");
 		var instrument = {inst : id, track : trackId};
 		var data = {actionId : actionId, instrument : instrument};
-		ajaxHelper.addInstrument(pageData.songId,data);//TODO might need to send where also
+		ajaxHelper.addInstrument(pageData.songId,data);
 		data.time = Date.now();//add timestamp for quarantining
 		pageData.quarantinedChanges.push(data);
 		
 
 	}
 
+	/*
+	Change the current instrument and notify server of change
+	*/
 	function changeInstrument(id,trackId) {//optional trackId for if dealing with channel message
 		$('li.active a span.instrument-name').html(midiHelper.getInstrumentName(id));
+		var track = null;
 		if(!trackId && trackId !== 0) {//if no track provided use current track
-			var track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
+			track = parseInt($('.tab-pane.active').attr('id').substring(5), 10);
 		} else {
-			var track = trackId;
+			track = trackId;
 		}
 		
 		tuneJSON.tracks[track].instrument = id;
@@ -752,6 +808,9 @@
 		
 	}
 
+	/*
+	Delete the instrument in the specified track and update server if necessary
+	*/
 	function deleteInstrument(tabId,fromChannels) {
 		var tabIndex = $('#track' + tabId).index();
 		if(!tabIndex) {
@@ -791,7 +850,7 @@
 			$('.key').css({
 				'left' : scrollAmount
 			});
-		})
+		});
 	}
 
 	
@@ -812,13 +871,16 @@
 
 		var newLeft = $element2.position().left;
 		var newRight = newLeft + $element2.width();
-		console.log(left + " " + right + " " + newLeft + " " + newRight);
+
 		if((left < newLeft && right > newLeft) || (left >= newLeft && left <= newRight )) {
 			return true;
 		}
 		return false;
 	}
 
+	/*
+	Generates a random id with the option to supply a prefix
+	*/
 	function generateId(word) {
 		var prefix = 'note-';//default prefix if none supplied
 		if(word) {
@@ -871,20 +933,16 @@
 		return note;
 	}
 
-	
-	
-	//TODO call draw preview on dragged between pitches divs so they dont disappear
+	//simple helper to enable us to repeat strings
+	//used when appending bar html etc.
 	String.prototype.repeat = function( num )
 	{
 	    return new Array( num + 1 ).join( this );
-	}
+	};
 
 	var barHTML = '<div class="bar">' + '<div class="pitch"></div>'.repeat(37) + '</div>';
 	var keyHTML = '<div class="key">' + '<div class="key-pitch"></div>'.repeat(37) + '</div>';
 	
-
-	
-
 	/*
 	Function to deal with getting a new tunejson from the server when something has gone wrong
 	*/

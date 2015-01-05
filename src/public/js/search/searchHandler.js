@@ -22,7 +22,7 @@ var init = function() {
                 sort = sortRule;
 	});
 	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
-}
+};
 
 function getUrlParam(parameter) {
 	var query = window.location.search.substring(1);
@@ -43,7 +43,7 @@ var showResults = function(response, token) {
 		token = response.token;
 		//sort = response.sort;
 		
-	if (!results || results[0] == null) {
+	if (!results || results[0] === null) {
 		$('#results tbody').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 		return;
 	}
@@ -78,4 +78,4 @@ var showResults = function(response, token) {
 		staticPlayer.attach($('td.preview' + results[i].jingle_id).eq(0));
 	}
 
-}
+};

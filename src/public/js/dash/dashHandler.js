@@ -32,12 +32,14 @@ var init = function() {
 
     $('.tags-form').keyup(function() {
         if($(this).val().indexOf(',') !== -1) {//if tag ended
+            var $target;
+            var $input;
             if($(this).attr('id') === 'tags-form') {
-                var $target = $('.tags-area').eq(0);
-                var $input = $('#tags-form');
+                $target = $('.tags-area').eq(0);
+                $input = $('#tags-form');
             } else {
-                var $target = $('.tags-area').eq(1);
-                var $input = $('#edit-tags-form') 
+                $target = $('.tags-area').eq(1);
+                $input = $('#edit-tags-form'); 
             }
             var parts = $(this).val().split(',');
             createTag(parts[0],$target,$input); 
@@ -55,25 +57,25 @@ var init = function() {
             $('ul.tag-list').append(htmlToAppend);
         }
     }
-}
+};
 
 var ownedSongs = function(response) {
     writeToTable('#ownedTable', response);
-}
+};
 
 var collabSongs = function(response) {
     writeToTable('#collabTable', response);
-}
+};
 
 var invitedSongs = function(response) {
-    if (!response || response[0] == null) {
+    if (!response || response[0] === null) {
         $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
             var resultDate = new Date(response[i].date_created * 1000);
             var resultGenre = response[i].genre;
             if (resultGenre === null) {
-          		resultGenre = new String("");
+          		resultGenre = new String();
          	}
             $('#inviteTable').append(
                 '<tr><td>' + response[i].title +'</td>'
@@ -94,7 +96,7 @@ var invitedSongs = function(response) {
             ajax.respondToInvite($(this).val(), false, rejectedInvite);
         });
     }
-}
+};
 
 var latestSongs = function(response) {
     var result = response.results;
@@ -106,7 +108,7 @@ var latestSongs = function(response) {
                 + "<td class='preview" + result[i].jingle_id + "'></td></tr>");
             staticPlayer.attach($('#latest-table td.preview' + result[i].jingle_id).eq(0));
     }
-}
+};
 
 var songCreated = function() {
     $('#createJingleModal').modal('hide');
@@ -126,7 +128,7 @@ var songCreated = function() {
         + "<p>Jingle saved</p>"
         + '</div>'
     );
-}
+};
 
 var acceptedInvite = function() {
     $('#collabTable > tbody').html("");
@@ -140,7 +142,7 @@ var acceptedInvite = function() {
         + "<p>Invite accepted</p>"
         + '</div>'
     );
-}
+};
 
 var rejectedInvite = function() {
     $('#inviteTable > tbody').html("");
@@ -152,7 +154,7 @@ var rejectedInvite = function() {
         + "<p>Invite declined</p>"
         + '</div>'
     );
-}
+};
 
 var createTag = function(name,$target,$inputArea) {
     if(!name || name === '') {//validate name
@@ -169,21 +171,21 @@ var createTag = function(name,$target,$inputArea) {
             $(this).remove();
         }).removeClass('new-tag');
     }
-}
+};
 
 var writeToTable = function(table, response) {
     var songTableEmptyMessage = {
         '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',
         '#collabTable': 'No collaborations found. Start contributing!',
-    }
-    if (!response || response[0] == null) {
+    };
+    if (!response || response[0] === null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
             var resultDate = new Date(response[i].date_created * 1000);
             var resultGenre = response[i].genre;
          	if (resultGenre === null) {
-          		resultGenre = new String("");
+          		resultGenre = new String();
          	}
             var staticPlayer = new StaticPlayer();
             var editHTML = '';
@@ -221,6 +223,6 @@ var writeToTable = function(table, response) {
             $('.new-edit-button').removeClass('new-edit-button');
         }
     }
-}
+};
 
 

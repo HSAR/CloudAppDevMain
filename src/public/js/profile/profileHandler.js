@@ -35,7 +35,7 @@ var init = function() {
             
         }
     });
-}
+};
 
 var createTag = function(name) {
     if(!name || name === '') {//validate name
@@ -54,7 +54,7 @@ var createTag = function(name) {
             $(this).remove();
         }).removeClass('new-tag');
     }
-}
+};
 
 var isFormUpdated = function() {
     var newData = {};
@@ -91,7 +91,7 @@ var isFormUpdated = function() {
         );
         $('.profile-edit').addClass("no-display");//hide profile editor
     }
-}
+};
 
 var profileUpdated = function() {
     ajax.getUser(path, userData, ajaxFailure); //update profile page
@@ -104,7 +104,7 @@ var profileUpdated = function() {
         + "<p>Profile updated</p>"
         + '</div>'
     );
-}
+};
 
 var userData = function(response) {
     $(".profile-username").text(response.username);
@@ -115,7 +115,7 @@ var userData = function(response) {
         createTag(tagsList[i]);
     }
     oldData.username = $("#username-form").val();
-    oldData.bio = $("#bio-form").val()
+    oldData.bio = $("#bio-form").val();
     oldData.tags = response.tags;
 
     if(!response.bio || response.bio === '') {//if undefined or empty
@@ -134,23 +134,23 @@ var userData = function(response) {
             $('#tags-area').append('<button class="label label-primary tag-label">' + tags[i] + '</button>');
         }
     }
-}
+};
 
 var ownedSongs = function(response) {
     writeToTable('#ownedTable', response);
-}
+};
 
 var collabSongs = function(response) {
     writeToTable('#collabTable', response);
-}
+};
 
 var writeToTable = function(table, response) {
     var songTableEmptyMessage = {
         '#ownedTable': 'User has not created any songs',
         '#collabTable': 'User has not contributed to any songs',
-    }
+    };
 
-    if (!response || response[0] == null) {
+    if (!response || response[0] === null) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
@@ -171,6 +171,6 @@ var writeToTable = function(table, response) {
             staticPlayer.attach($(table + ' td.preview' + response[i].jingle_id).eq(0));
         }
     }
-}
+};
 
 
