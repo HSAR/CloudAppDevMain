@@ -6,9 +6,10 @@ var token,
 
 var init = function() {
 	ajax = new AjaxHandler();
-	sort = getUrlParam('sort');
-	query = getUrlParam('query');
-	tag = getUrlParam('tag');
+	sort = decodeURIComponent(getUrlParam('sort'));
+	query = decodeURIComponent(new String(getUrlParam('query')).replace("+", '%20'));
+	tag = decodeURIComponent(new String(getUrlParam('tag')).replace("+", '%20'));
+	
 	if (query) {
 		$('#search-query').val(query);
 	} else if (tag) {
