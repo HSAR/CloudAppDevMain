@@ -68,7 +68,7 @@ var collabSongs = function(response) {
 
 var invitedSongs = function(response) {
     if (response[0] === undefined) {
-        $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td></tr>');
+        $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
             var resultDate = new Date(response[i].date_created * 1000);
@@ -168,7 +168,7 @@ var writeToTable = function(table, response) {
         '#collabTable': 'No collaborations found. Start contributing!',
     };
     if (response[0] === undefined) {
-        $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
+        $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
             var resultDate = new Date(response[i].date_created * 1000);
