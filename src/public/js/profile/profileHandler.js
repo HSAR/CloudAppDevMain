@@ -45,7 +45,7 @@ var isFormUpdated = function() {
 }
 
 var profileUpdated = function() {
-    ajax.getUser(path, userData, unknownUser);
+    ajax.getUser(path, userData, ajaxFailure);
     $('.profile-edit').addClass("no-display");//hide profile editor
 }
 
