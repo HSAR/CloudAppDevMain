@@ -298,7 +298,7 @@
 
 				$('table.results-table tbody').append(html);
 				$('button.fresh').click(function() {//fresh tag used to mark button out to register callback
-					ajaxHelper.sendInvite(pageData.songId,$(this).attr('id').substring(5));
+					ajaxHelper.sendInvite(pageData.songId,$(this).attr('id').substring(5), ajaxFailure);
 					$(this).html("Added").attr("disabled","disabled");
 				});
 				$('button.fresh').removeClass('fresh');//get rid of tag after used to register callback
