@@ -67,7 +67,7 @@ var collabSongs = function(response) {
 };
 
 var invitedSongs = function(response) {
-    if (!response || response[0] === null) {
+    if (response[0] === undefined) {
         $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
@@ -82,8 +82,8 @@ var invitedSongs = function(response) {
                 + '<td>' + response[i].tags + '</td>'
                 + '<td>' + resultGenre + '</td>'
                 + '<td>' + resultDate.toLocaleDateString() + '</td>'
-                + '<td><button class="accept-button invite-response-button btn btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
-                + '<button class="reject-button invite-response-button btn btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
+                + '<td><button class="accept-button invite-response-button btn btn-xs btn-success" type="button" value="'+ response[i].jingle_id +'">Accept</button>'
+                + '<button class="reject-button invite-response-button btn btn-xs btn-danger" type="button" value="'+ response[i].jingle_id +'">Reject</button></td></tr>'
             );
         }
 
