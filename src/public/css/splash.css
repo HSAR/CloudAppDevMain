@@ -79,3 +79,7 @@ h1.splash-title {
 .search-container button {
   margin-top: 1.5em;
 }
+
+.search-container {
+  padding-bottom: 2em;/* provide sufficient space at bottom to clear title */
+}
