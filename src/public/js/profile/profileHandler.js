@@ -10,6 +10,10 @@ var pageData = {
 var path;
 
 var init = function() {
+    //empty tables
+    $('#collabTable > tbody').html("");
+    $('#inviteTable > tbody').html("");
+
     path = window.location.pathname;
     path = path.split("/")[3];
 	ajax = new AjaxHandler();
