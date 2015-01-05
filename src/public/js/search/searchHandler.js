@@ -7,8 +7,8 @@ var token,
 var init = function() {
 	ajax = new AjaxHandler();
 	sort = decodeURIComponent(getUrlParam('sort'));
-	query = decodeURIComponent(new String(getUrlParam('query')).replace("+", '%20'));
-	tag = decodeURIComponent(new String(getUrlParam('tag')).replace("+", '%20'));
+	query = decodeURIComponent(new String(getUrlParam('query')).replace(/\+/g, '%20'));
+	tag = decodeURIComponent(new String(getUrlParam('tag')).replace(/\+/g, '%20'));
 	
 	if (query.length !== 0) {
 		$('#search-query').val(query);
