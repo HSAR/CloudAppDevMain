@@ -1,6 +1,8 @@
 /* Adapted from Chris Ackerman's node module
  * (https://github.com/ChrisAckerman/adler32) - ported to standard JS, make it
  * use strings instead of arrays of bytes. UTF-8 string desirable. */
+/* Lines with comments marked MWRC have been modified from the original */
+/* MWRC Remove node-specific shebang line and "use strict" */
 
 /**
  * Largest prime smaller than 2^16 (65536)
@@ -16,7 +18,7 @@ var BASE = 65521;
  */
 var NMAX = 5552;
 
-function sum(buf, adler)
+function sum(buf, adler) /* MWRC convert from node to generic JS */
 {
 	if (adler == null)
 		adler = 1;
@@ -33,7 +35,7 @@ function sum(buf, adler)
 
 		do
 		{
-			a += buf.charCodeAt(i++)<<0;
+			a += buf.charCodeAt(i++)<<0; /* MWRC use string not byte array */
 			b += a;
 		}
 		while (--n);
@@ -43,9 +45,9 @@ function sum(buf, adler)
 	}
 
 	return ((b << 16) | a) >>> 0;
-}
+} /* MWRC convert from node to generic JS */
 
-function roll(sum, length, oldByte, newByte)
+function roll(sum, length, oldByte, newByte) /* MWRC convert from node to generic JS */
 {
 	var a = sum & 0xFFFF,
 		b = (sum >>> 16) & 0xFFFF;
@@ -62,4 +64,4 @@ function roll(sum, length, oldByte, newByte)
 	}
 
 	return ((b << 16) | a) >>> 0;
-}
+} /* MWRC convert from node to generic JS */
