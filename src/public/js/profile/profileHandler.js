@@ -138,7 +138,7 @@ var writeToTable = function(table, response) {
     };
 
     if (response[0] === undefined) {
-        $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
+        $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td></tr>');
     } else {
         for (var i = 0; i < response.length; i++) {
             var resultDate = new Date(response[i].date_created * 1000);
