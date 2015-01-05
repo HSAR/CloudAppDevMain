@@ -1,3 +1,4 @@
+//ajax handler for the search page
 function AjaxHandler() {
 	this.search = function(query, sort, token, tag, cb, error) {
 		var data = {};

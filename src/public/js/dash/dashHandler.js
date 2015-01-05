@@ -66,6 +66,7 @@ var collabSongs = function(response) {
     writeToTable('#collabTable', response);
 };
 
+//fill the invite table with the user's invites
 var invitedSongs = function(response) {
     if (response[0] === undefined) {
         $('#inviteTable').append('<tr><td>'+ 'No pending invitations' +'</td><td></td><td></td><td></td><td></td><td></td></tr>');
@@ -97,6 +98,7 @@ var invitedSongs = function(response) {
     }
 };
 
+//fill the latest songs section with the most recently created jingles
 var latestSongs = function(response) {
     var result = response.results;
     for (var i = 0; i < result.length && i<5; i++) {
@@ -109,6 +111,7 @@ var latestSongs = function(response) {
     }
 };
 
+//callback for when a jingle has been created/edited successfully
 var songCreated = function() {
     $('#title-form').val('');
     $('#genre-form').val('');
@@ -117,14 +120,10 @@ var songCreated = function() {
     $('#ownedTable > tbody').html("");
     ajax.getUserSongs(ownedSongs, ajaxFailure);
     $('.alert').alert("close");
-    $('#page-content').prepend(
-        '<div id="ajax-alert" role="alert" class="alert alert-success alert-dismissible fade in">'
-        + '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-        + "<p>Jingle saved</p>"
-        + '</div>'
-    );
+    alertUser('alert-success', "Jingle saved");
 };
 
+//callback when invite is accepted
 var acceptedInvite = function() {
     $('#collabTable > tbody').html("");
     $('#inviteTable > tbody').html("");
@@ -134,16 +133,13 @@ var acceptedInvite = function() {
     alertUser('alert-success', 'Invite accepted');
 };
 
-
-
+//callback when invite rejected
 var rejectedInvite = function() {
     $('#inviteTable > tbody').html("");
     ajax.getUserInvites(invitedSongs, ajaxFailure);
     $('.alert').alert("close");
     alertUser('alert-success', 'Invite rejected');
 };
-
-
 
 var createTag = function(name,$target,$inputArea) {
     if(!name || name === '') {//validate name
@@ -162,6 +158,7 @@ var createTag = function(name,$target,$inputArea) {
     }
 };
 
+//fill in the given table with song data from the response
 var writeToTable = function(table, response) {
     var songTableEmptyMessage = {
         '#ownedTable': 'No songs found. Why not <a href="#" data-toggle="modal" data-target="#createJingleModal">create one?</a>',

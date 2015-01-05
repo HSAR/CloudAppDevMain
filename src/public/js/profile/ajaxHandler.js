@@ -1,3 +1,4 @@
+//ajax requests for the profile page
 function AjaxHandler() {
 	this.getUser = function(path, cb, error) {
 		commonAjax(window.location.protocol + '//' + window.location.host + '/api/users/' + path, cb, error);

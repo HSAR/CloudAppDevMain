@@ -9,6 +9,7 @@ var pageData = {
 };
 var path;
 
+//load required data for this page
 var init = function() {
     //empty tables
     $('#collabTable > tbody').html("");
@@ -58,6 +59,7 @@ var createTag = function(name) {
     }
 };
 
+//check for changes to profile, decide if update profile ajax request is necessary
 var isFormUpdated = function() {
     var newData = {};
 
@@ -85,6 +87,7 @@ var isFormUpdated = function() {
     }
 };
 
+//callback for loading new user profile data
 var profileUpdated = function() {
     ajax.getUser(path, userData, ajaxFailure); //update profile page
     getCurrentUser(setUser, ajaxFailure); //update currentUserEntity and related fields
@@ -93,6 +96,7 @@ var profileUpdated = function() {
     alertUser('alert-success', 'Profile updated');
 };
 
+//load the requested user's profile
 var userData = function(response) {
     $(".profile-username").text(response.username);
     $("#username-form").val(response.username);
@@ -131,12 +135,13 @@ var collabSongs = function(response) {
     writeToTable('#collabTable', response);
 };
 
+//writes the song data from the response into the supplied table
 var writeToTable = function(table, response) {
     var songTableEmptyMessage = {
         '#ownedTable': 'User has not created any songs',
         '#collabTable': 'User has not contributed to any songs',
     };
-
+    //if no data show an appropriate message
     if (response[0] === undefined) {
         $(table).append('<tr><td>'+ songTableEmptyMessage[table] +'</td><td></td><td></td><td></td></tr>');
     } else {
@@ -146,7 +151,7 @@ var writeToTable = function(table, response) {
           	if (resultGenre === null) {
           		resultGenre = new String("");
          	 }
-            var staticPlayer = new StaticPlayer();
+            var staticPlayer = new StaticPlayer(); //midi player for jingle
             staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + response[i].jingle_id + '/midi');
             $(table).append('<tr><td>' +  response[i].title + '</td>' 
                 + '<td><a href="/web/users/' + response[i].author + '">' + response[i].username + '</a></td>' 

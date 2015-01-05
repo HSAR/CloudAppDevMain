@@ -1,3 +1,4 @@
+//ajax handler for the dashboard page
 function AjaxHandler() {
 
 	this.getUserSongs = function(cb, error) {

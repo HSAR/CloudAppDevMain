@@ -25,6 +25,7 @@ var init = function() {
 	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
 };
 
+//extract the requested parameter from the url
 function getUrlParam(parameter) {
 	var query = window.location.search.substring(1);
 	var vars = query.split("&");
@@ -35,6 +36,7 @@ function getUrlParam(parameter) {
 	return("");
 }
 
+//display search results in the table
 var showResults = function(response, token) {
     //don't clear the table if we're continuing a search
     if (!token) {
@@ -42,17 +44,18 @@ var showResults = function(response, token) {
     }
 	var results = response.results;
 		token = response.token;
-		//sort = response.sort;
-		
+	
+	//if no results show appropriate message	
 	if (results[0] === undefined) {
 		$('#results tbody').append('<tr><td>No results found.</td><td></td><td></td><td></td></tr>');
 		return;
 	}
+	//if there's another page of results
 	if (response.more) {
 		//enable next page link
 		$('#more-results').click(function() {
 		  $('#more-results').unbind('click');
-                  ajax.search(query, sort, token, tag, showResults, ajaxFailure);
+        	  ajax.search(query, sort, token, tag, showResults, ajaxFailure);
         });
         $('#more-results').show();
 	} else {
@@ -60,6 +63,7 @@ var showResults = function(response, token) {
 		$('#more-results').unbind('click');
         $('#more-results').hide();
 	}
+	//fill the table
 	for (var i = 0; i < results.length; i++) {
 		var staticPlayer = new StaticPlayer();
 		staticPlayer.loadFile(window.location.protocol + '//' + window.location.host + '/api/songs/' + results[i].jingle_id + '/midi');
@@ -78,5 +82,4 @@ var showResults = function(response, token) {
 		);
 		staticPlayer.attach($('td.preview' + results[i].jingle_id).eq(0));
 	}
-
 };
