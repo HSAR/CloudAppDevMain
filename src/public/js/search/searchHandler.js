@@ -1,8 +1,8 @@
-var token;
-var query;
-var sort;
-var tag;
-var ajax;
+//passed into the search ajax request
+var token,
+    query,
+    sort,
+    tag;
 
 var init = function() {
 	ajax = new AjaxHandler();
@@ -47,7 +47,9 @@ var showResults = function(response) {
 		}
 		if (response.more) {
 			//enable next page link
-			$('#more-results').click(showMore);
+			$('#more-results').click(function() {
+                ajax.search(query, sort, token, tag, showResults, ajaxFailure);
+            });
 		} else {
 			$('#more-results').unbind('click');
 		}
@@ -70,8 +72,4 @@ var showResults = function(response) {
 			staticPlayer.attach($('td.preview' + results[i].jingle_id).eq(0));
 		}
 	}
-}
-
-var showMore = function() {
-	ajax.search(query, sort, token, tag, showResults, ajaxFailure);
 }

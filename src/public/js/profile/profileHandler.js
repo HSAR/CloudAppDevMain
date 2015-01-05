@@ -4,7 +4,6 @@ var oldData = {
     tags: null
 }
 var path;
-var ajax;
 
 var init = function() {
     path = window.location.pathname;

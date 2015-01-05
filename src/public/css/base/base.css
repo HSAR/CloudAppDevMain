@@ -10,10 +10,6 @@ body {
   text-decoration:none;
 }
 
-i {
-  font-size:18px;
-}
-
 .nav>li .count {
   position: absolute;
   top: 10%;

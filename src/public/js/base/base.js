@@ -1,5 +1,6 @@
-//The user entity of the currently active user
-var currentUserEntity;
+//Globals
+var currentUserEntity //the current user entity from datastore
+var ajax; //ajax handlers for this page
 
 var setUser = function(response) {
     currentUserEntity = response;
@@ -18,13 +19,12 @@ var ajaxFailure = function(data) {
 		data.responseJSON = jQuery.parseJSON(data.responseText);
 	}
 	$('#page-content').prepend(
-			'<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
-	     	+ '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
-	     	+ '<h4>An error occured</h4>'
-      		+ '<p>' + data.responseJSON.status + ': ' + data.responseJSON.message + '</p>'
-    		+ '<button class="btn btn-danger" onClick="location.reload();" type="button">Refresh</button>'
-	    	+ '</div>'
-		);
+		'<div id="ajax-alert" role="alert" class="alert alert-danger alert-dismissible fade in">'
+     	+ '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>'
+     	+ '<h4>An error occured</h4>'
+  		+ '<p><i>Error ' + data.responseJSON.status + ': ' + data.responseJSON.message + '</i></p>'
+    	+ '</div>'
+	);
 };
 
 var getCurrentUser = function(cb, error) {

@@ -1,5 +1,3 @@
-var ajax;
-
 var init = function() {
 	ajax = new AjaxHandler();
 	ajax.getUserSongs(ownedSongs, ajaxFailure);
@@ -22,8 +20,6 @@ var init = function() {
         }
     }
 }
-
-
 
 var ownedSongs = function(response) {
     writeToTable('#ownedTable', response);
