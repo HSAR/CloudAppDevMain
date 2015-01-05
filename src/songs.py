@@ -337,7 +337,7 @@ class WebSongsSidEditorHandler(webapp2.RequestHandler):
                 template = JINJA_ENVIRONMENT.get_template('templates/editor.html')
                 self.response.write(template.render(template_values))
             else:
-                return error.respond(404, "Song not found.")
+                Error404Handler(None, self.response, "Invalid Song ID")
 
 
 class ApiSongSidTokenHandler(webapp2.RequestHandler):
