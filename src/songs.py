@@ -104,7 +104,27 @@ class ApiSongSidMidiHandler(webapp2.RequestHandler):
             jingle = datastore.getJingleJSON(songid)
             if jingle:
                 try:
-                    self.response.out.write(json.dumps(midi.getMIDIBase64(jingle)))
+                    self.response.write(json.dumps(midi.getMIDIBase64(jingle)))
+                except midi.MIDIError as exc:
+                    return error.respond(500, midi.MIDIError.message)
+            else:
+                return error.respond(404, "Song not found.")
+
+
+class ApiSongSidFileHandler(webapp2.RequestHandler):
+    def get(self, songid):
+        if not songid:
+            return error.respond(400, "Invalid song ID in request URL")
+        else:
+            jingle_object = datastore.getJingleById(songid)
+            if jingle_object:
+                try:
+                    jingle_dict = datastore.getJingleDict(jingle_object)
+                    self.response.headers['Content-Type'] = 'application/x-midi'
+                    self.response.headers[
+                        'Content-Disposition'] = 'attachment; filename="' + jingle_object.title.encode('ascii','ignore') + '.midi"'
+                    #self.response.write(midi.getMIDI(jingle_dict['jingle'])['midi'].decode('cp437'))
+                    self.response.body = str(midi.getMIDI(jingle_dict['jingle'])['midi'])
                 except midi.MIDIError as exc:
                     return error.respond(500, midi.MIDIError.message)
             else:
@@ -390,6 +410,8 @@ application = webapp2.WSGIApplication([
                                                         name='song-get-by-id'),
                                           webapp2.Route(r'/api/songs/<songid>/midi', handler=ApiSongSidMidiHandler,
                                                         name='song-get-midi-by-id'),
+                                          webapp2.Route(r'/api/songs/<songid>/file', handler=ApiSongSidFileHandler,
+                                                        name='song-get-file-by-id'),
                                           webapp2.Route(r'/api/songs/<songid>/notes', handler=ApiSongSidNoteHandler,
                                                         name='notechanges'),
                                           webapp2.Route(r'/api/songs/<songid>/instruments',
