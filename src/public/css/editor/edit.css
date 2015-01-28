@@ -69,8 +69,8 @@
 	float : right;
 }
 
-button.download-button {
-	margin-top: 0.5em;
+.download-button:focus {
+	outline:none;
 }
 
 .key {

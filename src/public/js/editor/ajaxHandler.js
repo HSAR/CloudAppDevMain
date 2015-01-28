@@ -136,10 +136,10 @@ function AjaxHandler() {
 		});
 	};
 	this.downloadMidi = function(id) {
-		$.ajax({
-			type : 'GET',
-			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/file'
-		});
+		//pseudo ajax call
+		var currentPath = window.location.pathname;
+		window.location.pathname = '/api/songs/' + id + '/file';//download midi file
+		window.history.replaceState('Object', 'Title', currentPath);//replace download url in bar with the original url
 	}
 
 }
