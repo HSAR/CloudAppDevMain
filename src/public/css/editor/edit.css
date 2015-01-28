@@ -60,6 +60,19 @@
 	vertical-align:  top;
 }
 
+.song-title {
+	display: inline;
+	vertical-align: middle;
+}
+
+.float-right {
+	float : right;
+}
+
+button.download-button {
+	margin-top: 0.5em;
+}
+
 .key {
 	width : 20%;
 	height : 100%;

@@ -135,5 +135,11 @@ function AjaxHandler() {
 			}
 		});
 	};
+	this.downloadMidi = function(id) {
+		$.ajax({
+			type : 'GET',
+			url : window.location.protocol + '//' + window.location.host + '/api/songs/' + id + '/file'
+		});
+	}
 
 }

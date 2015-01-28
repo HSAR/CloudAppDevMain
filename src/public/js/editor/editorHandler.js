@@ -60,6 +60,13 @@
 	function loadRemainingUI() {
 		loadPalette();
 		setPlaybackButtons();
+		loadDownloadButton();
+	}
+
+	function loadDownloadButton() {
+		$('button.download-button').click(function() {
+			ajaxHelper.downloadMidi(pageData.songId);
+		});
 	}
 	
 	function drawLoadScreen() {
